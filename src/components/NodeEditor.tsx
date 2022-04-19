@@ -1,6 +1,6 @@
 export const NodeEditor = () => {
     return(
-        <div>
+        <div id="#myInitialId">
             Show the canvas here
         </div>
     )

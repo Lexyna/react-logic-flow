@@ -1,8 +1,15 @@
-import { LogicNode, selectedNode } from "./NodeTypes";
+import { LogicNode, ProtoNode, selectedNode } from "./NodeTypes";
 
 export interface Connection {
     input: selectedNode,
     output: selectedNode
+}
+
+export interface NodeEditorProps {
+    id: string,
+    config: ProtoNode[],
+    root: ProtoNode,
+    liveUpdate: boolean
 }
 
 export interface NodeEditorState {

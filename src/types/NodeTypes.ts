@@ -31,3 +31,11 @@ export interface LogicNode {
     outputs: NodeIO<any>[],
     forward: (...io: any[]) => void
 }
+
+export interface ProtoNode {
+    name: "string",
+    description: "string",
+    inputs: NodeIO<any>[],
+    outputs: NodeIO<any>[],
+    forward: (...io: any[]) => void
+}

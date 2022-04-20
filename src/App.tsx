@@ -1,13 +1,23 @@
 import React from 'react';
-import logo from './logo.svg';
-
 import { NodeEditor } from './components/NodeEditor';
+import { ProtoNode } from './types/NodeTypes';
+
+
+const config: ProtoNode[] = []
+
+const root: ProtoNode = {
+  name:"My ProtoNode",
+  description: "A root Node",
+  inputs: [],
+  outputs: [],
+  forward: () => {/*this node does nothing*/}
+}
 
 function App() {
   return (
    <div>
      My apps
-     <NodeEditor />
+     <NodeEditor id={"#myInitialID"} config={config} root={root} liveUpdate={false}/>
    </div>
   );
 }

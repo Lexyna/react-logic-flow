@@ -1,4 +1,4 @@
-import { LogicNode, ProtoNode, selectedNode } from "./NodeTypes";
+import { ProtoNode, selectedNode } from "./NodeTypes";
 
 export interface Connection {
     input: selectedNode,
@@ -10,15 +10,6 @@ export interface NodeEditorProps {
     config: ProtoNode[],
     root: ProtoNode,
     liveUpdate: boolean
-}
-
-export interface NodeEditorState {
-    nodes: LogicNode[],
-    root: string,
-    dragNode: string,
-    mousePath: string,
-    connections: Connection[],
-    contextMenuOptions: ContextMenuOptions
 }
 
 export interface ContextMenuOptions {

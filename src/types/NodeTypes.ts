@@ -27,14 +27,17 @@ export interface ReactNode {
 //Logic Node used to compute the graph
 export interface LogicNode {
     id: string,
+    name: string,
+    x: number,
+    y: number,
     inputs: NodeIO<any>[],
     outputs: NodeIO<any>[],
     forward: (...io: any[]) => void
 }
 
 export interface ProtoNode {
-    name: "string",
-    description: "string",
+    name: string,
+    description: string,
     inputs: NodeIO<any>[],
     outputs: NodeIO<any>[],
     forward: (...io: any[]) => void

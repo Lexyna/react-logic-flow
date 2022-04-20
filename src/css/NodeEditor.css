@@ -1,5 +1,9 @@
 .NodeEditor {
     height: 100vh;
     display: flex;
-    background-color: green;
+}
+
+.NodeEditorSVG {
+  width: 100%;
+  background-color: wheat;
 }

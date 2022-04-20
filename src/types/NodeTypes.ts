@@ -1,4 +1,4 @@
-import { NodeIO } from "./IOTypes"
+import { ProtoIO } from "./IOTypes"
 
 //Passed type to identify the currently selected Node in the Editor
 export interface selectedNode {
@@ -16,11 +16,11 @@ export interface ReactNode {
     name: string,
     x: number,
     y:number,
-    inputs: NodeIO<any>[],
-    outpiuts: NodeIO<any>[],
+    inputs: ProtoIO<any>[],
+    outputs: ProtoIO<any>[],
     dragHandler: (id: string) => void | null,
     onInputClicked: (node: selectedNode) => void,
-    onoutputClicked: (node: selectedNode) => void,
+    onOutputClicked: (node: selectedNode) => void,
     updateExtraData: (nodeId: string, input: boolean, index: number, data: any) => void
 }
 
@@ -30,15 +30,15 @@ export interface LogicNode {
     name: string,
     x: number,
     y: number,
-    inputs: NodeIO<any>[],
-    outputs: NodeIO<any>[],
+    inputs: ProtoIO<any>[],
+    outputs: ProtoIO<any>[],
     forward: (...io: any[]) => void
 }
 
 export interface ProtoNode {
     name: string,
     description: string,
-    inputs: NodeIO<any>[],
-    outputs: NodeIO<any>[],
+    inputs: ProtoIO<any>[],
+    outputs: ProtoIO<any>[],
     forward: (...io: any[]) => void
 }

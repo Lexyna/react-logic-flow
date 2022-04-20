@@ -1,5 +1,6 @@
 import { MouseEvent, useState } from "react";
 import "../css/NodeEditor.css";
+import { computeBezierCurve } from "../logic/Utils";
 import {
   Connection,
   ContextMenuOptions,
@@ -32,6 +33,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
       y: 0,
     });
 
+  const onOutputClicked = (node: selectedNode) => {
+    selectedOutput = node;
+  };
+
   const selecteNodeToDrag = (id: string) => {
     setDragNodeId(id);
   };
@@ -55,6 +60,30 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const onMove = (e: MouseEvent) => {
     updateNodePosition(e);
+    updateMousePath(e);
+  };
+
+  const resetSelectedOutput = () => {
+    if (selectedOutput && isSelected) {
+      selectedOutput = null;
+      isSelected = false;
+      setMousePath("");
+    }
+    if (selectedOutput) isSelected = true;
+  };
+
+  const updateMousePath = (e: MouseEvent) => {
+    if (!selectedOutput) return;
+    const x2 = e.clientX;
+    const y2 = e.clientY;
+
+    const str = computeBezierCurve(
+      selectedOutput.x(),
+      selectedOutput.y(),
+      x2,
+      y2
+    );
+    setMousePath(str);
   };
 
   const updateExtraData = (
@@ -73,8 +102,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
       id={props.id}
       className="NodeEditor"
       onMouseUp={resetNodeToDrag}
+      onClick={resetSelectedOutput}
       onMouseMove={onMove}>
-      <svg>
+      <svg className="NodeEditorSVG">
         <path
           fill="none"
           stroke="gray"
@@ -90,10 +120,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
             y={node.y}
             name={node.name}
             inputs={node.inputs}
-            outpiuts={node.outputs}
+            outputs={node.outputs}
             dragHandler={selecteNodeToDrag}
             onInputClicked={onConnect}
-            onoutputClicked={onDisconnect}
+            onOutputClicked={onOutputClicked}
             updateExtraData={updateExtraData}
             id={node.id}
             key={node.id}

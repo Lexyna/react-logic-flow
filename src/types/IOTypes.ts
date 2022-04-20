@@ -1,4 +1,6 @@
-export interface NodeIO<T> {
+import { selectedNode } from "./NodeTypes";
+
+export interface ProtoIO<T> {
 name: string,
 type: string,
 color:string,
@@ -16,6 +18,8 @@ export interface ReactIO<T> {
     color: string,
     value: T,
     extra: React.FC<ExtraProps<T>> | null,
+    data: any,
+    onClick: (node: selectedNode) => void
     updateData: (nodeId: string, input: boolean, index: number, data: any) => any
 }
 

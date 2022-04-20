@@ -118,6 +118,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
   };
 
+  let pathId: number = 0;
+
   return (
     <div
       id={props.id}
@@ -139,6 +141,25 @@ export const NodeEditor = (props: NodeEditorProps) => {
           e.preventDefault();
           showContextMenu(e);
         }}>
+        {connections.map((con) => {
+          const str = computeBezierCurve(
+            con.output.x(),
+            con.output.y(),
+            con.input.x(),
+            con.input.y()
+          );
+          pathId++;
+          return (
+            <path
+              key={pathId}
+              fill="none"
+              stroke={con.output.color}
+              strokeWidth={2}
+              d={str}
+            />
+          );
+        })}
+
         <path
           fill="none"
           stroke="gray"

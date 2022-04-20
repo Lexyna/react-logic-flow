@@ -19,7 +19,7 @@ export interface ReactIO<T> {
     value: T,
     extra: React.FC<ExtraProps<T>> | null,
     data: any,
-    onClick: (node: selectedNode) => void
+    onClick: (node: selectedNode) => void,
     updateData: (nodeId: string, input: boolean, index: number, data: any) => any
 }
 

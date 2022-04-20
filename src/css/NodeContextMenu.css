@@ -1,0 +1,52 @@
+.NodeContextMenuContainer{
+  position: absolute;
+}
+
+.NodeContextMenu {
+  display: block;
+  width: auto;
+  min-width: 10rem;
+  max-height: 20rem;
+  background-color: rgba(63, 63, 63, .7);
+  border: 0px solid gray;
+  position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1;
+}
+
+.NodeContextMenuItem {
+  border-bottom: 1px solid gray;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  overflow-wrap: normal;
+}
+
+.NodeContextMenuItem>header {
+  color: black;
+  text-align: left;
+  padding-left: .2rem;
+  font-weight: bold;
+}
+
+.NodeContextMenuItem>span {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-style: italic;
+  font-size: medium;
+  color: white;
+  display: block;
+}
+
+.NodeContextMenuItem>input {
+  margin-left: 0.5rem;
+  width: auto;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  font-style: italic;
+  font-size: medium;
+  color: white;
+  display: block;
+  outline: none;
+  font-size: medium;
+}

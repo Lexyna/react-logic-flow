@@ -3,8 +3,6 @@ import { NodeEditor } from "./components/NodeEditor";
 import { ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
 
-const config: ProtoNode[] = [];
-
 const ioNumber: ProtoIO<number> = {
   name: "const",
   type: "number",
@@ -13,6 +11,18 @@ const ioNumber: ProtoIO<number> = {
   extra: null,
   value: 0,
 };
+
+const numberInput: ProtoNode = {
+  name: "Number",
+  description: "A node that takes a number",
+  inputs: [ioNumber],
+  outputs: [],
+  forward: (io: ProtoIO<number>) => {
+    console.log(io.value);
+  },
+};
+
+const config: ProtoNode[] = [numberInput];
 
 const root: ProtoNode = {
   name: "Const",

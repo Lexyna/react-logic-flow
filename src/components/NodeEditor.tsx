@@ -7,6 +7,7 @@ import {
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
 import { LogicNode, selectedNode } from "../types/NodeTypes";
+import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
 
 let selectedOutput: selectedNode | null = null;
@@ -97,6 +98,26 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const onDisconnect = () => {};
 
+  const addNodeToEditor = (node: LogicNode) => {
+    setNodes(nodes.concat(node));
+    hideContextMenu();
+  };
+
+  const showContextMenu = (e: MouseEvent) => {
+    setContextMenuOptions({
+      showContextMenu: true,
+      x: e.clientX,
+      y: e.clientY,
+    });
+  };
+
+  const hideContextMenu = () => {
+    setContextMenuOptions({
+      ...contextMenuOptions,
+      showContextMenu: false,
+    });
+  };
+
   return (
     <div
       id={props.id}
@@ -104,7 +125,20 @@ export const NodeEditor = (props: NodeEditorProps) => {
       onMouseUp={resetNodeToDrag}
       onClick={resetSelectedOutput}
       onMouseMove={onMove}>
-      <svg className="NodeEditorSVG">
+      <NodeContextMenu
+        config={props.config}
+        show={contextMenuOptions.showContextMenu}
+        x={contextMenuOptions.x}
+        y={contextMenuOptions.y}
+        addNode={addNodeToEditor}
+      />
+      <svg
+        className="NodeEditorSVG"
+        onClick={hideContextMenu}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          showContextMenu(e);
+        }}>
         <path
           fill="none"
           stroke="gray"

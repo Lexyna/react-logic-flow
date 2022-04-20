@@ -1,0 +1,80 @@
+.NodeContainer {
+    background-color: rgba(63, 63, 63, .7);
+    max-width: 250px;
+    min-width: 100px;
+    width: auto;
+    height: auto;
+    position: absolute;
+    padding-bottom: 7px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    border-radius: 6px;
+    box-shadow: 0px 6px 14px #000000dd;
+}
+
+.NodeContainer:hover {
+    border-color: rgba(0, 0, 200, .7);
+}
+
+.NodeContainer:active {
+    border-color: rgba(100, 0, 0, .7);
+}
+
+.NodeContainer>header {
+    display: block;
+    background-color: #297286BB;
+    color:white;
+    cursor: move;
+    border-radius: 5px 5px 0px 0px;
+    text-align: left;
+    font-family: 'Courier New', Courier, monospace;
+    user-select: none;
+    padding: 2px 12px 5px;
+}
+
+.NodeContainer>ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.NodeContainer>ul>li {
+    position: relative;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.NodeContainer>ul>li>span {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    color: black;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.NodeContainer>ul>li>i {
+    position: absolute;
+    width: .6rem;
+    height: .6rem;
+    background-color: white;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+.NodeContainer>ul>li>i:hover {
+    background-color: black;
+}
+
+.NodeContainer>ul>li.Input>i {
+    left: -.3rem;
+    top: .4rem
+}
+
+.NodeContainer>ul>li.Output>i {
+    right: -.25rem;
+    top: 40%
+}
+
+.NodeContainer>ul>li.Output {
+    text-align: right;
+}

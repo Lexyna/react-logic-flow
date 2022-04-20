@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../css/NodeEditor.css";
 import {
   Connection,
   ContextMenuOptions,
@@ -6,6 +7,9 @@ import {
 } from "../types/NodeEditorTypes";
 import { LogicNode, selectedNode } from "../types/NodeTypes";
 import { ReactEditorNode } from "./ReactEditorNode";
+
+let selectedOutput: selectedNode | null = null;
+let isSelected: boolean = false;
 
 export const NodeEditor = (props: NodeEditorProps) => {
   const [nodes, setNodes] = useState<LogicNode[]>([

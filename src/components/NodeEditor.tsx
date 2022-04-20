@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import "../css/NodeEditor.css";
 import {
   Connection,
@@ -22,7 +22,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     },
   ]);
 
-  const [dragNode, setDragNode] = useState<string>(""); //Identify the node to be dragged
+  const [dragNodeId, setDragNodeId] = useState<string | null>(""); //Identify the node to be dragged
   const [mousePath, setMousePath] = useState<string>(""); //stroke path for output to mouse bezier curve - if any
   const [connections, setConnections] = useState<Connection[]>([]);
   const [contextMenuOptions, setContextMenuOptions] =
@@ -31,6 +31,31 @@ export const NodeEditor = (props: NodeEditorProps) => {
       x: 0,
       y: 0,
     });
+
+  const selecteNodeToDrag = (id: string) => {
+    setDragNodeId(id);
+  };
+
+  const resetNodeToDrag = () => {
+    setDragNodeId(null);
+  };
+
+  const updateNodePosition = (e: MouseEvent) => {
+    if (!dragNodeId) return;
+
+    const newNodes: LogicNode[] = nodes.slice();
+    newNodes.forEach((node, index) => {
+      if (node.id !== dragNodeId) return;
+      newNodes[index].x += e.movementX;
+      newNodes[index].y += e.movementY;
+    });
+
+    setNodes(newNodes);
+  };
+
+  const onMove = (e: MouseEvent) => {
+    updateNodePosition(e);
+  };
 
   const updateExtraData = (
     nodeID: string,
@@ -44,7 +69,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const onDisconnect = () => {};
 
   return (
-    <div id={props.id} className="NodeEditor">
+    <div
+      id={props.id}
+      className="NodeEditor"
+      onMouseUp={resetNodeToDrag}
+      onMouseMove={onMove}>
       <svg>
         <path
           fill="none"
@@ -62,7 +91,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
             name={node.name}
             inputs={node.inputs}
             outpiuts={node.outputs}
-            dragHandler={setDragNode}
+            dragHandler={selecteNodeToDrag}
             onInputClicked={onConnect}
             onoutputClicked={onDisconnect}
             updateExtraData={updateExtraData}

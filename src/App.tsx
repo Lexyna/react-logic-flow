@@ -1,24 +1,29 @@
-import React from 'react';
-import { NodeEditor } from './components/NodeEditor';
-import { ProtoNode } from './types/NodeTypes';
+import React from "react";
+import { NodeEditor } from "./components/NodeEditor";
+import { ProtoNode } from "./types/NodeTypes";
 
-
-const config: ProtoNode[] = []
+const config: ProtoNode[] = [];
 
 const root: ProtoNode = {
-  name:"My ProtoNode",
+  name: "My ProtoNode",
   description: "A root Node",
   inputs: [],
   outputs: [],
-  forward: () => {/*this node does nothing*/}
-}
+  forward: () => {
+    /*this node does nothing*/
+  },
+};
 
 function App() {
   return (
-   <div>
-     My apps
-     <NodeEditor id={"#myInitialID"} config={config} root={root} liveUpdate={false}/>
-   </div>
+    <div>
+      <NodeEditor
+        id={"#myInitialID"}
+        config={config}
+        root={root}
+        liveUpdate={false}
+      />
+    </div>
   );
 }
 

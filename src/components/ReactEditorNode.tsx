@@ -3,8 +3,8 @@ import "./../css/NodeContainer.css";
 
 export const ReactEditorNode = (props: ReactNode) => {
   const style = {
-    top: props.x + "px",
-    left: props.y + "px",
+    top: props.y + "px",
+    left: props.x + "px",
   };
 
   const onDrag = () => {
@@ -15,7 +15,7 @@ export const ReactEditorNode = (props: ReactNode) => {
 
   return (
     <div className="NodeContainer" style={style}>
-      <header>{props.name}</header>
+      <header onMouseDown={onDrag}>{props.name}</header>
     </div>
   );
 };

@@ -10,7 +10,8 @@ value: T
 export interface ReactIO<T> {
     nodeId: string,
     index: number,
-    rype: string,
+    isInput: boolean,
+    type: string,
     label:string,
     color: string,
     value: T,

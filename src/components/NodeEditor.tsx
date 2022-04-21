@@ -1,5 +1,6 @@
 import { MouseEvent, useState } from "react";
 import "../css/NodeEditor.css";
+import { proccesstNodes } from "../logic/NodeProcessing";
 import { computeBezierCurve } from "../logic/Utils";
 import {
   Connection,
@@ -15,11 +16,12 @@ let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
 export const NodeEditor = (props: NodeEditorProps) => {
+  const rootId = props.id + "Root"; // useNanoId here to create the unqiue Id
   const [nodes, setNodes] = useState<LogicNode[]>([
     {
       ...props.root,
       name: props.root.name + "(Root)",
-      id: props.id, // useNanoId here to create the unqiue Id
+      id: rootId,
       x: 50,
       y: 50,
     },
@@ -186,6 +188,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setConnections(cons);
   };
 
+  const execute = () => {
+    proccesstNodes(nodes, connections, rootId);
+  };
+
   let pathId: number = 0;
 
   return (
@@ -202,6 +208,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
         y={contextMenuOptions.y}
         addNode={addNodeToEditor}
       />
+      <button style={{ position: "absolute" }} onClick={execute}>
+        proccess me
+      </button>
       <svg
         className="NodeEditorSVG"
         onClick={hideContextMenu}

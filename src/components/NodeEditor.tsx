@@ -7,6 +7,7 @@ import {
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
 import { LogicNode, selectedNode } from "../types/NodeTypes";
+import { NodeConnection } from "./NodeConnection";
 import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
 
@@ -143,6 +144,19 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
   };
 
+  //Move the curently hovered-over connetion to the end of the list =>
+  //it wil be renderd on top all other connections
+  const setConnectionHover = (index: number) => {
+    const cons = connections.map((con) => {
+      return { ...con };
+    });
+    const hover = cons[index];
+
+    cons.splice(index, 1);
+    cons.push(hover);
+    setConnections(cons);
+  };
+
   let pathId: number = 0;
 
   return (
@@ -166,7 +180,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
           e.preventDefault();
           showContextMenu(e);
         }}>
-        {connections.map((con) => {
+        {connections.map((con, index) => {
+          const nodeConnectionId = props.id + "Connection" + pathId;
+
           const str = computeBezierCurve(
             con.output.x(),
             con.output.y(),
@@ -175,15 +191,13 @@ export const NodeEditor = (props: NodeEditorProps) => {
           );
           pathId++;
           return (
-            <svg>
-              <path
-                key={pathId}
-                fill="none"
-                stroke={con.output.color}
-                strokeWidth={2}
-                d={str}
-              />
-            </svg>
+            <NodeConnection
+              key={pathId}
+              index={index}
+              color={con.input.color}
+              d={str}
+              setHover={setConnectionHover}
+            />
           );
         })}
 

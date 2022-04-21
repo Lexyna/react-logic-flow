@@ -5,6 +5,13 @@ export interface Connection {
     output: selectedNode
 }
 
+export interface NodeConnectionProps {
+  index: number,
+  d: string,
+  color: string,
+  setHover: (index: number) => void
+}
+
 export interface NodeEditorProps {
     id: string,
     config: ProtoNode[],

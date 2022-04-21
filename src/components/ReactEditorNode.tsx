@@ -11,6 +11,7 @@ export const ReactEditorNode = (props: NodeProps) => {
 
   const onDrag = () => {
     props.dragHandler(props.id);
+    props.reorderNode(props.index);
   };
 
   let ioKey: number = 0;

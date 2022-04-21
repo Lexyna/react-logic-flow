@@ -151,6 +151,17 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
   };
 
+  const reorderNode = (index: number) => {
+    const reorderedNodes = nodes.map((n) => {
+      return { ...n };
+    });
+    const activeNode = reorderedNodes[index];
+
+    reorderedNodes.splice(index, 1);
+    reorderedNodes.push(activeNode);
+    setNodes(reorderedNodes);
+  };
+
   //Move the curently hovered-over connetion to the end of the list =>
   //it wil be renderd on top all other connections
   const setConnectionHover = (index: number) => {
@@ -215,15 +226,17 @@ export const NodeEditor = (props: NodeEditorProps) => {
           d={mousePath}
         />
       </svg>
-      {nodes.map((node: LogicNode) => {
+      {nodes.map((node: LogicNode, index: number) => {
         return (
           <ReactEditorNode
+            index={index}
             x={node.x}
             y={node.y}
             name={node.name}
             inputs={node.inputs}
             outputs={node.outputs}
             dragHandler={selecteNodeToDrag}
+            reorderNode={reorderNode}
             onInputClicked={onConnect}
             onOutputClicked={onOutputClicked}
             updateExtraData={updateExtraData}

@@ -13,12 +13,14 @@ export interface selectedNode {
 //Type for the renderd node in the NodeEditor
 export interface NodeProps {
     id: string,
+    index: number,
     name: string,
     x: number,
     y:number,
     inputs: ProtoIO<any>[],
     outputs: ProtoIO<any>[],
     dragHandler: (id: string) => void | null,
+    reorderNode: (index: number) => void,
     onInputClicked: (node: selectedNode) => void,
     onOutputClicked: (node: selectedNode) => void,
     updateExtraData: (nodeId: string, input: boolean, index: number, data: any) => void

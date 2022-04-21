@@ -137,7 +137,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
       return { ...n };
     });
     for (let i = cons.length - 1; i >= 0; i--)
-      if (cons[i].output.id === nodeId) cons.splice(i, 1);
+      if (cons[i].output.id === nodeId && cons[i].output.index === index)
+        cons.splice(i, 1);
     setConnections(cons);
   };
 
@@ -220,7 +221,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
             <NodeConnection
               key={pathId}
               index={index}
-              color={con.input.color}
+              color={con.output.color}
               d={str}
               setHover={setConnectionHover}
               removeConnection={onRemoveConnecton}

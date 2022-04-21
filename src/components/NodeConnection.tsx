@@ -15,9 +15,15 @@ export const NodeConnection = (props: NodeConnectionProps) => {
     setPathColor(props.color);
     setStrokeWidth(2);
   };
+
+  const onConnectionClicked = () => {
+    props.removeConnection(props.index);
+  };
+
   return (
     <svg onMouseEnter={onHover} onMouseLeave={onHoverLeave}>
       <path
+        onClick={onConnectionClicked}
         fill="none"
         stroke={pathColor}
         strokeWidth={strokeWidth}

@@ -108,7 +108,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         if (selectedOutput) {
           if (con.input.type !== con.output.type) return;
           cons[index].output = selectedOutput;
-        } else cons.slice(index, 1);
+        } else cons.splice(index, 1);
       }
     });
 
@@ -122,7 +122,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setConnections(cons);
   };
 
-  const onDisconnect = () => {};
+  const onRemoveConnecton = (index: number) => {
+    const cons = connections.map((con) => {
+      return { ...con };
+    });
+    cons.splice(index, 1);
+
+    setConnections(cons);
+  };
 
   const addNodeToEditor = (node: LogicNode) => {
     setNodes(nodes.concat(node));
@@ -181,8 +188,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
           showContextMenu(e);
         }}>
         {connections.map((con, index) => {
-          const nodeConnectionId = props.id + "Connection" + pathId;
-
           const str = computeBezierCurve(
             con.output.x(),
             con.output.y(),
@@ -197,6 +202,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
               color={con.input.color}
               d={str}
               setHover={setConnectionHover}
+              removeConnection={onRemoveConnecton}
             />
           );
         })}

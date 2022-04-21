@@ -9,7 +9,8 @@ export interface NodeConnectionProps {
   index: number,
   d: string,
   color: string,
-  setHover: (index: number) => void
+  setHover: (index: number) => void,
+  removeConnection: (index: number) => void
 }
 
 export interface NodeEditorProps {

@@ -62,13 +62,14 @@
     position: absolute;
     width: .6rem;
     height: .6rem;
-    background-color: white;
+    background-color: black;
     border-radius: 1rem;
     cursor: pointer;
+    border: 1px solid black;
 }
 
 .NodeContainer>ul>li>i:hover {
-    background-color: black;
+    background-color: white !important;
 }
 
 .NodeContainer>ul>li.Input>i {

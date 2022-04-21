@@ -106,7 +106,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       if (con.input.id === node.id && con.input.index === node.index) {
         connectionExists = true;
         if (selectedOutput) {
-          if (con.input.type !== con.output.type) return;
+          if (con.input.type !== selectedOutput.type) return;
           cons[index].output = selectedOutput;
         } else cons.splice(index, 1);
       }

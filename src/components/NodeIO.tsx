@@ -54,6 +54,7 @@ export const ReactNodeIO = (props: NodeIOProps<any>) => {
         <span>{props.label}</span>
       )}
       <i
+        style={{ backgroundColor: `${props.color}` }}
         onClick={() => setSelectedNode()}
         onContextMenu={onRightClick}
         ref={dotRef}></i>

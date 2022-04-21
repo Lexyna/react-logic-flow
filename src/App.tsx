@@ -6,16 +6,25 @@ import { ProtoNode } from "./types/NodeTypes";
 const ioNumber: ProtoIO<number> = {
   name: "const",
   type: "number",
-  color: "white",
+  color: "green",
   data: {},
   extra: null,
   value: 0,
 };
 
+const ioText: ProtoIO<string> = {
+  name: "Text",
+  type: "text",
+  color: "blue",
+  data: {},
+  extra: null,
+  value: "",
+};
+
 const numberInput: ProtoNode = {
   name: "Number",
   description: "A node that takes a number",
-  inputs: [ioNumber],
+  inputs: [ioNumber, ioText],
   outputs: [],
   forward: (io: ProtoIO<number>) => {
     console.log(io.value);
@@ -26,7 +35,7 @@ const numberOutput: ProtoNode = {
   name: "NumberOut",
   description: "A node that outputs a number",
   inputs: [],
-  outputs: [ioNumber],
+  outputs: [ioNumber, ioText],
   forward: (io: ProtoIO<number>) => {
     console.log(io.value);
   },

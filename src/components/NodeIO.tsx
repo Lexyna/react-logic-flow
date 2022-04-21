@@ -1,4 +1,4 @@
-import { FunctionComponent, useRef } from "react";
+import { FunctionComponent, MouseEvent, useRef } from "react";
 import { ExtraProps, NodeIOProps } from "../types/IOTypes";
 
 export const ReactNodeIO = (props: NodeIOProps<any>) => {
@@ -32,6 +32,12 @@ export const ReactNodeIO = (props: NodeIOProps<any>) => {
     });
   };
 
+  const onRightClick = (e: MouseEvent) => {
+    e.preventDefault();
+    if (!props.onRightClick) return;
+    props.onRightClick(props.nodeId, props.index);
+  };
+
   const updateData = (data: any) => {
     props.updateData(props.nodeId, props.isInput, props.index, data);
   };
@@ -47,7 +53,10 @@ export const ReactNodeIO = (props: NodeIOProps<any>) => {
       ) : (
         <span>{props.label}</span>
       )}
-      <i onClick={() => setSelectedNode()} ref={dotRef}></i>
+      <i
+        onClick={() => setSelectedNode()}
+        onContextMenu={onRightClick}
+        ref={dotRef}></i>
     </li>
   );
 };

@@ -22,7 +22,8 @@ export interface NodeProps {
     dragHandler: (id: string) => void | null,
     reorderNode: (index: number) => void,
     onInputClicked: (node: selectedNode) => void,
-    onOutputClicked: (node: selectedNode) => void,
+    onOutputClicked: (node:selectedNode) => void,
+    onOutputRightClikced: (nodeId:string, index: number) => void,
     updateExtraData: (nodeId: string, input: boolean, index: number, data: any) => void
 }
 

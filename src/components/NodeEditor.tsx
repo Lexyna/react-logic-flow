@@ -19,7 +19,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     {
       ...props.root,
       name: props.root.name + "(Root)",
-      id: props.id,
+      id: props.id, // useNanoId here to create the unqiue Id
       x: 50,
       y: 50,
     },
@@ -131,6 +131,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setConnections(cons);
   };
 
+  //Right click on an output node, to remove all connected nodes
+  const onRemoveAllConnections = (nodeId: string, index: number) => {
+    const cons = connections.map((n) => {
+      return { ...n };
+    });
+    for (let i = cons.length - 1; i >= 0; i--)
+      if (cons[i].output.id === nodeId) cons.splice(i, 1);
+    setConnections(cons);
+  };
+
   const addNodeToEditor = (node: LogicNode) => {
     setNodes(nodes.concat(node));
     hideContextMenu();
@@ -239,6 +249,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
             reorderNode={reorderNode}
             onInputClicked={onConnect}
             onOutputClicked={onOutputClicked}
+            onOutputRightClikced={onRemoveAllConnections}
             updateExtraData={updateExtraData}
             id={node.id}
             key={node.id}

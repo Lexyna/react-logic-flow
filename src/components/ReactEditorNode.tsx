@@ -42,6 +42,7 @@ export const ReactEditorNode = (props: NodeProps) => {
               extra={io.extra}
               data={io.data}
               onClick={props.onInputClicked}
+              onRightClick={null}
               updateData={props.updateExtraData}
             />
           );
@@ -61,6 +62,7 @@ export const ReactEditorNode = (props: NodeProps) => {
               extra={io.extra}
               data={io.data}
               onClick={props.onOutputClicked}
+              onRightClick={props.onOutputRightClikced}
               updateData={props.updateExtraData}
             />
           );

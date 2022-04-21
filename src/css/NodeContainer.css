@@ -65,7 +65,6 @@
     background-color: black;
     border-radius: 1rem;
     cursor: pointer;
-    border: 1px solid black;
 }
 
 .NodeContainer>ul>li>i:hover {

@@ -11,7 +11,7 @@ export interface selectedNode {
 }
 
 //Type for the renderd node in the NodeEditor
-export interface ReactNode {
+export interface NodeProps {
     id: string,
     name: string,
     x: number,

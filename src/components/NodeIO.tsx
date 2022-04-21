@@ -1,7 +1,7 @@
 import { FunctionComponent, useRef } from "react";
-import { ExtraProps, ReactIO } from "../types/IOTypes";
+import { ExtraProps, NodeIOProps } from "../types/IOTypes";
 
-export const ReactNodeIO = (props: ReactIO<any>) => {
+export const ReactNodeIO = (props: NodeIOProps<any>) => {
   const dotRef = useRef<HTMLUListElement>(null);
 
   const setSelectedNode = () => {

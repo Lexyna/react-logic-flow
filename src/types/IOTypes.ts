@@ -9,7 +9,7 @@ extra: React.FC<ExtraProps<T>> | null;
 value: T
 }
 
-export interface ReactIO<T> {
+export interface NodeIOProps<T> {
     nodeId: string,
     index: number,
     isInput: boolean,

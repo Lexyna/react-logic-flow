@@ -1,9 +1,9 @@
 import { MouseEvent } from "react";
-import { ReactNode } from "../types/NodeTypes";
+import { NodeProps } from "../types/NodeTypes";
 import "./../css/NodeContainer.css";
 import { ReactNodeIO } from "./NodeIO";
 
-export const ReactEditorNode = (props: ReactNode) => {
+export const ReactEditorNode = (props: NodeProps) => {
   const style = {
     top: props.y + "px",
     left: props.x + "px",

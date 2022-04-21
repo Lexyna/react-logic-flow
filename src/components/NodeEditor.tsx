@@ -94,7 +94,29 @@ export const NodeEditor = (props: NodeEditorProps) => {
     data: any
   ) => {};
 
-  const onConnect = (node: selectedNode) => {};
+  const onConnect = (node: selectedNode) => {
+    const cons = connections.slice();
+    let connectionExists = false;
+
+    cons.forEach((con, index) => {
+      if (con.input.id === node.id && con.input.index === node.index) {
+        connectionExists = true;
+        if (selectedOutput) {
+          if (con.input.type !== con.output.type) return;
+          cons[index].output = selectedOutput;
+        } else cons.slice(index, 1);
+      }
+    });
+
+    if (
+      !connectionExists &&
+      selectedOutput &&
+      node.type === selectedOutput.type
+    )
+      cons.push({ input: node, output: selectedOutput });
+
+    setConnections(cons);
+  };
 
   const onDisconnect = () => {};
 

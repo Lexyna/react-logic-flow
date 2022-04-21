@@ -22,7 +22,17 @@ const numberInput: ProtoNode = {
   },
 };
 
-const config: ProtoNode[] = [numberInput];
+const numberOutput: ProtoNode = {
+  name: "NumberOut",
+  description: "A node that outputs a number",
+  inputs: [],
+  outputs: [ioNumber],
+  forward: (io: ProtoIO<number>) => {
+    console.log(io.value);
+  },
+};
+
+const config: ProtoNode[] = [numberInput, numberOutput];
 
 const root: ProtoNode = {
   name: "Const",

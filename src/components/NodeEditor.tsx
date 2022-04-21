@@ -49,11 +49,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const updateNodePosition = (e: MouseEvent) => {
     if (!dragNodeId) return;
 
-    const newNodes: LogicNode[] = nodes.slice();
+    const newNodes: LogicNode[] = nodes.map((n) => {
+      return { ...n };
+    });
     newNodes.forEach((node, index) => {
-      if (node.id !== dragNodeId) return;
-      newNodes[index].x += e.movementX;
-      newNodes[index].y += e.movementY;
+      if (node.id === dragNodeId) {
+        newNodes[index].x += e.movementX;
+        newNodes[index].y += e.movementY;
+      }
     });
 
     setNodes(newNodes);
@@ -172,13 +175,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
           );
           pathId++;
           return (
-            <path
-              key={pathId}
-              fill="none"
-              stroke={con.output.color}
-              strokeWidth={2}
-              d={str}
-            />
+            <svg>
+              <path
+                key={pathId}
+                fill="none"
+                stroke={con.output.color}
+                strokeWidth={2}
+                d={str}
+              />
+            </svg>
           );
         })}
 

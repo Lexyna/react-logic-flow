@@ -98,7 +98,27 @@ export const NodeEditor = (props: NodeEditorProps) => {
     input: boolean,
     index: number,
     data: any
-  ) => {};
+  ) => {
+    const copyNodes = nodes.map((node) => {
+      return {
+        ...node,
+        inputs: node.inputs.map((io) => {
+          return { ...io };
+        }),
+        outputs: node.outputs.map((io) => {
+          return { ...io };
+        }),
+      };
+    });
+
+    copyNodes.forEach((node, nodeIndex) => {
+      if (node.id !== nodeID) return;
+      if (input) copyNodes[nodeIndex].inputs[index].data = data;
+      else copyNodes[nodeIndex].outputs[index].data = data;
+    });
+
+    setNodes(copyNodes);
+  };
 
   const onConnect = (node: selectedNode) => {
     const cons = connections.slice();

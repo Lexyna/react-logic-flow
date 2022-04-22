@@ -1,27 +1,26 @@
 import { ProtoNode, selectedNode } from "./NodeTypes";
 
 export interface Connection {
-    input: selectedNode,
-    output: selectedNode
+  input: selectedNode;
+  output: selectedNode;
 }
 
 export interface NodeConnectionProps {
-  index: number,
-  d: string,
-  color: string,
-  setHover: (index: number) => void,
-  removeConnection: (index: number) => void
+  index: number;
+  d: string;
+  color: string;
+  removeConnection: (index: number) => void;
 }
 
 export interface NodeEditorProps {
-    id: string,
-    config: ProtoNode[],
-    root: ProtoNode,
-    liveUpdate: boolean
+  id: string;
+  config: ProtoNode[];
+  root: ProtoNode;
+  liveUpdate: boolean;
 }
 
 export interface ContextMenuOptions {
-    showContextMenu: boolean,
-    x: number,
-    y: number
+  showContextMenu: boolean;
+  x: number;
+  y: number;
 }

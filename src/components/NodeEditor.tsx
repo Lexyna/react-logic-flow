@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
 import { computeBezierCurve } from "../logic/Utils";
@@ -195,19 +195,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setNodes(reorderedNodes);
   };
 
-  //Move the curently hovered-over connetion to the end of the list =>
-  //it wil be renderd on top all other connections
-  const setConnectionHover = (index: number) => {
-    const cons = connections.map((con) => {
-      return { ...con };
-    });
-    const hover = cons[index];
-
-    cons.splice(index, 1);
-    cons.push(hover);
-    setConnections(cons);
-  };
-
   const execute = () => {
     const logicNodes: LogicNode[] = nodes.map((node) => {
       return {
@@ -223,6 +210,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
     proccesstNodes(logicNodes, connections, rootId);
   };
+
+  const doLiveUpdate = () => {
+    if (props.liveUpdate) execute();
+  };
+
+  useEffect(() => {
+    if (!dragNodeId) doLiveUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connections, nodes]);
 
   let pathId: number = 0;
 
@@ -264,7 +260,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
               index={index}
               color={con.output.color}
               d={str}
-              setHover={setConnectionHover}
               removeConnection={onRemoveConnecton}
             />
           );

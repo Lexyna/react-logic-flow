@@ -5,7 +5,6 @@ export const NodeConnection = (props: NodeConnectionProps) => {
   const [strokeWidth, setStrokeWidth] = useState(2);
 
   const onHover = () => {
-    props.setHover(props.index);
     setStrokeWidth(4);
   };
 

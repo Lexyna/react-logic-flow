@@ -98,6 +98,21 @@ const mulNode: ProtoNode = {
   },
 };
 
+const divNode: ProtoNode = {
+  name: "Div",
+  description: "Divides two numnbers",
+  inputs: [ioNumber, ioNumber],
+  outputs: [ioNumber],
+  forward: (
+    in1: ProtoIO<number, any>,
+    in2: ProtoIO<number, any>,
+    out: ProtoIO<number, any>
+  ) => {
+    out.value = in1.value * in2.value;
+    console.log("Div: " + out.value);
+  },
+};
+
 const constNode: ProtoNode = {
   name: "Const",
   description: "A node that outputs a number",
@@ -109,15 +124,15 @@ const constNode: ProtoNode = {
   },
 };
 
-const config: ProtoNode[] = [constNode, addNode, subNode, mulNode];
+const config: ProtoNode[] = [constNode, addNode, subNode, mulNode, divNode];
 
 const root: ProtoNode = {
   name: "Const",
   description: "A root Node",
-  inputs: [],
-  outputs: [ioNumber],
-  forward: () => {
-    /*this node does nothing*/
+  inputs: [ioNumber],
+  outputs: [],
+  forward: (io: ProtoIO<number, any>) => {
+    console.log("root: " + io.value);
   },
 };
 
@@ -128,7 +143,7 @@ function App() {
         id={"#myInitialID"}
         config={config}
         root={root}
-        liveUpdate={false}
+        liveUpdate={true}
       />
     </div>
   );

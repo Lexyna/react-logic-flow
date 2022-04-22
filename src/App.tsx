@@ -6,10 +6,10 @@ import { ProtoNode } from "./types/NodeTypes";
 const ioNumber: ProtoIO<number> = {
   name: "const",
   type: "number",
-  color: "green",
+  color: "blue",
   data: {},
   extra: null,
-  value: 0,
+  value: 7,
 };
 
 const ioText: ProtoIO<string> = {
@@ -21,27 +21,62 @@ const ioText: ProtoIO<string> = {
   value: "",
 };
 
-const numberInput: ProtoNode = {
-  name: "Number",
-  description: "A node that takes a number",
-  inputs: [ioNumber, ioText],
-  outputs: [],
-  forward: (io: ProtoIO<number>) => {
-    console.log(io.value);
+const addNode: ProtoNode = {
+  name: "Add",
+  description: "Adds two numnbers",
+  inputs: [ioNumber, ioNumber],
+  outputs: [ioNumber],
+  forward: (
+    in1: ProtoIO<number>,
+    in2: ProtoIO<number>,
+    out: ProtoIO<number>
+  ) => {
+    out.value = in1.value + in2.value;
+    console.log("add: " + out.value);
   },
 };
 
-const numberOutput: ProtoNode = {
-  name: "NumberOut",
+const subNode: ProtoNode = {
+  name: "Sub",
+  description: "Subs two numnbers",
+  inputs: [ioNumber, ioNumber],
+  outputs: [ioNumber],
+  forward: (
+    in1: ProtoIO<number>,
+    in2: ProtoIO<number>,
+    out: ProtoIO<number>
+  ) => {
+    out.value = in1.value - in2.value;
+    console.log("sub: " + out.value);
+  },
+};
+
+const mulNode: ProtoNode = {
+  name: "Mul",
+  description: "Multiplicates two numnbers",
+  inputs: [ioNumber, ioNumber],
+  outputs: [ioNumber],
+  forward: (
+    in1: ProtoIO<number>,
+    in2: ProtoIO<number>,
+    out: ProtoIO<number>
+  ) => {
+    out.value = in1.value * in2.value;
+    console.log("Mul: " + out.value);
+  },
+};
+
+const constNode: ProtoNode = {
+  name: "Const",
   description: "A node that outputs a number",
   inputs: [],
-  outputs: [ioNumber, ioText],
+  outputs: [ioNumber],
   forward: (io: ProtoIO<number>) => {
-    console.log(io.value);
+    console.log("out: " + io.value);
   },
 };
 
-const config: ProtoNode[] = [numberInput, numberOutput];
+const config: ProtoNode[] = [constNode, addNode, subNode, mulNode];
 
 const root: ProtoNode = {
   name: "Const",

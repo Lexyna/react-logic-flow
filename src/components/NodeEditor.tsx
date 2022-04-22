@@ -189,7 +189,19 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   const execute = () => {
-    proccesstNodes(nodes, connections, rootId);
+    const logicNodes: LogicNode[] = nodes.map((node) => {
+      return {
+        ...node,
+        inputs: node.inputs.map((io) => {
+          return { ...io };
+        }),
+        outputs: node.outputs.map((io) => {
+          return { ...io };
+        }),
+      };
+    });
+
+    proccesstNodes(logicNodes, connections, rootId);
   };
 
   let pathId: number = 0;

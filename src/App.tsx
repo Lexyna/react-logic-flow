@@ -1,18 +1,50 @@
 import React from "react";
 import { NodeEditor } from "./components/NodeEditor";
-import { ProtoIO } from "./types/IOTypes";
+import { ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
 
-const ioNumber: ProtoIO<number> = {
+interface inputData {
+  val: number;
+}
+
+export const InputForm = (props: ExtraProps<number, inputData>) => {
+  const update = (val: number) => {
+    props.setData({ val: val });
+  };
+
+  return (
+    <div>
+      <label>value:</label>
+      <input
+        type="number"
+        style={{ width: "25px" }}
+        defaultValue={props.value}
+        step={1}
+        onChange={(e) => update(parseFloat(e.target.value))}
+      />
+    </div>
+  );
+};
+
+const ioNumber: ProtoIO<number, any> = {
   name: "const",
   type: "number",
   color: "blue",
   data: {},
   extra: null,
-  value: 7,
+  value: 0,
 };
 
-const ioText: ProtoIO<string> = {
+const ioNumberInput: ProtoIO<number, inputData> = {
+  name: "const",
+  type: "number",
+  color: "blue",
+  data: { val: 0 },
+  extra: InputForm,
+  value: 0,
+};
+
+const ioText: ProtoIO<string, any> = {
   name: "Text",
   type: "text",
   color: "blue",
@@ -27,9 +59,9 @@ const addNode: ProtoNode = {
   inputs: [ioNumber, ioNumber],
   outputs: [ioNumber],
   forward: (
-    in1: ProtoIO<number>,
-    in2: ProtoIO<number>,
-    out: ProtoIO<number>
+    in1: ProtoIO<number, any>,
+    in2: ProtoIO<number, any>,
+    out: ProtoIO<number, any>
   ) => {
     out.value = in1.value + in2.value;
     console.log("add: " + out.value);
@@ -42,9 +74,9 @@ const subNode: ProtoNode = {
   inputs: [ioNumber, ioNumber],
   outputs: [ioNumber],
   forward: (
-    in1: ProtoIO<number>,
-    in2: ProtoIO<number>,
-    out: ProtoIO<number>
+    in1: ProtoIO<number, any>,
+    in2: ProtoIO<number, any>,
+    out: ProtoIO<number, any>
   ) => {
     out.value = in1.value - in2.value;
     console.log("sub: " + out.value);
@@ -57,9 +89,9 @@ const mulNode: ProtoNode = {
   inputs: [ioNumber, ioNumber],
   outputs: [ioNumber],
   forward: (
-    in1: ProtoIO<number>,
-    in2: ProtoIO<number>,
-    out: ProtoIO<number>
+    in1: ProtoIO<number, any>,
+    in2: ProtoIO<number, any>,
+    out: ProtoIO<number, any>
   ) => {
     out.value = in1.value * in2.value;
     console.log("Mul: " + out.value);
@@ -70,8 +102,9 @@ const constNode: ProtoNode = {
   name: "Const",
   description: "A node that outputs a number",
   inputs: [],
-  outputs: [ioNumber],
-  forward: (io: ProtoIO<number>) => {
+  outputs: [ioNumberInput],
+  forward: (io: ProtoIO<number, inputData>) => {
+    io.value = io.data.val;
     console.log("out: " + io.value);
   },
 };

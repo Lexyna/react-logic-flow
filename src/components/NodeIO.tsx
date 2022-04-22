@@ -1,7 +1,7 @@
 import { FunctionComponent, MouseEvent, useRef } from "react";
 import { ExtraProps, NodeIOProps } from "../types/IOTypes";
 
-export const ReactNodeIO = (props: NodeIOProps<any>) => {
+export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
   const dotRef = useRef<HTMLUListElement>(null);
 
   const setSelectedNode = () => {
@@ -42,7 +42,9 @@ export const ReactNodeIO = (props: NodeIOProps<any>) => {
     props.updateData(props.nodeId, props.isInput, props.index, data);
   };
 
-  const CustomComponent = props.extra as FunctionComponent<ExtraProps<any>>;
+  const CustomComponent = props.extra as FunctionComponent<
+    ExtraProps<any, any>
+  >;
 
   return (
     <li className={props.isInput ? "Input" : "Output"}>

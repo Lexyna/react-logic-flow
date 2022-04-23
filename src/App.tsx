@@ -26,6 +26,55 @@ export const InputForm = (props: ExtraProps<number, inputData>) => {
   );
 };
 
+enum OPS {
+  ADD,
+  SUB,
+  MULS,
+  DIV,
+}
+
+interface Operations {
+  type: OPS;
+}
+
+export const OperationSelect = (props: ExtraProps<number, Operations>) => {
+  const options: string[] = ["ADD", "SUB", "MUL", "DIV"];
+
+  const updateType = (val: string) => {
+    switch (val) {
+      case "ADD":
+        props.setData({ type: OPS.ADD });
+        break;
+      case "SUB":
+        props.setData({ type: OPS.SUB });
+        break;
+      case "MUL":
+        props.setData({ type: OPS.MULS });
+        break;
+      case "DIV":
+        props.setData({ type: OPS.DIV });
+        break;
+    }
+  };
+
+  let id = 0;
+
+  return (
+    <div>
+      <select onChange={(e) => updateType(e.target.value)}>
+        {options.map((val) => {
+          id++;
+          return (
+            <option key={id} value={val}>
+              {val}
+            </option>
+          );
+        })}
+      </select>
+    </div>
+  );
+};
+
 const ioNumber: ProtoIO<number, any> = {
   name: "const",
   type: "number",
@@ -44,6 +93,15 @@ const ioNumberInput: ProtoIO<number, inputData> = {
   value: 0,
 };
 
+const ioNumberSelect: ProtoIO<number, Operations> = {
+  name: "Out",
+  type: "number",
+  color: "blue",
+  data: { type: OPS.ADD },
+  extra: OperationSelect,
+  value: 0,
+};
+
 const ioText: ProtoIO<string, any> = {
   name: "Text",
   type: "text",
@@ -51,6 +109,33 @@ const ioText: ProtoIO<string, any> = {
   data: {},
   extra: null,
   value: "",
+};
+
+const operationNode: ProtoNode = {
+  name: "Operation",
+  description: "use a operation",
+  inputs: [ioNumber, ioNumber],
+  outputs: [ioNumberSelect],
+  forward: (
+    io1: ProtoIO<number, any>,
+    io2: ProtoIO<number, any>,
+    out: ProtoIO<number, Operations>
+  ) => {
+    switch (out.data.type) {
+      case OPS.ADD:
+        out.value = io1.value + io2.value;
+        break;
+      case OPS.SUB:
+        out.value = io1.value - io2.value;
+        break;
+      case OPS.MULS:
+        out.value = io1.value * io2.value;
+        break;
+      case OPS.DIV:
+        out.value = io1.value / io2.value;
+        break;
+    }
+  },
 };
 
 const addNode: ProtoNode = {
@@ -124,7 +209,14 @@ const constNode: ProtoNode = {
   },
 };
 
-const config: ProtoNode[] = [constNode, addNode, subNode, mulNode, divNode];
+const config: ProtoNode[] = [
+  constNode,
+  addNode,
+  subNode,
+  mulNode,
+  divNode,
+  operationNode,
+];
 
 const root: ProtoNode = {
   name: "Const",
@@ -143,7 +235,7 @@ function App() {
         id={"#myInitialID"}
         config={config}
         root={root}
-        liveUpdate={true}
+        liveUpdate={false}
       />
     </div>
   );

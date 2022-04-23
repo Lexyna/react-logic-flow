@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useEffect, useState, WheelEvent } from "react";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
 import { computeBezierCurve } from "../logic/Utils";
@@ -36,6 +36,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
       x: 0,
       y: 0,
     });
+
+  const [zoom, setZoom] = useState(1);
 
   const onOutputClicked = (node: selectedNode) => {
     selectedOutput = node;
@@ -220,11 +222,23 @@ export const NodeEditor = (props: NodeEditorProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections, nodes]);
 
+  //listeners
+  const zoomListener = (e: WheelEvent) => {
+    let newZoom = zoom;
+    if (e.deltaY > 0) newZoom += 0.05;
+    else newZoom -= 0.05;
+
+    if (newZoom < 0.2 || newZoom > 1.2) return;
+
+    setZoom(newZoom);
+  };
+
   let pathId: number = 0;
 
   return (
     <div
       id={props.id}
+      style={{ zoom: `${zoom}` }}
       className="NodeEditor"
       onMouseUp={resetNodeToDrag}
       onClick={resetSelectedOutput}
@@ -242,6 +256,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       <svg
         className="NodeEditorSVG"
         onClick={hideContextMenu}
+        onWheel={zoomListener}
         onContextMenu={(e) => {
           e.preventDefault();
           showContextMenu(e);

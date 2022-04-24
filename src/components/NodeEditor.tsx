@@ -231,7 +231,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (newZoom < 0.2 || newZoom > 1.2) return;
 
     setZoom(newZoom);
-    //updateMousePath(e);
+    updateMousePath(e as MouseEvent);
   };
 
   let pathId: number = 0;

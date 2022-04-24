@@ -63,7 +63,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const updateNodePosition = (e: MouseEvent) => {
     if (!dragNodeId) return;
-
+    //console.log(e);
     const newNodes: LogicNode[] = nodes.map((n) => {
       return { ...n };
     });
@@ -207,6 +207,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setNodes(reorderedNodes);
   };
 
+  //Execute the defined node tree based on an abstract mapping of the nodes and it's connections
   const execute = () => {
     const logicNodes: LogicNode[] = nodes.map((node) => {
       return {
@@ -242,7 +243,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setEditorDimensions({ width: width, height: height });
   }, []);
 
-  //listeners
+  //update nodeEditor zoom
   const zoomListener = (e: WheelEvent) => {
     let newZoom = zoom;
     if (e.deltaY > 0) newZoom += 0.05;

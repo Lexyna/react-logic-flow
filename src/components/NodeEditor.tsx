@@ -83,8 +83,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const updateMousePath = (e: MouseEvent) => {
     if (!selectedOutput) return;
-    const x2 = e.clientX;
-    const y2 = e.clientY;
+    const x2 = e.clientX / zoom;
+    const y2 = e.clientY / zoom;
 
     const str = computeBezierCurve(
       selectedOutput.x(),
@@ -231,6 +231,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (newZoom < 0.2 || newZoom > 1.2) return;
 
     setZoom(newZoom);
+    //updateMousePath(e);
   };
 
   let pathId: number = 0;
@@ -248,6 +249,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         show={contextMenuOptions.showContextMenu}
         x={contextMenuOptions.x}
         y={contextMenuOptions.y}
+        zoom={zoom}
         addNode={addNodeToEditor}
       />
       <button style={{ position: "absolute" }} onClick={execute}>
@@ -279,14 +281,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
             />
           );
         })}
-
-        <path
-          fill="none"
-          stroke="gray"
-          strokeWidth={2}
-          strokeDasharray="20,5,5,10,5,5"
-          d={mousePath}
-        />
+        <svg>
+          <path
+            fill="none"
+            stroke="gray"
+            strokeWidth={2}
+            strokeDasharray="20,5,5,10,5,5"
+            d={mousePath}
+          />
+        </svg>
       </svg>
       {nodes.map((node: LogicNode, index: number) => {
         return (

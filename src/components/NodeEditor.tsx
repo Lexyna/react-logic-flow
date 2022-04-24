@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useState, WheelEvent } from "react";
+import { MouseEvent, useEffect, useRef, useState, WheelEvent } from "react";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
 import { computeBezierCurve } from "../logic/Utils";
@@ -8,9 +8,15 @@ import {
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
 import { LogicNode, selectedNode } from "../types/NodeTypes";
+import { BackgroundGrid } from "./BackgroundGrid";
 import { NodeConnection } from "./NodeConnection";
 import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
+
+interface clientDimensions {
+  width: number;
+  height: number;
+}
 
 let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
@@ -38,6 +44,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
 
   const [zoom, setZoom] = useState(1);
+  const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
+    width: 0,
+    height: 0,
+  });
 
   const onOutputClicked = (node: selectedNode) => {
     selectedOutput = node;
@@ -222,6 +232,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections, nodes]);
 
+  //Update background grid with nodeedito width and height
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const width = ref.current.getBoundingClientRect().width;
+    const height = ref.current.getBoundingClientRect().height;
+
+    setEditorDimensions({ width: width, height: height });
+  }, []);
+
   //listeners
   const zoomListener = (e: WheelEvent) => {
     let newZoom = zoom;
@@ -235,9 +255,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   let pathId: number = 0;
+  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <div
+      ref={ref}
       id={props.id}
       style={{ zoom: `${zoom}` }}
       className="NodeEditor"
@@ -255,6 +277,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       <button style={{ position: "absolute" }} onClick={execute}>
         proccess me
       </button>
+
       <svg
         className="NodeEditorSVG"
         onClick={hideContextMenu}
@@ -263,6 +286,13 @@ export const NodeEditor = (props: NodeEditorProps) => {
           e.preventDefault();
           showContextMenu(e);
         }}>
+        <BackgroundGrid
+          width={editorDimensions.width}
+          height={editorDimensions.height}
+          offsetX={0}
+          offsetY={0}
+          zoom={zoom}
+        />
         {connections.map((con, index) => {
           const str = computeBezierCurve(
             con.output.x(),

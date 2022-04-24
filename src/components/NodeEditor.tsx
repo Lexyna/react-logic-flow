@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { MouseEvent, useEffect, useState, WheelEvent } from "react";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
@@ -16,7 +17,7 @@ let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
 export const NodeEditor = (props: NodeEditorProps) => {
-  const rootId = props.id + "Root"; // useNanoId here to create the unqiue Id
+  const rootId = nanoid(); //props.id + "Root"; // useNanoId here to create the unqiue Id
   const [nodes, setNodes] = useState<LogicNode[]>([
     {
       ...props.root,

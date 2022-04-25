@@ -152,7 +152,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
         if (selectedOutput) {
           if (con.input.type !== selectedOutput.type) return;
           cons[index].output = selectedOutput;
-        } else cons.splice(index, 1);
+        } else {
+          selectedOutput = cons[index].output;
+          cons.splice(index, 1);
+        }
       }
     });
 

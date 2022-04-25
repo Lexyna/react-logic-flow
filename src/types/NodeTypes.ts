@@ -19,7 +19,7 @@ export interface NodeProps {
   y: number;
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
-  dragHandler: (id: string) => void | null;
+  dragHandler: (id: string, x: number, y: number) => void | null;
   reorderNode: (index: number) => void;
   onInputClicked: (node: selectedNode) => void;
   onOutputClicked: (node: selectedNode) => void;

@@ -9,8 +9,11 @@ export const ReactEditorNode = (props: NodeProps) => {
     left: props.x + "px",
   };
 
-  const onDrag = () => {
-    props.dragHandler(props.id);
+  const onDrag = (e: MouseEvent) => {
+    const diffX = e.pageX - props.x;
+    const diffY = e.pageY - props.y;
+
+    props.dragHandler(props.id, diffX, diffY);
     props.reorderNode(props.index);
   };
 
@@ -21,7 +24,7 @@ export const ReactEditorNode = (props: NodeProps) => {
       <header
         onMouseDown={(e: MouseEvent) => {
           e.preventDefault();
-          onDrag();
+          onDrag(e);
         }}>
         {props.name}
       </header>

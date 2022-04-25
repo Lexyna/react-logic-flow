@@ -18,6 +18,11 @@ interface clientDimensions {
   height: number;
 }
 
+interface DragOffset {
+  offsetX: number;
+  offsetY: number;
+}
+
 let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
@@ -44,6 +49,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
 
   const [zoom, setZoom] = useState(1);
+  const [dragOffset, setDragOffset] = useState<DragOffset>({
+    offsetX: 0,
+    offsetY: 0,
+  });
   const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
     width: 0,
     height: 0,
@@ -53,8 +62,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
     selectedOutput = node;
   };
 
-  const selecteNodeToDrag = (id: string) => {
+  const selecteNodeToDrag = (id: string, x: number, y: number) => {
     setDragNodeId(id);
+    setDragOffset({ offsetX: x, offsetY: y });
   };
 
   const resetNodeToDrag = () => {
@@ -69,8 +79,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
     newNodes.forEach((node, index) => {
       if (node.id === dragNodeId) {
-        newNodes[index].x += e.movementX / zoom;
-        newNodes[index].y += e.movementY / zoom;
+        newNodes[index].x = e.pageX - dragOffset.offsetX;
+        newNodes[index].y = e.pageY - dragOffset.offsetY;
       }
     });
 

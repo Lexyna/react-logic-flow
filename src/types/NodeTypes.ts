@@ -17,6 +17,7 @@ export interface NodeProps {
   name: string;
   x: number;
   y: number;
+  zoom: number;
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
   dragHandler: (id: string, x: number, y: number) => void | null;

@@ -10,8 +10,8 @@ export const ReactEditorNode = (props: NodeProps) => {
   };
 
   const onDrag = (e: MouseEvent) => {
-    const diffX = e.pageX - props.x;
-    const diffY = e.pageY - props.y;
+    const diffX = e.pageX / props.zoom - props.x;
+    const diffY = e.pageY / props.zoom - props.y;
 
     props.dragHandler(props.id, diffX, diffY);
     props.reorderNode(props.index);

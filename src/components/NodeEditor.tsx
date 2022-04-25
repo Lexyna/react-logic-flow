@@ -63,14 +63,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const updateNodePosition = (e: MouseEvent) => {
     if (!dragNodeId) return;
-    //console.log(e);
+
     const newNodes: LogicNode[] = nodes.map((n) => {
       return { ...n };
     });
     newNodes.forEach((node, index) => {
       if (node.id === dragNodeId) {
-        newNodes[index].x += e.movementX;
-        newNodes[index].y += e.movementY;
+        newNodes[index].x += e.movementX / zoom;
+        newNodes[index].y += e.movementY / zoom;
       }
     });
 

@@ -241,6 +241,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (props.liveUpdate) execute();
   };
 
+  const updateBackground = () => {
+    if (!ref.current) return;
+
+    const width = ref.current.getBoundingClientRect().width;
+    const height = ref.current.getBoundingClientRect().height;
+
+    setEditorDimensions({ width: width, height: height });
+  };
+
   useEffect(() => {
     if (!dragNodeId) doLiveUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -248,12 +257,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //Update background grid with nodeedito width and height
   useEffect(() => {
-    if (!ref.current) return;
+    updateBackground();
 
-    const width = ref.current.getBoundingClientRect().width;
-    const height = ref.current.getBoundingClientRect().height;
-
-    setEditorDimensions({ width: width, height: height });
+    window.onresize = updateBackground;
   }, []);
 
   //update nodeEditor zoom

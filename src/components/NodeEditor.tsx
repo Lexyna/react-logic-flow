@@ -1,7 +1,14 @@
 import { MouseEvent, useEffect, useRef, useState, WheelEvent } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
 import { computeBezierCurve } from "../logic/Utils";
+import {
+  addNodeEditor,
+  NodeEditorStore,
+  selectNodeEditor,
+  selectNodeEditorConnections,
+} from "../store/reducers/NodeEditorSlice";
 import {
   Connection,
   ContextMenuOptions,
@@ -27,6 +34,13 @@ let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
 export const NodeEditor = (props: NodeEditorProps) => {
+  const nodeEditorStore = useSelector(selectNodeEditor(props.id));
+  const nodeEditorConnections = useSelector(
+    selectNodeEditorConnections(props.id)
+  );
+
+  const dispatch = useDispatch();
+
   const rootId = props.id + "Root"; // useNanoId here to create a unqiueId -- needs redux implemntation to work properly
   const [nodes, setNodes] = useState<LogicNode[]>([
     {
@@ -57,6 +71,20 @@ export const NodeEditor = (props: NodeEditorProps) => {
     width: 0,
     height: 0,
   });
+
+  //Create new store Object if this nodeEditor didn#t exist already
+  const createNewNodeEditor = () => {
+    const editor: NodeEditorStore = {
+      offsetX: 0,
+      offsetY: 0,
+      id: props.id,
+      nodes: [],
+      connections: [],
+    };
+    dispatch(addNodeEditor(editor));
+    console.log("Why null, id:" + props.id);
+    console.log(nodeEditorStore);
+  };
 
   const onOutputClicked = (node: selectedNode) => {
     selectedOutput = node;
@@ -261,6 +289,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
     window.onresize = updateBackground;
   }, []);
+
+  //Update store if this node Editor is forst created
+  useEffect(() => {
+    if (!nodeEditorStore) createNewNodeEditor();
+  });
 
   //update nodeEditor zoom
   const zoomListener = (e: WheelEvent) => {

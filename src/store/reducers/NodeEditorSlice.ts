@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Connection } from "../../types/NodeEditorTypes";
 import { LogicNode } from "../../types/NodeTypes";
+import { RootState } from "../stroe";
 
 export interface NodeEditorsStoreState {
   [k: string]: NodeEditorStore;
@@ -13,6 +14,11 @@ export interface NodeEditorStore {
   connections: Connection[];
 }
 
+export interface UpdateConnectionPayload {
+  id: string;
+  connetions: Connection[];
+}
+
 export const nodeEditorSlice = createSlice({
   name: "nodeEditors",
   initialState: {} as NodeEditorsStoreState,
@@ -22,6 +28,14 @@ export const nodeEditorSlice = createSlice({
 
       state[action.payload.id] = action.payload;
     },
+    updateConnections: (
+      state,
+      action: PayloadAction<UpdateConnectionPayload>
+    ) => {
+      if (!state[action.payload.id]) return;
+
+      state[action.payload.id].connections = action.payload.connetions;
+    },
   },
 });
 
@@ -29,6 +43,16 @@ export const { addNodeEditor } = nodeEditorSlice.actions;
 
 export default nodeEditorSlice.reducer;
 
-export const selectNodeEditor = (id: string) => (state: NodeEditorsStoreState): NodeEditorStore => state[id];
+export const selectNodeEditor =
+  (id: string) =>
+  (state: RootState): NodeEditorStore => {
+    return state.nodeEditors[id];
+  };
 
-}
+export const selectNodeEditorConnections =
+  (id: string) =>
+  (state: RootState): Connection[] => {
+    if (!state.nodeEditors[id]) return [];
+    if (!state.nodeEditors[id].connections) return [];
+    return state.nodeEditors[id].connections;
+  };

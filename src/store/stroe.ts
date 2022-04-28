@@ -6,3 +6,5 @@ export const store = configureStore({
     nodeEditors: nodeEditor,
   },
 });
+
+export type RootState = ReturnType<typeof store.getState>;

@@ -1,4 +1,4 @@
-import { FunctionComponent, MouseEvent, useRef } from "react";
+import { FunctionComponent, MouseEvent, useEffect, useRef } from "react";
 import { ExtraProps, NodeIOProps } from "../types/IOTypes";
 
 export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
@@ -43,7 +43,7 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
   };
 
   //Update connection (if any) with the new position of this io port
-  /*useEffect(() => {
+  useEffect(() => {
     let id = props.isInput
       ? props.nodeId + "In" + props.index
       : props.nodeId + "Out" + props.index;
@@ -64,7 +64,7 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
       x: x,
       y: y,
     });
-  });*/
+  });
 
   const CustomComponent = props.extra as FunctionComponent<
     ExtraProps<any, any>

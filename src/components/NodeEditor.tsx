@@ -375,15 +375,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
           zoom={zoom}
         />
         {connections.map((con, index) => {
-          const outId = con.output.id + "Out" + con.output.index;
-          const inId = con.input.id + "In" + con.input.index;
-          console.log(outId);
-
           const str = computeBezierCurve(
-            conPosTable[outId].x, // con.output.x(),
-            conPosTable[outId].y, //con.output.y(),
-            conPosTable[inId].x, //con.input.x(),
-            conPosTable[inId].y //con.input.y()
+            con.output.x(),
+            con.output.y(),
+            con.input.x(),
+            con.input.y()
           );
           pathId++;
           return (

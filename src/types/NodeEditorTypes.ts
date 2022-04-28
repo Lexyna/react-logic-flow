@@ -1,4 +1,4 @@
-import { LogicNode, ProtoNode, selectedNode } from "./NodeTypes";
+import { ProtoNode, selectedNode } from "./NodeTypes";
 
 export interface Connection {
   input: selectedNode;
@@ -23,12 +23,4 @@ export interface ContextMenuOptions {
   showContextMenu: boolean;
   x: number;
   y: number;
-}
-
-export interface NodeEditorState {
-  offsetX: number;
-  offsetY: number;
-  id: string;
-  nodes: LogicNode[];
-  connections: Connection[];
 }

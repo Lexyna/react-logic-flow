@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import nodeEditorReducer from "./reducers/NodeEditorReducer";
+import nodeEditor from "./reducers/NodeEditorSlice";
 
 export const store = configureStore({
   reducer: {
-    nodeEditr: nodeEditorReducer,
+    nodeEditors: nodeEditor,
   },
 });

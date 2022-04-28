@@ -1,4 +1,5 @@
 import { ProtoIO } from "./IOTypes";
+import { ConnectionPosition } from "./NodeEditorTypes";
 
 //Passed type to identify the currently selected Node in the Editor
 export interface selectedNode {
@@ -25,6 +26,7 @@ export interface NodeProps {
   onInputClicked: (node: selectedNode) => void;
   onOutputClicked: (node: selectedNode) => void;
   onOutputRightClikced: (nodeId: string, index: number) => void;
+  updateIOPosition: (id: string, conPos: ConnectionPosition) => void;
   updateExtraData: (
     nodeId: string,
     input: boolean,

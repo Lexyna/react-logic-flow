@@ -7,10 +7,11 @@ import {
   addNodeEditor,
   NodeEditorStore,
   selectNodeEditor,
-  selectNodeEditorConnections,
 } from "../store/reducers/NodeEditorSlice";
 import {
   Connection,
+  ConnectionPosition,
+  ConnectionPosTable,
   ContextMenuOptions,
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
@@ -35,11 +36,25 @@ let isSelected: boolean = false;
 
 export const NodeEditor = (props: NodeEditorProps) => {
   const nodeEditorStore = useSelector(selectNodeEditor(props.id));
-  const nodeEditorConnections = useSelector(
-    selectNodeEditorConnections(props.id)
-  );
+  /*const connections = useSelector(selectNodeEditorConnections(props.id));
+
+  const setConnections = (connections: Connection[]) => {
+    dispatch(
+      updateConnections({
+        id: props.id,
+        connetions: connections,
+      })
+    );
+  };*/
 
   const dispatch = useDispatch();
+
+  //const [conPosTable, setConPosTable] = useState<ConnectionPosTable>({});
+  let conPosTable: ConnectionPosTable = {};
+
+  const setConPosTable = (newConPosTable: ConnectionPosTable) => {
+    conPosTable = newConPosTable;
+  };
 
   const rootId = props.id + "Root"; // useNanoId here to create a unqiueId -- needs redux implemntation to work properly
   const [nodes, setNodes] = useState<LogicNode[]>([
@@ -82,8 +97,21 @@ export const NodeEditor = (props: NodeEditorProps) => {
       connections: [],
     };
     dispatch(addNodeEditor(editor));
-    console.log("Why null, id:" + props.id);
-    console.log(nodeEditorStore);
+  };
+
+  const updatedNodeIOPosition = (
+    id: string,
+    updatedPos: ConnectionPosition
+  ) => {
+    setConPosTable({
+      ...conPosTable,
+      [id]: {
+        x: updatedPos.x,
+        y: updatedPos.y,
+      },
+    });
+    //console.log("updated table");
+    //console.log(conPosTable);
   };
 
   const onOutputClicked = (node: selectedNode) => {
@@ -347,11 +375,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
           zoom={zoom}
         />
         {connections.map((con, index) => {
+          const outId = con.output.id + "Out" + con.output.index;
+          const inId = con.input.id + "In" + con.input.index;
+          console.log(outId);
+
           const str = computeBezierCurve(
-            con.output.x(),
-            con.output.y(),
-            con.input.x(),
-            con.input.y()
+            conPosTable[outId].x, // con.output.x(),
+            conPosTable[outId].y, //con.output.y(),
+            conPosTable[inId].x, //con.input.x(),
+            conPosTable[inId].y //con.input.y()
           );
           pathId++;
           return (
@@ -389,6 +421,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
             onInputClicked={onConnect}
             onOutputClicked={onOutputClicked}
             onOutputRightClikced={onRemoveAllConnections}
+            updateIOPosition={updatedNodeIOPosition}
             updateExtraData={updateExtraData}
             id={node.id}
             key={node.id}

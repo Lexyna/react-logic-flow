@@ -39,7 +39,7 @@ export const nodeEditorSlice = createSlice({
   },
 });
 
-export const { addNodeEditor } = nodeEditorSlice.actions;
+export const { addNodeEditor, updateConnections } = nodeEditorSlice.actions;
 
 export default nodeEditorSlice.reducer;
 

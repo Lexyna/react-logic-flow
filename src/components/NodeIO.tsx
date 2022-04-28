@@ -42,6 +42,30 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
     props.updateData(props.nodeId, props.isInput, props.index, data);
   };
 
+  //Update connection (if any) with the new position of this io port
+  /*useEffect(() => {
+    let id = props.isInput
+      ? props.nodeId + "In" + props.index
+      : props.nodeId + "Out" + props.index;
+
+    let x = -1;
+    let y = 1;
+
+    if (dotRef.current) {
+      x =
+        dotRef.current.getBoundingClientRect().left +
+        dotRef.current.getBoundingClientRect().width;
+      y =
+        dotRef.current.getBoundingClientRect().y +
+        0.4 * dotRef.current.getBoundingClientRect().height;
+    }
+
+    props.updateIOPosition(id, {
+      x: x,
+      y: y,
+    });
+  });*/
+
   const CustomComponent = props.extra as FunctionComponent<
     ExtraProps<any, any>
   >;
@@ -59,6 +83,7 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
         style={{ backgroundColor: `${props.color}` }}
         onClick={() => setSelectedNode()}
         onContextMenu={onRightClick}
+        onChange={() => console.log("change: " + props.nodeId)}
         ref={dotRef}></i>
     </li>
   );

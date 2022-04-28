@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { MouseEvent } from "react";
 import { ContextMenuProps } from "../types/ContextMenuTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
@@ -14,7 +15,7 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
 
   const addLogicNode = (e: MouseEvent, protoNode: ProtoNode) => {
     const logicNode: LogicNode = {
-      id: (Math.random() * 100).toString(), // use nanoID for this
+      id: nanoid(),
       name: protoNode.name,
       x: e.clientX,
       y: e.clientY,

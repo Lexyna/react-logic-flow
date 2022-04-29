@@ -9,6 +9,7 @@ import {
   selectNodeEditor,
   selectNodeEditorConnections,
   updateConnections,
+  updateOffset,
 } from "../store/reducers/NodeEditorSlice";
 import {
   Connection,
@@ -27,8 +28,7 @@ interface clientDimensions {
   width: number;
   height: number;
 }
-
-interface DragOffset {
+export interface DragOffset {
   offsetX: number;
   offsetY: number;
 }
@@ -47,6 +47,19 @@ export const NodeEditor = (props: NodeEditorProps) => {
       updateConnections({
         id: props.id,
         connetions: connections,
+      })
+    );
+  };
+
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const dragOffset = useSelector(selectNodeEditor(rootId));
+
+  const setDragOffset = (offset: DragOffset) => {
+    dispatch(
+      updateOffset({
+        id: rootId,
+        offsetX: offset.offsetX,
+        offsetY: offset.offsetY,
       })
     );
   };
@@ -77,10 +90,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
 
   const [zoom, setZoom] = useState(1);
-  const [dragOffset, setDragOffset] = useState<DragOffset>({
+  /*const [dragOffset, setDragOffset] = useState<DragOffset>({
     offsetX: 0,
     offsetY: 0,
-  });
+  });*/
 
   //width and height of the NodeEditor. Needed to draw the background grid correctly
   const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
@@ -98,6 +111,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
       connections: [],
     };
     dispatch(addNodeEditor(editor));
+  };
+
+  const setDragging = (isDragging: boolean) => {
+    if (ref.current) {
+      if (isDragging) ref.current.classList.add("NodeEditorDrag");
+      else ref.current.classList.remove("NodeEditorDrag");
+    }
+
+    setIsDragging(isDragging);
   };
 
   //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
@@ -152,6 +174,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const onMove = (e: MouseEvent) => {
     updateNodePosition(e);
     updateMousePath(e);
+  };
+
+  const onMouseDownHandler = (e: MouseEvent) => {
+    if (e.button === 1) setDragging(true);
+  };
+
+  const onMouseUpHandler = (e: MouseEvent) => {
+    //resetNodeToDrag();
+    setDragNodeId(null);
+    setDragging(false);
   };
 
   const resetSelectedOutput = () => {
@@ -353,7 +385,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
       id={props.id}
       //style={{ transform: `scale(${zoom})` }}
       className="NodeEditor"
-      onMouseUp={resetNodeToDrag}
+      onMouseUp={onMouseUpHandler}
+      onMouseDown={onMouseDownHandler}
       onClick={resetSelectedOutput}
       onMouseMove={onMove}>
       <NodeContextMenu

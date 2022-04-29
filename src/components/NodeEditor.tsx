@@ -325,7 +325,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     updateBackground();
 
     window.onresize = updateBackground;
-  }, []);
+  }, [zoom]);
 
   //Update store if this node Editor is first created
   useEffect(() => {
@@ -351,7 +351,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     <div
       ref={ref}
       id={props.id}
-      style={{ zoom: `${zoom}` }}
+      //style={{ transform: `scale(${zoom})` }}
       className="NodeEditor"
       onMouseUp={resetNodeToDrag}
       onClick={resetSelectedOutput}

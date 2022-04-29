@@ -23,7 +23,11 @@ export interface NodeIOProps<T, K> {
   onClick: (node: selectedNode) => void;
   onRightClick: ((nodeId: string, index: number) => void) | null;
   updateData: (nodeId: string, input: boolean, index: number, data: any) => any;
-  updateIOPosition: (id: string, conPos: ConnectionPosition) => void;
+  updateIOPosition: (
+    nodeId: string,
+    id: string,
+    conPos: ConnectionPosition
+  ) => void;
 }
 
 export interface ExtraProps<T, K> {

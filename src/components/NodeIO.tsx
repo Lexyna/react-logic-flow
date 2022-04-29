@@ -5,26 +5,9 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
   const dotRef = useRef<HTMLUListElement>(null);
 
   const setSelectedNode = () => {
-    if (!dotRef.current) return;
-    const x = () => {
-      if (!dotRef.current) return -1;
-      return (
-        dotRef.current.getBoundingClientRect().left +
-        dotRef.current.getBoundingClientRect().width
-      );
-    };
-    const y = () => {
-      if (!dotRef.current) return -1;
-      return (
-        dotRef.current.getBoundingClientRect().y +
-        0.4 * dotRef.current.getBoundingClientRect().height
-      );
-    };
     const id = props.nodeId;
 
     props.onClick({
-      x: x,
-      y: y,
       id: id,
       color: props.color,
       index: props.index,
@@ -48,19 +31,22 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
       ? props.nodeId + "In" + props.index
       : props.nodeId + "Out" + props.index;
 
-    let x = -1;
-    let y = 1;
-
-    if (dotRef.current) {
-      x =
+    const x = () => {
+      if (!dotRef.current) return -1;
+      return (
         dotRef.current.getBoundingClientRect().left +
-        dotRef.current.getBoundingClientRect().width;
-      y =
+        dotRef.current.getBoundingClientRect().width
+      );
+    };
+    const y = () => {
+      if (!dotRef.current) return -1;
+      return (
         dotRef.current.getBoundingClientRect().y +
-        0.4 * dotRef.current.getBoundingClientRect().height;
-    }
+        0.4 * dotRef.current.getBoundingClientRect().height
+      );
+    };
 
-    props.updateIOPosition(id, {
+    props.updateIOPosition(props.nodeId, id, {
       x: x,
       y: y,
     });

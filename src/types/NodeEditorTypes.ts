@@ -6,11 +6,13 @@ export interface Connection {
 }
 
 export interface ConnectionPosTable {
-  [id: string]: ConnectionPosition;
+  [nodeId: string]: {
+    [ioPortId: string]: ConnectionPosition;
+  };
 }
 export interface ConnectionPosition {
-  x: number;
-  y: number;
+  x: () => number;
+  y: () => number;
 }
 export interface NodeConnectionProps {
   index: number;

@@ -3,8 +3,6 @@ import { ConnectionPosition } from "./NodeEditorTypes";
 
 //Passed type to identify the currently selected Node in the Editor
 export interface selectedNode {
-  x: () => number;
-  y: () => number;
   type: string;
   color: string;
   index: number;
@@ -26,7 +24,11 @@ export interface NodeProps {
   onInputClicked: (node: selectedNode) => void;
   onOutputClicked: (node: selectedNode) => void;
   onOutputRightClikced: (nodeId: string, index: number) => void;
-  updateIOPosition: (id: string, conPos: ConnectionPosition) => void;
+  updateIOPosition: (
+    nodeId: string,
+    id: string,
+    conPos: ConnectionPosition
+  ) => void;
   updateExtraData: (
     nodeId: string,
     input: boolean,

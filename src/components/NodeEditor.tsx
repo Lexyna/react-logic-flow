@@ -7,6 +7,8 @@ import {
   addNodeEditor,
   NodeEditorStore,
   selectNodeEditor,
+  selectNodeEditorConnections,
+  updateConnections,
 } from "../store/reducers/NodeEditorSlice";
 import {
   Connection,
@@ -35,8 +37,10 @@ let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
 export const NodeEditor = (props: NodeEditorProps) => {
-  const nodeEditorStore = useSelector(selectNodeEditor(props.id));
-  /*const connections = useSelector(selectNodeEditorConnections(props.id));
+  const rootId = props.id; // main id for the indetification of this nodeEditor in the store
+
+  const nodeEditorStore = useSelector(selectNodeEditor(rootId));
+  const connections = useSelector(selectNodeEditorConnections(rootId));
 
   const setConnections = (connections: Connection[]) => {
     dispatch(
@@ -45,18 +49,12 @@ export const NodeEditor = (props: NodeEditorProps) => {
         connetions: connections,
       })
     );
-  };*/
+  };
 
   const dispatch = useDispatch();
 
-  //const [conPosTable, setConPosTable] = useState<ConnectionPosTable>({});
-  let conPosTable: ConnectionPosTable = {};
-
-  const setConPosTable = (newConPosTable: ConnectionPosTable) => {
-    conPosTable = newConPosTable;
-  };
-
-  const rootId = props.id + "Root"; // useNanoId here to create a unqiueId -- needs redux implemntation to work properly
+  //conPosTable is used to store a function referncing the x,y location of each ioPort. This way, we can serrialize the connection Objects in the store without having to worry about losing the information to draw the svg paths
+  const [conPosTable, setConPosTable] = useState<ConnectionPosTable>({});
   const [nodes, setNodes] = useState<LogicNode[]>([
     {
       ...props.root,
@@ -69,7 +67,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const [dragNodeId, setDragNodeId] = useState<string | null>(""); //Identify the node to be dragged
   const [mousePath, setMousePath] = useState<string>(""); //stroke path for output to mouse bezier curve - if any
-  const [connections, setConnections] = useState<Connection[]>([]);
+
+  //Helper state to draw the contextMenu
   const [contextMenuOptions, setContextMenuOptions] =
     useState<ContextMenuOptions>({
       showContextMenu: false,
@@ -82,12 +81,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
     offsetX: 0,
     offsetY: 0,
   });
+
+  //width and height of the NodeEditor. Needed to draw the background grid correctly
   const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
     width: 0,
     height: 0,
   });
 
-  //Create new store Object if this nodeEditor didn#t exist already
+  //Create new store Object if this nodeEditor does not already exist
   const createNewNodeEditor = () => {
     const editor: NodeEditorStore = {
       offsetX: 0,
@@ -99,19 +100,24 @@ export const NodeEditor = (props: NodeEditorProps) => {
     dispatch(addNodeEditor(editor));
   };
 
+  //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
   const updatedNodeIOPosition = (
-    id: string,
+    nodeId: string,
+    id: string, //individual ioPort id => nodeID + [In|Out] + ioPort.index
     updatedPos: ConnectionPosition
   ) => {
+    if (conPosTable[nodeId]) if (conPosTable[nodeId][id]) return;
+
     setConPosTable({
       ...conPosTable,
-      [id]: {
-        x: updatedPos.x,
-        y: updatedPos.y,
+      [nodeId]: {
+        ...conPosTable[nodeId],
+        [id]: {
+          x: updatedPos.x,
+          y: updatedPos.y,
+        },
       },
     });
-    //console.log("updated table");
-    //console.log(conPosTable);
   };
 
   const onOutputClicked = (node: selectedNode) => {
@@ -162,9 +168,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
     const x2 = e.clientX / zoom;
     const y2 = e.clientY / zoom;
 
+    const outId = selectedOutput.id + "Out" + selectedOutput.index;
+
     const str = computeBezierCurve(
-      selectedOutput.x(),
-      selectedOutput.y(),
+      conPosTable[selectedOutput.id][outId].x(),
+      conPosTable[selectedOutput.id][outId].y(),
       x2,
       y2
     );
@@ -265,6 +273,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
   };
 
+  //Reorder node array so the currently selected Node will be darwn last
   const reorderNode = (index: number) => {
     const reorderedNodes = nodes.map((n) => {
       return { ...n };
@@ -311,14 +320,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections, nodes]);
 
-  //Update background grid with nodeedito width and height
+  //Update background grid with nodeEditor width and height
   useEffect(() => {
     updateBackground();
 
     window.onresize = updateBackground;
   }, []);
 
-  //Update store if this node Editor is forst created
+  //Update store if this node Editor is first created
   useEffect(() => {
     if (!nodeEditorStore) createNewNodeEditor();
   });
@@ -375,11 +384,17 @@ export const NodeEditor = (props: NodeEditorProps) => {
           zoom={zoom}
         />
         {connections.map((con, index) => {
+          const inId = con.input.id + "In" + con.input.index;
+          const outId = con.output.id + "Out" + con.output.index;
+
+          if (!conPosTable[con.input.id][inId]) return null;
+          if (!conPosTable[con.output.id][outId]) return null;
+
           const str = computeBezierCurve(
-            con.output.x(),
-            con.output.y(),
-            con.input.x(),
-            con.input.y()
+            conPosTable[con.output.id][outId].x(),
+            conPosTable[con.output.id][outId].y(),
+            conPosTable[con.input.id][inId].x(),
+            conPosTable[con.input.id][inId].y()
           );
           pathId++;
           return (

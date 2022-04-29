@@ -239,7 +239,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   const onConnect = (node: selectedNode) => {
-    const cons = connections.slice();
+    const cons = connections.map((con) => {
+      return { ...con };
+    });
     let connectionExists = false;
 
     cons.forEach((con, index) => {

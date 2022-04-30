@@ -208,9 +208,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
     newNodes.forEach((node, index) => {
       if (node.id === dragNodeId) {
         newNodes[index].x =
-          e.pageX / zoom - dragOffset.offsetX - panningOffset.offsetX;
+          e.pageX - dragOffset.offsetX - panningOffset.offsetX;
         newNodes[index].y =
-          e.pageY / zoom - dragOffset.offsetY - panningOffset.offsetY;
+          e.pageY - dragOffset.offsetY - panningOffset.offsetY;
       }
     });
 
@@ -492,7 +492,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     <div
       ref={ref}
       id={props.id}
-      //style={{ transform: `scale(${zoom})` }}
       className="NodeEditor"
       onMouseUp={onMouseUpHandler}
       onMouseDown={onMouseDownHandler}

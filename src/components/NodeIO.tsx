@@ -60,7 +60,11 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
     <li className={props.isInput ? "Input" : "Output"}>
       {props.extra ? (
         <div>
-          <CustomComponent value={props.value} setData={updateData} />
+          <CustomComponent
+            value={props.value}
+            data={props.data}
+            setData={updateData}
+          />
         </div>
       ) : (
         <span>{props.label}</span>

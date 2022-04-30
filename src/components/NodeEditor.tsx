@@ -59,14 +59,24 @@ const createLogicNodeArray = (
   nodes.forEach((node) => {
     const configNode = getProtoNodeById(configNodes, node.configId);
     if (!configNode) return;
+
+    //Create IOPorts
+    const inputs = configNode.inputs.map((io, index) => {
+      return { ...io, data: node.inputs[index] };
+    });
+
+    const outputs = configNode.outputs.map((io, index) => {
+      return { ...io, data: node.outputs[index] };
+    });
+
     logicNodes.push({
       id: node.nodeId,
       configId: configNode.id,
       name: configNode.name,
       x: node.x,
       y: node.y,
-      inputs: configNode.inputs,
-      outputs: configNode.outputs,
+      inputs: inputs,
+      outputs: outputs,
       forward: configNode.forward,
     });
   });
@@ -429,7 +439,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         extraDataInput.push(n.inputs[i].data);
 
       for (let i = 0; i < n.outputs.length; i++)
-        extraDataInput.push(n.outputs[i].data);
+        extraDataOutput.push(n.outputs[i].data);
 
       reduxNodes.push({
         x: n.x,

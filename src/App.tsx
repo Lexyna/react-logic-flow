@@ -18,7 +18,7 @@ export const InputForm = (props: ExtraProps<number, inputData>) => {
       <input
         type="number"
         style={{ width: "25px" }}
-        defaultValue={props.value}
+        defaultValue={props.data.val}
         step={1}
         onChange={(e) => update(parseFloat(e.target.value))}
       />

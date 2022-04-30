@@ -32,5 +32,6 @@ export interface NodeIOProps<T, K> {
 
 export interface ExtraProps<T, K> {
   setData: (data: K) => void;
+  data: K;
   value: T;
 }

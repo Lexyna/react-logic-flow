@@ -5,6 +5,15 @@ export interface Connection {
   output: selectedNode;
 }
 
+export interface ConnectionPosTable {
+  [nodeId: string]: {
+    [ioPortId: string]: ConnectionPosition;
+  };
+}
+export interface ConnectionPosition {
+  x: () => number;
+  y: () => number;
+}
 export interface NodeConnectionProps {
   index: number;
   d: string;

@@ -5,8 +5,8 @@ import { ReactNodeIO } from "./NodeIO";
 
 export const ReactEditorNode = (props: NodeProps) => {
   const style = {
-    top: props.y + "px",
-    left: props.x + "px",
+    top: props.y - props.editorOffset.y + "px",
+    left: props.x - props.editorOffset.x + "px",
   };
 
   const onDrag = (e: MouseEvent) => {
@@ -47,6 +47,7 @@ export const ReactEditorNode = (props: NodeProps) => {
               onClick={props.onInputClicked}
               onRightClick={null}
               updateData={props.updateExtraData}
+              updateIOPosition={props.updateIOPosition}
             />
           );
         })}
@@ -67,6 +68,7 @@ export const ReactEditorNode = (props: NodeProps) => {
               onClick={props.onOutputClicked}
               onRightClick={props.onOutputRightClikced}
               updateData={props.updateExtraData}
+              updateIOPosition={props.updateIOPosition}
             />
           );
         })}

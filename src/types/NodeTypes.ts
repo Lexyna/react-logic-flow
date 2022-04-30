@@ -1,9 +1,8 @@
 import { ProtoIO } from "./IOTypes";
+import { ConnectionPosition } from "./NodeEditorTypes";
 
 //Passed type to identify the currently selected Node in the Editor
 export interface selectedNode {
-  x: () => number;
-  y: () => number;
   type: string;
   color: string;
   index: number;
@@ -14,6 +13,7 @@ export interface selectedNode {
 export interface NodeProps {
   id: string;
   index: number;
+  editorOffset: { x: number; y: number };
   name: string;
   x: number;
   y: number;
@@ -25,6 +25,11 @@ export interface NodeProps {
   onInputClicked: (node: selectedNode) => void;
   onOutputClicked: (node: selectedNode) => void;
   onOutputRightClikced: (nodeId: string, index: number) => void;
+  updateIOPosition: (
+    nodeId: string,
+    id: string,
+    conPos: ConnectionPosition
+  ) => void;
   updateExtraData: (
     nodeId: string,
     input: boolean,
@@ -36,6 +41,7 @@ export interface NodeProps {
 //Logic Node used to compute the graph
 export interface LogicNode {
   id: string;
+  configId: string;
   name: string;
   x: number;
   y: number;
@@ -45,6 +51,7 @@ export interface LogicNode {
 }
 
 export interface ProtoNode {
+  id: string;
   name: string;
   description: string;
   inputs: ProtoIO<any, any>[];

@@ -1,6 +1,13 @@
 .NodeEditor {
-    height: 100vh;
+    height: inherit;
+    width: inherit;
     display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+.NodeEditorDrag {
+  cursor: move;
 }
 
 .NodeEditorSVG {

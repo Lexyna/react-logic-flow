@@ -252,8 +252,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const updateMousePath = (e: MouseEvent) => {
     if (!selectedOutput) return;
-    const x2 = e.clientX / zoom;
-    const y2 = e.clientY / zoom;
+    const x2 = e.clientX;
+    const y2 = e.clientY;
 
     const outId = selectedOutput.id + "Out" + selectedOutput.index;
 

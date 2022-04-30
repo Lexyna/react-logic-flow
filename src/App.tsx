@@ -27,10 +27,10 @@ export const InputForm = (props: ExtraProps<number, inputData>) => {
 };
 
 enum OPS {
-  ADD,
-  SUB,
-  MULS,
-  DIV,
+  ADD = "ADD",
+  SUB = "SUB",
+  MULS = "MUL",
+  DIV = "DIV",
 }
 
 interface Operations {
@@ -61,7 +61,9 @@ export const OperationSelect = (props: ExtraProps<number, Operations>) => {
 
   return (
     <div>
-      <select onChange={(e) => updateType(e.target.value)}>
+      <select
+        onChange={(e) => updateType(e.target.value)}
+        defaultValue={props.data.type}>
         {options.map((val) => {
           id++;
           return (
@@ -87,7 +89,7 @@ const ioNumber: ProtoIO<number, any> = {
 const ioNumberInput: ProtoIO<number, inputData> = {
   name: "const",
   type: "number",
-  color: "rgb(0, 200, 100",
+  color: "rgb(0, 200, 100)",
   data: { val: 0 },
   extra: InputForm,
   value: 0,

@@ -96,19 +96,10 @@ const ioNumberInput: ProtoIO<number, inputData> = {
 const ioNumberSelect: ProtoIO<number, Operations> = {
   name: "Out",
   type: "number",
-  color: "blue",
+  color: "rgb(0, 200, 100)",
   data: { type: OPS.ADD },
   extra: OperationSelect,
   value: 0,
-};
-
-const ioText: ProtoIO<string, any> = {
-  name: "Text",
-  type: "text",
-  color: "blue",
-  data: {},
-  extra: null,
-  value: "",
 };
 
 const operationNode: ProtoNode = {

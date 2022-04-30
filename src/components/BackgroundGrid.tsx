@@ -9,8 +9,6 @@ interface line {
 }
 
 export const BackgroundGrid = (props: GridProps) => {
-  const renderLines: line[] = [];
-
   const lineWidth = props.width / props.zoom;
   const lineHeight = props.height / props.zoom;
 

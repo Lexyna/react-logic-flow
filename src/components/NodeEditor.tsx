@@ -10,8 +10,10 @@ import {
   selectNodeEditor,
   selectNodeEditorConnections,
   selectNodeEditorNodes,
+  selectRootNodePos,
   updateConnections,
   updateNodes,
+  updateRootNodePos,
 } from "../store/reducers/NodeEditorSlice";
 import {
   Connection,
@@ -75,6 +77,8 @@ const createLogicNodeArray = (
 export const NodeEditor = (props: NodeEditorProps) => {
   const rootId = props.id; // main id for the indetification of this nodeEditor in the store
 
+  const rootPos = useSelector(selectRootNodePos(rootId));
+
   const savedNode = useSelector(selectNodeEditorNodes(rootId));
   const [nodes, setNodes] = useState<LogicNode[]>(
     createLogicNodeArray(props.config, savedNode).concat({
@@ -82,8 +86,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
       name: props.root.name + "(Root)",
       id: rootId,
       configId: props.root.id,
-      x: 50,
-      y: 50,
+      x: rootPos.x,
+      y: rootPos.y,
     })
   );
 
@@ -137,6 +141,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const createNewNodeEditor = () => {
     const editor: NodeEditorStore = {
       id: props.id,
+      rootNodePos: { x: 50, y: 50 },
       nodes: [],
       connections: [],
     };
@@ -406,7 +411,17 @@ export const NodeEditor = (props: NodeEditorProps) => {
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
     nodes.forEach((n) => {
-      if (n.configId === props.root.id) return;
+      if (n.configId === props.root.id) {
+        dispatch(
+          updateRootNodePos({
+            id: rootId,
+            x: n.x,
+            y: n.y,
+          })
+        );
+        return;
+      }
+
       reduxNodes.push({
         x: n.x,
         y: n.y,

@@ -15,6 +15,10 @@ export interface ReduxNode {
 
 export interface NodeEditorStore {
   id: string;
+  rootNodePos: {
+    x: number;
+    y: number;
+  };
   nodes: ReduxNode[];
   connections: Connection[];
 }
@@ -27,6 +31,12 @@ export interface UpdateConnectionPayload {
 export interface UpdateNodesPayload {
   id: string;
   nodes: ReduxNode[];
+}
+
+export interface UpdateRootNodePos {
+  id: string;
+  x: number;
+  y: number;
 }
 
 export const nodeEditorSlice = createSlice({
@@ -51,11 +61,21 @@ export const nodeEditorSlice = createSlice({
 
       state[action.payload.id].nodes = action.payload.nodes;
     },
+    updateRootNodePos: (state, action: PayloadAction<UpdateRootNodePos>) => {
+      if (!state[action.payload.id]) return;
+
+      state[action.payload.id].rootNodePos.x = action.payload.x;
+      state[action.payload.id].rootNodePos.y = action.payload.y;
+    },
   },
 });
 
-export const { addNodeEditor, updateConnections, updateNodes } =
-  nodeEditorSlice.actions;
+export const {
+  addNodeEditor,
+  updateConnections,
+  updateNodes,
+  updateRootNodePos,
+} = nodeEditorSlice.actions;
 
 export default nodeEditorSlice.reducer;
 
@@ -79,4 +99,12 @@ export const selectNodeEditorNodes =
     if (!state.nodeEditors[id]) return [];
     if (!state.nodeEditors[id].connections) return [];
     return state.nodeEditors[id].nodes;
+  };
+
+export const selectRootNodePos =
+  (id: string) =>
+  (state: RootState): { x: number; y: number } => {
+    if (!state.nodeEditors[id]) return { x: 50, y: 50 };
+    if (!state.nodeEditors[id].connections) return { x: 50, y: 50 };
+    return state.nodeEditors[id].rootNodePos;
   };

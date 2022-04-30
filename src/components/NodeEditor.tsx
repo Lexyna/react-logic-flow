@@ -391,6 +391,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         show={contextMenuOptions.showContextMenu}
         x={contextMenuOptions.x}
         y={contextMenuOptions.y}
+        panning={panningOffset}
         zoom={zoom}
         addNode={addNodeToEditor}
       />

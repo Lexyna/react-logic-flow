@@ -1,3 +1,4 @@
+import { DragOffset } from "../components/NodeEditor";
 import { LogicNode, ProtoNode } from "./NodeTypes";
 
 export interface ContextMenuProps {
@@ -5,6 +6,7 @@ export interface ContextMenuProps {
   show: boolean;
   x: number;
   y: number;
+  panning: DragOffset;
   zoom: number;
   addNode: (node: LogicNode) => void;
 }

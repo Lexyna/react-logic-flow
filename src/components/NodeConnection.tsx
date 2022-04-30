@@ -20,6 +20,7 @@ export const NodeConnection = (props: NodeConnectionProps) => {
   return (
     <svg onMouseEnter={onHover} onMouseLeave={onHoverLeave}>
       <path
+        style={{ transform: `scale(${props.zoom})` }}
         className="NodeConnection"
         onClick={onConnectionClicked}
         fill="none"

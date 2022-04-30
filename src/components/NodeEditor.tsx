@@ -536,10 +536,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
           if (!conPosTable[con.output.id][outId]) return null;
 
           const str = computeBezierCurve(
-            conPosTable[con.output.id][outId].x() - nodeEditorOffset.x,
-            conPosTable[con.output.id][outId].y() - nodeEditorOffset.y,
-            conPosTable[con.input.id][inId].x() - nodeEditorOffset.x,
-            conPosTable[con.input.id][inId].y() - nodeEditorOffset.y
+            conPosTable[con.output.id][outId].x() / zoom - nodeEditorOffset.x,
+            conPosTable[con.output.id][outId].y() / zoom - nodeEditorOffset.y,
+            conPosTable[con.input.id][inId].x() / zoom - nodeEditorOffset.x,
+            conPosTable[con.input.id][inId].y() / zoom - nodeEditorOffset.y
           );
           pathId++;
           return (
@@ -547,6 +547,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
               key={pathId}
               index={index}
               color={con.output.color}
+              zoom={zoom}
               d={str}
               removeConnection={onRemoveConnecton}
             />

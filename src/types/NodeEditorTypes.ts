@@ -16,6 +16,7 @@ export interface ConnectionPosition {
 }
 export interface NodeConnectionProps {
   index: number;
+  zoom: number;
   d: string;
   color: string;
   removeConnection: (index: number) => void;

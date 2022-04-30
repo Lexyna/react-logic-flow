@@ -479,7 +479,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (e.deltaY > 0) newZoom += 0.05;
     else newZoom -= 0.05;
 
-    if (newZoom < 0.2 || newZoom > 1.2) return;
+    if (newZoom < 0.3 || newZoom > 1.2) return;
 
     setZoom(newZoom);
     updateMousePath(e as MouseEvent);

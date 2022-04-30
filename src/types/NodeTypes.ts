@@ -40,6 +40,7 @@ export interface NodeProps {
 //Logic Node used to compute the graph
 export interface LogicNode {
   id: string;
+  configId: string;
   name: string;
   x: number;
   y: number;
@@ -49,6 +50,7 @@ export interface LogicNode {
 }
 
 export interface ProtoNode {
+  id: string;
   name: string;
   description: string;
   inputs: ProtoIO<any, any>[];

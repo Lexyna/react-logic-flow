@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NodeEditor } from "./components/NodeEditor";
 import { ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
@@ -112,6 +112,7 @@ const ioText: ProtoIO<string, any> = {
 };
 
 const operationNode: ProtoNode = {
+  id: "OperationalNode",
   name: "Operation",
   description: "use a operation",
   inputs: [ioNumber, ioNumber],
@@ -139,6 +140,7 @@ const operationNode: ProtoNode = {
 };
 
 const addNode: ProtoNode = {
+  id: "addNode",
   name: "Add",
   description: "Adds two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -154,6 +156,7 @@ const addNode: ProtoNode = {
 };
 
 const subNode: ProtoNode = {
+  id: "subNode",
   name: "Sub",
   description: "Subs two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -169,6 +172,7 @@ const subNode: ProtoNode = {
 };
 
 const mulNode: ProtoNode = {
+  id: "MulNode",
   name: "Mul",
   description: "Multiplicates two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -184,6 +188,7 @@ const mulNode: ProtoNode = {
 };
 
 const divNode: ProtoNode = {
+  id: "DivNode",
   name: "Div",
   description: "Divides two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -199,6 +204,7 @@ const divNode: ProtoNode = {
 };
 
 const constNode: ProtoNode = {
+  id: "constNode",
   name: "Const",
   description: "A node that outputs a number",
   inputs: [],
@@ -219,6 +225,7 @@ const config: ProtoNode[] = [
 ];
 
 const root: ProtoNode = {
+  id: "root",
   name: "Const",
   description: "A root Node",
   inputs: [ioNumber],
@@ -229,14 +236,25 @@ const root: ProtoNode = {
 };
 
 function App() {
+  const [show, setShow] = useState<boolean>(true);
+
   return (
     <div>
-      <NodeEditor
-        id={"#myInitialID"}
-        config={config}
-        root={root}
-        liveUpdate={false}
-      />
+      <button
+        onClick={() => setShow((currShow) => !currShow)}
+        style={{ position: "absolute", left: "8rem" }}>
+        Show/Hide
+      </button>
+      {show ? (
+        <NodeEditor
+          id={"#myInitialID"}
+          config={config}
+          root={root}
+          liveUpdate={false}
+        />
+      ) : (
+        <p>False</p>
+      )}
     </div>
   );
 }

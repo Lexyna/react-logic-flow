@@ -6,9 +6,12 @@ import { computeBezierCurve } from "../logic/Utils";
 import {
   addNodeEditor,
   NodeEditorStore,
+  ReduxNode,
   selectNodeEditor,
   selectNodeEditorConnections,
+  selectNodeEditorNodes,
   updateConnections,
+  updateNodes,
 } from "../store/reducers/NodeEditorSlice";
 import {
   Connection,
@@ -17,7 +20,7 @@ import {
   ContextMenuOptions,
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
-import { LogicNode, selectedNode } from "../types/NodeTypes";
+import { LogicNode, ProtoNode, selectedNode } from "../types/NodeTypes";
 import { BackgroundGrid } from "./BackgroundGrid";
 import { NodeConnection } from "./NodeConnection";
 import { NodeContextMenu } from "./NodeContextMenu";
@@ -35,8 +38,54 @@ export interface DragOffset {
 let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
+const getProtoNodeById = (
+  protoNodes: ProtoNode[],
+  id: string
+): ProtoNode | null => {
+  for (let i = 0; i < protoNodes.length; i++)
+    if (protoNodes[i].id === id) return protoNodes[i];
+
+  return null;
+};
+
+const createLogicNodeArray = (
+  configNodes: ProtoNode[],
+  nodes: ReduxNode[]
+): LogicNode[] => {
+  const logicNodes: LogicNode[] = [];
+
+  nodes.forEach((node) => {
+    const configNode = getProtoNodeById(configNodes, node.configId);
+    if (!configNode) return;
+    logicNodes.push({
+      id: node.nodeId,
+      configId: configNode.id,
+      name: configNode.name,
+      x: node.x,
+      y: node.y,
+      inputs: configNode.inputs,
+      outputs: configNode.outputs,
+      forward: configNode.forward,
+    });
+  });
+
+  return logicNodes;
+};
+
 export const NodeEditor = (props: NodeEditorProps) => {
   const rootId = props.id; // main id for the indetification of this nodeEditor in the store
+
+  const savedNode = useSelector(selectNodeEditorNodes(rootId));
+  const [nodes, setNodes] = useState<LogicNode[]>(
+    createLogicNodeArray(props.config, savedNode).concat({
+      ...props.root,
+      name: props.root.name + "(Root)",
+      id: rootId,
+      configId: props.root.id,
+      x: 50,
+      y: 50,
+    })
+  );
 
   const nodeEditorStore = useSelector(selectNodeEditor(rootId));
   const connections = useSelector(selectNodeEditorConnections(rootId));
@@ -60,15 +109,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //conPosTable is used to store a function referncing the x,y location of each ioPort. This way, we can serrialize the connection Objects in the store without having to worry about losing the information to draw the svg paths
   const [conPosTable, setConPosTable] = useState<ConnectionPosTable>({});
-  const [nodes, setNodes] = useState<LogicNode[]>([
-    {
-      ...props.root,
-      name: props.root.name + "(Root)",
-      id: rootId,
-      x: 50,
-      y: 50,
-    },
-  ]);
 
   const [dragNodeId, setDragNodeId] = useState<string | null>(""); //Identify the node to be dragged
   const [mousePath, setMousePath] = useState<string>(""); //stroke path for output to mouse bezier curve - if any
@@ -150,9 +190,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
     newNodes.forEach((node, index) => {
       if (node.id === dragNodeId) {
         newNodes[index].x =
-          e.pageX / zoom - dragOffset.offsetX - panningOffset.offsetX; //(e.pageX  - dragOffset.offsetX) / 1;
+          e.pageX / zoom - dragOffset.offsetX - panningOffset.offsetX;
         newNodes[index].y =
-          e.pageY / zoom - dragOffset.offsetY - panningOffset.offsetY; //(e.pageY  - dragOffset.offsetY) / 1;
+          e.pageY / zoom - dragOffset.offsetY - panningOffset.offsetY;
       }
     });
 
@@ -363,6 +403,26 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (!nodeEditorStore) createNewNodeEditor();
   });
 
+  useEffect(() => {
+    const reduxNodes: ReduxNode[] = [];
+    nodes.forEach((n) => {
+      if (n.configId === props.root.id) return;
+      reduxNodes.push({
+        x: n.x,
+        y: n.y,
+        configId: n.configId,
+        nodeId: n.id,
+      });
+    });
+    dispatch(
+      updateNodes({
+        id: rootId,
+        nodes: reduxNodes,
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes]);
+
   //update nodeEditor zoom
   const zoomListener = (e: WheelEvent) => {
     let newZoom = zoom;
@@ -419,6 +479,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
         {connections.map((con, index) => {
           const inId = con.input.id + "In" + con.input.index;
           const outId = con.output.id + "Out" + con.output.index;
+
+          if (!conPosTable[con.input.id]) return null;
+          if (!conPosTable[con.output.id]) return null;
 
           if (!conPosTable[con.input.id][inId]) return null;
           if (!conPosTable[con.output.id][outId]) return null;

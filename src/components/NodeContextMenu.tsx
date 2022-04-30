@@ -16,6 +16,7 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
   const addLogicNode = (e: MouseEvent, protoNode: ProtoNode) => {
     const logicNode: LogicNode = {
       id: nanoid(),
+      configId: protoNode.id,
       name: protoNode.name,
       x: e.clientX - props.panning.offsetX,
       y: e.clientY - props.panning.offsetY,

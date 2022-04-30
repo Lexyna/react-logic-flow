@@ -7,6 +7,7 @@ export const ReactEditorNode = (props: NodeProps) => {
   const style = {
     top: props.y - props.editorOffset.y + "px",
     left: props.x - props.editorOffset.x + "px",
+    transform: `scale(${props.zoom})`,
   };
 
   const onDrag = (e: MouseEvent) => {

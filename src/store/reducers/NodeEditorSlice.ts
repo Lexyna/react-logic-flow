@@ -11,6 +11,8 @@ export interface ReduxNode {
   nodeId: string; //unique Id of this node
   x: number;
   y: number;
+  inputs: any[]; // stor extra data -- Need tp be serializable!
+  outputs: any[]; // stor extra data -- Need tp be serializable!
 }
 
 export interface NodeEditorStore {

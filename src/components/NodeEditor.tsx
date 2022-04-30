@@ -422,11 +422,22 @@ export const NodeEditor = (props: NodeEditorProps) => {
         return;
       }
 
+      const extraDataInput: any[] = [];
+      const extraDataOutput: any[] = [];
+
+      for (let i = 0; i < n.inputs.length; i++)
+        extraDataInput.push(n.inputs[i].data);
+
+      for (let i = 0; i < n.outputs.length; i++)
+        extraDataInput.push(n.outputs[i].data);
+
       reduxNodes.push({
         x: n.x,
         y: n.y,
         configId: n.configId,
         nodeId: n.id,
+        inputs: extraDataInput,
+        outputs: extraDataOutput,
       });
     });
     dispatch(

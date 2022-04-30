@@ -257,10 +257,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     const outId = selectedOutput.id + "Out" + selectedOutput.index;
 
     const str = computeBezierCurve(
-      conPosTable[selectedOutput.id][outId].x(),
-      conPosTable[selectedOutput.id][outId].y(),
-      x2,
-      y2
+      conPosTable[selectedOutput.id][outId].x() - nodeEditorOffset.x,
+      conPosTable[selectedOutput.id][outId].y() - nodeEditorOffset.y,
+      x2 - nodeEditorOffset.x,
+      y2 - nodeEditorOffset.y
     );
     setMousePath(str);
   };
@@ -421,7 +421,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
       createNewNodeEditor();
 
       if (!ref.current) return;
-      console.log("set");
       setNodeEditorOffset({
         x: ref.current.getBoundingClientRect().x,
         y: ref.current.getBoundingClientRect().y,
@@ -534,10 +533,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
           if (!conPosTable[con.output.id][outId]) return null;
 
           const str = computeBezierCurve(
-            conPosTable[con.output.id][outId].x(),
-            conPosTable[con.output.id][outId].y(),
-            conPosTable[con.input.id][inId].x(),
-            conPosTable[con.input.id][inId].y()
+            conPosTable[con.output.id][outId].x() - nodeEditorOffset.x,
+            conPosTable[con.output.id][outId].y() - nodeEditorOffset.y,
+            conPosTable[con.input.id][inId].x() - nodeEditorOffset.x,
+            conPosTable[con.input.id][inId].y() - nodeEditorOffset.y
           );
           pathId++;
           return (

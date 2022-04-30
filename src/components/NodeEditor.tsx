@@ -119,6 +119,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     offsetY: 0,
   });
 
+  //top left positon of the node editor relative to the screen
   const [nodeEditorOffset, setNodeEditorOffset] = useState({ x: 0, y: 0 });
 
   const dispatch = useDispatch();
@@ -390,6 +391,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     proccesstNodes(logicNodes, connections, rootId);
   };
 
+  //Executes logiGrapg after each node or connection upgrade
   const doLiveUpdate = () => {
     if (props.liveUpdate) execute();
   };
@@ -416,6 +418,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   }, [zoom]);
 
   //Update store if this node Editor is first created
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!nodeEditorStore) {
       createNewNodeEditor();
@@ -428,6 +431,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     }
   });
 
+  //When nodes change (positions/add/delete/etc.) => update the storr nodes
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
     nodes.forEach((n) => {

@@ -78,7 +78,7 @@ export const OperationSelect = (props: ExtraProps<number, Operations>) => {
 const ioNumber: ProtoIO<number, any> = {
   name: "const",
   type: "number",
-  color: "blue",
+  color: "rgba(0, 200, 100)",
   data: {},
   extra: null,
   value: 0,
@@ -87,7 +87,7 @@ const ioNumber: ProtoIO<number, any> = {
 const ioNumberInput: ProtoIO<number, inputData> = {
   name: "const",
   type: "number",
-  color: "blue",
+  color: "rgb(0, 200, 100",
   data: { val: 0 },
   extra: InputForm,
   value: 0,

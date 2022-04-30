@@ -18,49 +18,49 @@ export const BackgroundGrid = (props: GridProps) => {
   const boldColor: string = "black";
 
   let boldLine = 7;
+  const gridPadding = 15;
 
   const defaultLines: line[] = [];
   const boldLines: line[] = [];
 
-  for (let i = 0; i < lineWidth; i += 15) {
+  for (let i = -gridPadding; i < lineWidth; i += gridPadding) {
     boldLine++;
 
-    if (boldLine % 8 !== 0)
-      defaultLines.push({
-        startX: i,
-        startY: 0,
-        endX: i,
-        endY: lineHeight,
-        color: defaultColor,
-      });
-    else
+    defaultLines.push({
+      startX: i + (props.offsetX % gridPadding),
+      startY: 0,
+      endX: i + (props.offsetX % gridPadding),
+      endY: lineHeight,
+      color: defaultColor,
+    });
+    if (boldLine % 8 === 0)
       boldLines.push({
-        startX: i,
+        startX: i + (props.offsetX % (8 * gridPadding)),
         startY: 0,
-        endX: i,
+        endX: i + (props.offsetX % (8 * gridPadding)),
         endY: lineHeight,
         color: boldColor,
       });
   }
 
-  boldLine = 0;
+  boldLine = 7;
 
-  for (let i = 0; i < lineHeight; i += 15) {
+  for (let i = -gridPadding; i < lineHeight; i += gridPadding) {
     boldLine++;
-    if (boldLine % 8 !== 0)
-      defaultLines.push({
-        startX: 0,
-        startY: i,
-        endX: lineWidth,
-        endY: i,
-        color: defaultColor,
-      });
-    else
+
+    defaultLines.push({
+      startX: 0,
+      startY: i + (props.offsetY % gridPadding),
+      endX: lineWidth,
+      endY: i + (props.offsetY % gridPadding),
+      color: defaultColor,
+    });
+    if (boldLine % 8 === 0)
       boldLines.push({
         startX: 0,
-        startY: i,
+        startY: i + (props.offsetY % (gridPadding * 8)),
         endX: lineWidth,
-        endY: i,
+        endY: i + (props.offsetY % (gridPadding * 8)),
         color: boldColor,
       });
   }

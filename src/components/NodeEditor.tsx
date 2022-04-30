@@ -523,7 +523,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
           height={editorDimensions.height}
           offsetX={panningOffset.offsetX}
           offsetY={panningOffset.offsetY}
-          zoom={1}
+          zoom={zoom}
         />
         {connections.map((con, index) => {
           const inId = con.input.id + "In" + con.input.index;

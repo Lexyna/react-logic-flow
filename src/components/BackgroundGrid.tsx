@@ -9,14 +9,14 @@ interface line {
 }
 
 export const BackgroundGrid = (props: GridProps) => {
-  const lineWidth = props.width / props.zoom;
-  const lineHeight = props.height / props.zoom;
+  const lineWidth = props.width;
+  const lineHeight = props.height;
 
   const defaultColor: string = "rgb(55, 55, 55)";
   const boldColor: string = "black";
 
   let boldLine = 7;
-  const gridPadding = 15;
+  const gridPadding = 15 * props.zoom;
 
   const defaultLines: line[] = [];
   const boldLines: line[] = [];

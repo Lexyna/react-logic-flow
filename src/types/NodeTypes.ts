@@ -13,6 +13,7 @@ export interface selectedNode {
 export interface NodeProps {
   id: string;
   index: number;
+  editorOffset: { x: number; y: number };
   name: string;
   x: number;
   y: number;

@@ -232,22 +232,21 @@ function App() {
   const [show, setShow] = useState<boolean>(true);
 
   return (
-    <div>
-      <button
-        onClick={() => setShow((currShow) => !currShow)}
-        style={{ position: "absolute", left: "8rem" }}>
-        Show/Hide
-      </button>
-      {show ? (
-        <NodeEditor
-          id={"#myInitialID"}
-          config={config}
-          root={root}
-          liveUpdate={false}
-        />
-      ) : (
-        <p>False</p>
-      )}
+    <div
+      style={{
+        width: "800px",
+        height: "400px",
+        border: "3px solid red",
+        left: "150px",
+        top: "100px",
+        position: "absolute",
+      }}>
+      <NodeEditor
+        id={"#myInitialID"}
+        config={config}
+        root={root}
+        liveUpdate={false}
+      />
     </div>
   );
 }

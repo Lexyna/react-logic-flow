@@ -119,6 +119,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
     offsetY: 0,
   });
 
+  const [nodeEditorOffset, setNodeEditorOffset] = useState({ x: 0, y: 0 });
+
   const dispatch = useDispatch();
 
   //conPosTable is used to store a function referncing the x,y location of each ioPort. This way, we can serrialize the connection Objects in the store without having to worry about losing the information to draw the svg paths
@@ -415,7 +417,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //Update store if this node Editor is first created
   useEffect(() => {
-    if (!nodeEditorStore) createNewNodeEditor();
+    if (!nodeEditorStore) {
+      createNewNodeEditor();
+
+      if (!ref.current) return;
+      console.log("set");
+      setNodeEditorOffset({
+        x: ref.current.getBoundingClientRect().x,
+        y: ref.current.getBoundingClientRect().y,
+      });
+    }
   });
 
   useEffect(() => {
@@ -510,7 +521,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
           height={editorDimensions.height}
           offsetX={panningOffset.offsetX}
           offsetY={panningOffset.offsetY}
-          zoom={zoom}
+          zoom={1}
         />
         {connections.map((con, index) => {
           const inId = con.input.id + "In" + con.input.index;
@@ -555,6 +566,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
             index={index}
             x={node.x + panningOffset.offsetX}
             y={node.y + panningOffset.offsetY}
+            editorOffset={nodeEditorOffset}
             zoom={zoom}
             name={node.name}
             inputs={node.inputs}

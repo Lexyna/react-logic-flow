@@ -9,7 +9,6 @@ import {
   selectNodeEditor,
   selectNodeEditorConnections,
   updateConnections,
-  updateOffset,
 } from "../store/reducers/NodeEditorSlice";
 import {
   Connection,
@@ -52,17 +51,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const dragOffset = useSelector(selectNodeEditor(rootId));
-
-  const setDragOffset = (offset: DragOffset) => {
-    dispatch(
-      updateOffset({
-        id: rootId,
-        offsetX: offset.offsetX,
-        offsetY: offset.offsetY,
-      })
-    );
-  };
+  const [panningOffset, setPanningOffset] = useState<DragOffset>({
+    offsetX: 0,
+    offsetY: 0,
+  });
 
   const dispatch = useDispatch();
 
@@ -90,10 +82,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
 
   const [zoom, setZoom] = useState(1);
-  /*const [dragOffset, setDragOffset] = useState<DragOffset>({
+  const [dragOffset, setDragOffset] = useState<DragOffset>({
     offsetX: 0,
     offsetY: 0,
-  });*/
+  });
 
   //width and height of the NodeEditor. Needed to draw the background grid correctly
   const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
@@ -104,8 +96,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
   //Create new store Object if this nodeEditor does not already exist
   const createNewNodeEditor = () => {
     const editor: NodeEditorStore = {
-      offsetX: 0,
-      offsetY: 0,
       id: props.id,
       nodes: [],
       connections: [],
@@ -151,10 +141,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setDragOffset({ offsetX: x, offsetY: y });
   };
 
-  const resetNodeToDrag = () => {
-    setDragNodeId(null);
-  };
-
   const updateNodePosition = (e: MouseEvent) => {
     if (!dragNodeId) return;
 
@@ -171,9 +157,19 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setNodes(newNodes);
   };
 
+  const updateEditorOffset = (e: MouseEvent) => {
+    if (!isDragging) return;
+
+    setPanningOffset({
+      offsetX: panningOffset.offsetX + e.movementX,
+      offsetY: panningOffset.offsetY + e.movementY,
+    });
+  };
+
   const onMove = (e: MouseEvent) => {
     updateNodePosition(e);
     updateMousePath(e);
+    updateEditorOffset(e);
   };
 
   const onMouseDownHandler = (e: MouseEvent) => {
@@ -181,7 +177,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   const onMouseUpHandler = (e: MouseEvent) => {
-    //resetNodeToDrag();
     setDragNodeId(null);
     setDragging(false);
   };
@@ -414,8 +409,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
         <BackgroundGrid
           width={editorDimensions.width}
           height={editorDimensions.height}
-          offsetX={0}
-          offsetY={0}
+          offsetX={panningOffset.offsetX}
+          offsetY={panningOffset.offsetY}
           zoom={zoom}
         />
         {connections.map((con, index) => {
@@ -456,8 +451,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
         return (
           <ReactEditorNode
             index={index}
-            x={node.x}
-            y={node.y}
+            x={node.x + panningOffset.offsetX}
+            y={node.y + panningOffset.offsetY}
             zoom={zoom}
             name={node.name}
             inputs={node.inputs}

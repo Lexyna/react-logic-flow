@@ -18,12 +18,21 @@ export const executeNodeGraph = (
 ) => {
   const state = store.getState();
 
-  if (!state.nodeEditors[id]) return;
+  if (!state.nodeEditors[id]) throw new Error("Id not found");
 
   const editorState = state.nodeEditors[id];
 
   const nodes: ReduxNode[] = editorState.nodes;
   const connections: Connection[] = editorState.connections;
+
+  //check if the passed config is valid
+  nodes.forEach((node) => {
+    let isValid: boolean = false;
+    config.forEach((con) => {
+      if (node.configId === con.id) isValid = true;
+    });
+    if (!isValid) throw new Error("Invalid configuration provided");
+  });
 
   const logicNode = createLogicNodeArray(config, nodes).concat({
     ...root,

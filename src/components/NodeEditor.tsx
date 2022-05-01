@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef, useState, WheelEvent } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
@@ -25,9 +25,8 @@ import {
 } from "../types/NodeEditorTypes";
 import { LogicNode, selectedNode } from "../types/NodeTypes";
 import { clientDimensions, DragOffset } from "../types/utilTypes";
-import { BackgroundGrid } from "./BackgroundGrid";
+import { ConnectionStage } from "./ConnectionStage";
 import { EditorContextMenu } from "./EditorContextMenu";
-import { NodeConnection } from "./NodeConnection";
 import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
 
@@ -284,15 +283,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setConnections(cons);
   };
 
-  const onRemoveConnecton = (index: number) => {
-    const cons = connections.map((con) => {
-      return { ...con };
-    });
-    cons.splice(index, 1);
-
-    setConnections(cons);
-  };
-
   //Right click on an output node, to remove all connected nodes
   const onRemoveAllConnections = (nodeId: string, index: number) => {
     const cons = connections.map((n) => {
@@ -470,19 +460,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes]);
 
-  //update nodeEditor zoom
-  const zoomListener = (e: WheelEvent) => {
-    let newZoom = zoom;
-    if (e.deltaY > 0) newZoom += 0.05;
-    else newZoom -= 0.05;
-
-    if (newZoom < 0.3 || newZoom > 1.2) return;
-
-    setZoom(newZoom);
-    updateMousePath(e as MouseEvent);
-  };
-
-  let pathId: number = 0;
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -492,7 +469,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
       className="NodeEditor"
       onMouseUp={onMouseUpHandler}
       onMouseDown={onMouseDownHandler}
-      onClick={resetSelectedOutput}
+      onClick={() => {
+        resetSelectedOutput();
+        hideNodeContextMenu();
+        hideContextMenu();
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        hideNodeContextMenu();
+        showContextMenu(e);
+      }}
       onMouseMove={onMove}>
       <EditorContextMenu
         config={props.config}
@@ -512,69 +498,19 @@ export const NodeEditor = (props: NodeEditorProps) => {
       <button style={{ position: "absolute" }} onClick={execute}>
         proccess me
       </button>
+      <ConnectionStage
+        zoom={zoom}
+        setZoom={setZoom}
+        setConnections={setConnections}
+        editorDimensions={editorDimensions}
+        nodeEditorOffset={nodeEditorOffset}
+        updateMousePath={updateMousePath}
+        panningOffset={panningOffset}
+        connections={connections}
+        conPosTable={conPosTable}
+        mousePath={mousePath}
+      />
 
-      <svg
-        className="NodeEditorSVG"
-        onClick={() => {
-          hideContextMenu();
-          hideNodeContextMenu();
-        }}
-        onWheel={zoomListener}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          hideNodeContextMenu();
-          showContextMenu(e);
-        }}>
-        <BackgroundGrid
-          width={editorDimensions.width}
-          height={editorDimensions.height}
-          offsetX={panningOffset.offsetX}
-          offsetY={panningOffset.offsetY}
-          zoom={zoom}
-        />
-        {connections.map((con, index) => {
-          const inId = con.input.id + "In" + con.input.index;
-          const outId = con.output.id + "Out" + con.output.index;
-
-          if (!conPosTable[con.input.id]) return null;
-          if (!conPosTable[con.output.id]) return null;
-
-          if (!conPosTable[con.input.id][inId]) return null;
-          if (!conPosTable[con.output.id][outId]) return null;
-
-          const str = computeBezierCurve(
-            conPosTable[con.output.id][outId].x() / zoom -
-              nodeEditorOffset.x / zoom,
-            conPosTable[con.output.id][outId].y() / zoom -
-              nodeEditorOffset.y / zoom,
-            conPosTable[con.input.id][inId].x() / zoom -
-              nodeEditorOffset.x / zoom,
-            conPosTable[con.input.id][inId].y() / zoom -
-              nodeEditorOffset.y / zoom
-          );
-          pathId++;
-          return (
-            <NodeConnection
-              key={pathId}
-              index={index}
-              color={con.output.color}
-              zoom={zoom}
-              d={str}
-              removeConnection={onRemoveConnecton}
-            />
-          );
-        })}
-        <svg>
-          <path
-            style={{ transform: `scale(${zoom})` }}
-            fill="none"
-            stroke="gray"
-            strokeWidth={2}
-            strokeDasharray="20,5,5,10,5,5"
-            d={mousePath}
-          />
-        </svg>
-      </svg>
       {nodes.map((node: LogicNode, index: number) => {
         return (
           <ReactEditorNode

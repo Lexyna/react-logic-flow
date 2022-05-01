@@ -83,7 +83,7 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
           className="NodeContextMenu"
           onKeyDown={(e) => onKeyDownHandler(e)}
           tabIndex={0}>
-          <div className="NodeContextMenuItem">
+          <div className="NodeContextMenuItem searchBar">
             <header>Search</header>
             <input
               autoFocus

@@ -4,7 +4,7 @@ import { ContextMenuProps } from "../types/ContextMenuTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
 import "./../css/NodeContextMenu.css";
 
-export const NodeContextMenu = (props: ContextMenuProps) => {
+export const EditorContextMenu = (props: ContextMenuProps) => {
   let listId = 0;
 
   const [searchText, setSearchText] = useState<string>("");

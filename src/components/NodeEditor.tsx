@@ -24,8 +24,8 @@ import {
 } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode, selectedNode } from "../types/NodeTypes";
 import { BackgroundGrid } from "./BackgroundGrid";
+import { EditorContextMenu } from "./EditorContextMenu";
 import { NodeConnection } from "./NodeConnection";
-import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
 
 interface clientDimensions {
@@ -501,7 +501,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       onMouseDown={onMouseDownHandler}
       onClick={resetSelectedOutput}
       onMouseMove={onMove}>
-      <NodeContextMenu
+      <EditorContextMenu
         config={props.config}
         show={contextMenuOptions.showContextMenu}
         x={contextMenuOptions.x}

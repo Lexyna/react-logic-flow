@@ -46,7 +46,12 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
             />
           </div>
           {props.config.map((node) => {
-            if (!node.name.includes(searchText)) return null;
+            if (
+              !node.name
+                .toLocaleLowerCase()
+                .includes(searchText.toLocaleLowerCase())
+            )
+              return null;
             listId++;
             return (
               <div

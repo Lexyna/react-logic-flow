@@ -208,9 +208,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
     newNodes.forEach((node, index) => {
       if (node.id === dragNodeId) {
         newNodes[index].x =
-          e.pageX - dragOffset.offsetX - panningOffset.offsetX;
+          e.pageX / zoom - dragOffset.offsetX / zoom - panningOffset.offsetX;
         newNodes[index].y =
-          e.pageY - dragOffset.offsetY - panningOffset.offsetY;
+          e.pageY / zoom - dragOffset.offsetY / zoom - panningOffset.offsetY;
       }
     });
 
@@ -571,8 +571,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
         return (
           <ReactEditorNode
             index={index}
-            x={node.x + panningOffset.offsetX}
-            y={node.y + panningOffset.offsetY}
+            x={node.x * zoom + panningOffset.offsetX}
+            y={node.y * zoom + panningOffset.offsetY}
             editorOffset={nodeEditorOffset}
             zoom={zoom}
             name={node.name}

@@ -234,11 +234,11 @@ function App() {
   return (
     <div
       style={{
-        height: "400px",
-        width: "600px",
+        height: "500px",
+        width: "800px",
         position: "absolute",
-        left: "100px",
-        top: "100px",
+        left: "0px",
+        top: "0px",
       }}>
       <NodeEditor
         id={"#myInitialID"}

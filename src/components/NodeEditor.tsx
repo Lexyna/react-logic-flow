@@ -80,7 +80,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const [dragNodeId, setDragNodeId] = useState<string | null>("");
 
   //stroke path from output to mouse; bezier curve - if any
-  const [mousePath, setMousePath] = useState<string>("");
+  const [previewPath, setPreviewPath] = useState<string>("");
 
   //Helper state to draw the contextMenu
   const [contextMenuOptions, setContextMenuOptions] =
@@ -164,7 +164,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       x2 / zoom - nodeEditorOffset.x,
       y2 / zoom - nodeEditorOffset.y
     );
-    setMousePath(str);
+    setPreviewPath(str);
   };
 
   //functions related to connections
@@ -173,7 +173,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (selectedOutput && isSelected) {
       selectedOutput = null;
       isSelected = false;
-      setMousePath("");
+      setPreviewPath("");
     }
     if (selectedOutput) isSelected = true;
   };
@@ -182,6 +182,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     selectedOutput = node;
   };
 
+  //connect the selectdOutput node with the passed input node
   const onConnect = (node: selectedNode) => {
     const cons = connections.map((con) => {
       return { ...con };
@@ -504,7 +505,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         setZoom={setZoom}
         setConnections={setConnections}
         updatePreviewConnectionPath={updatePreviewConnectionPath}
-        mousePath={mousePath}
+        mousePath={previewPath}
         showEditorContexMenu={showContextMenu}
         hideNodeContextMenu={hideNodeContextMenu}
       />

@@ -1,12 +1,41 @@
+import { ReduxNode } from "../store/reducers/NodeEditorSlice";
+import { store } from "../store/stroe";
 import {
   AbstractInput,
   AbstractNode,
   AbstractOutput,
 } from "../types/NodeComputationalTypes";
 import { Connection } from "../types/NodeEditorTypes";
-import { LogicNode } from "../types/NodeTypes";
+import { LogicNode, ProtoNode } from "../types/NodeTypes";
+import { createLogicNodeArray } from "./Utils";
 
 let cycleGraph: boolean = false;
+
+export const executeNodeGraph = (
+  id: string,
+  config: ProtoNode[],
+  root: ProtoNode
+) => {
+  const state = store.getState();
+
+  if (!state.nodeEditors[id]) return;
+
+  const editorState = state.nodeEditors[id];
+
+  const nodes: ReduxNode[] = editorState.nodes;
+  const connections: Connection[] = editorState.connections;
+
+  const logicNode = createLogicNodeArray(config, nodes).concat({
+    ...root,
+    name: root.name + "(Root)",
+    id: id,
+    configId: root.id,
+    x: 0,
+    y: 0,
+  });
+
+  proccesstNodes(logicNode, connections, id);
+};
 
 export const proccesstNodes = (
   nodes: LogicNode[],

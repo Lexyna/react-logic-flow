@@ -258,10 +258,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     const outId = selectedOutput.id + "Out" + selectedOutput.index;
 
     const str = computeBezierCurve(
-      conPosTable[selectedOutput.id][outId].x() - nodeEditorOffset.x,
-      conPosTable[selectedOutput.id][outId].y() - nodeEditorOffset.y,
-      x2 - nodeEditorOffset.x,
-      y2 - nodeEditorOffset.y
+      conPosTable[selectedOutput.id][outId].x() / zoom - nodeEditorOffset.x,
+      conPosTable[selectedOutput.id][outId].y() / zoom - nodeEditorOffset.y,
+      x2 / zoom - nodeEditorOffset.x,
+      y2 / zoom - nodeEditorOffset.y
     );
     setMousePath(str);
   };
@@ -559,6 +559,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         })}
         <svg>
           <path
+            style={{ transform: `scale(${zoom})` }}
             fill="none"
             stroke="gray"
             strokeWidth={2}

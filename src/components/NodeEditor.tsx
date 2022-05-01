@@ -208,9 +208,13 @@ export const NodeEditor = (props: NodeEditorProps) => {
     newNodes.forEach((node, index) => {
       if (node.id === dragNodeId) {
         newNodes[index].x =
-          e.pageX / zoom - dragOffset.offsetX / zoom - panningOffset.offsetX;
+          e.pageX / zoom -
+          dragOffset.offsetX / zoom -
+          panningOffset.offsetX / zoom;
         newNodes[index].y =
-          e.pageY / zoom - dragOffset.offsetY / zoom - panningOffset.offsetY;
+          e.pageY / zoom -
+          dragOffset.offsetY / zoom -
+          panningOffset.offsetY / zoom;
       }
     });
 

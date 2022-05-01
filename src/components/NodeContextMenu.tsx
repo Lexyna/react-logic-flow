@@ -7,7 +7,10 @@ export const NodeContextMenu = (props: NodeContextMenuProps) => {
   };
 
   return (
-    <div style={style} className="ContextMenuContainer">
+    <div
+      style={style}
+      className="ContextMenuContainer"
+      onContextMenu={(e) => e.preventDefault()}>
       {props.show ? (
         <div className="NodeContextMenu">
           <div className="NodeContextMenuItem" onClick={props.delete}>

@@ -76,7 +76,10 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
-    <div style={style} className="ContextMenuContainer">
+    <div
+      style={style}
+      className="ContextMenuContainer"
+      onContextMenu={(e) => e.preventDefault()}>
       {props.show ? (
         <div>
           <div

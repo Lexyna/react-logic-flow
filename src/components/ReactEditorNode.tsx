@@ -5,12 +5,17 @@ import { ReactNodeIO } from "./NodeIO";
 
 export const ReactEditorNode = (props: NodeProps) => {
   const style = {
-    top: props.y + "px",
-    left: props.x + "px",
+    top: props.y - props.editorOffset.y + "px",
+    left: props.x - props.editorOffset.x + "px",
+    transform: `scale(${props.zoom})`,
+    transformOrigin: "top left",
   };
 
-  const onDrag = () => {
-    props.dragHandler(props.id);
+  const onDrag = (e: MouseEvent) => {
+    const diffX = e.pageX - props.x;
+    const diffY = e.pageY - props.y;
+
+    props.dragHandler(props.id, diffX, diffY);
     props.reorderNode(props.index);
   };
 
@@ -21,7 +26,7 @@ export const ReactEditorNode = (props: NodeProps) => {
       <header
         onMouseDown={(e: MouseEvent) => {
           e.preventDefault();
-          onDrag();
+          onDrag(e);
         }}>
         {props.name}
       </header>
@@ -44,6 +49,7 @@ export const ReactEditorNode = (props: NodeProps) => {
               onClick={props.onInputClicked}
               onRightClick={null}
               updateData={props.updateExtraData}
+              updateIOPosition={props.updateIOPosition}
             />
           );
         })}
@@ -64,6 +70,7 @@ export const ReactEditorNode = (props: NodeProps) => {
               onClick={props.onOutputClicked}
               onRightClick={props.onOutputRightClikced}
               updateData={props.updateExtraData}
+              updateIOPosition={props.updateIOPosition}
             />
           );
         })}

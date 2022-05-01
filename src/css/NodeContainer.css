@@ -28,7 +28,7 @@
     color:white;
     border-radius: 5px 5px 0px 0px;
     text-align: left;
-    cursor: move;
+    cursor: pointer;
     font-family: 'Courier New', Courier, monospace;
     user-select: none; /* supported by Chrome and Opera */
     -webkit-touch-callout: none;
@@ -43,6 +43,12 @@
     margin: 0;
     padding: 0;
     list-style: none;
+    user-select: none; /* supported by Chrome and Opera */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
 .NodeContainer>ul>li {
@@ -73,7 +79,7 @@
 
 .NodeContainer>ul>li.Input>i {
     left: -.3rem;
-    top: .4rem
+    top: .4rem;
 }
 
 .NodeContainer>ul>li.Output>i {

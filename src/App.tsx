@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NodeEditor } from "./components/NodeEditor";
 import { ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
@@ -18,7 +18,7 @@ export const InputForm = (props: ExtraProps<number, inputData>) => {
       <input
         type="number"
         style={{ width: "25px" }}
-        defaultValue={props.value}
+        defaultValue={props.data.val}
         step={1}
         onChange={(e) => update(parseFloat(e.target.value))}
       />
@@ -27,10 +27,10 @@ export const InputForm = (props: ExtraProps<number, inputData>) => {
 };
 
 enum OPS {
-  ADD,
-  SUB,
-  MULS,
-  DIV,
+  ADD = "ADD",
+  SUB = "SUB",
+  MULS = "MUL",
+  DIV = "DIV",
 }
 
 interface Operations {
@@ -61,7 +61,9 @@ export const OperationSelect = (props: ExtraProps<number, Operations>) => {
 
   return (
     <div>
-      <select onChange={(e) => updateType(e.target.value)}>
+      <select
+        onChange={(e) => updateType(e.target.value)}
+        defaultValue={props.data.type}>
         {options.map((val) => {
           id++;
           return (
@@ -78,7 +80,7 @@ export const OperationSelect = (props: ExtraProps<number, Operations>) => {
 const ioNumber: ProtoIO<number, any> = {
   name: "const",
   type: "number",
-  color: "blue",
+  color: "rgba(0, 200, 100)",
   data: {},
   extra: null,
   value: 0,
@@ -87,7 +89,7 @@ const ioNumber: ProtoIO<number, any> = {
 const ioNumberInput: ProtoIO<number, inputData> = {
   name: "const",
   type: "number",
-  color: "blue",
+  color: "rgb(0, 200, 100)",
   data: { val: 0 },
   extra: InputForm,
   value: 0,
@@ -96,22 +98,14 @@ const ioNumberInput: ProtoIO<number, inputData> = {
 const ioNumberSelect: ProtoIO<number, Operations> = {
   name: "Out",
   type: "number",
-  color: "blue",
+  color: "rgb(0, 200, 100)",
   data: { type: OPS.ADD },
   extra: OperationSelect,
   value: 0,
 };
 
-const ioText: ProtoIO<string, any> = {
-  name: "Text",
-  type: "text",
-  color: "blue",
-  data: {},
-  extra: null,
-  value: "",
-};
-
 const operationNode: ProtoNode = {
+  id: "OperationalNode",
   name: "Operation",
   description: "use a operation",
   inputs: [ioNumber, ioNumber],
@@ -139,6 +133,7 @@ const operationNode: ProtoNode = {
 };
 
 const addNode: ProtoNode = {
+  id: "addNode",
   name: "Add",
   description: "Adds two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -154,6 +149,7 @@ const addNode: ProtoNode = {
 };
 
 const subNode: ProtoNode = {
+  id: "subNode",
   name: "Sub",
   description: "Subs two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -169,6 +165,7 @@ const subNode: ProtoNode = {
 };
 
 const mulNode: ProtoNode = {
+  id: "MulNode",
   name: "Mul",
   description: "Multiplicates two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -184,6 +181,7 @@ const mulNode: ProtoNode = {
 };
 
 const divNode: ProtoNode = {
+  id: "DivNode",
   name: "Div",
   description: "Divides two numnbers",
   inputs: [ioNumber, ioNumber],
@@ -199,6 +197,7 @@ const divNode: ProtoNode = {
 };
 
 const constNode: ProtoNode = {
+  id: "constNode",
   name: "Const",
   description: "A node that outputs a number",
   inputs: [],
@@ -219,6 +218,7 @@ const config: ProtoNode[] = [
 ];
 
 const root: ProtoNode = {
+  id: "root",
   name: "Const",
   description: "A root Node",
   inputs: [ioNumber],
@@ -229,8 +229,17 @@ const root: ProtoNode = {
 };
 
 function App() {
+  const [show, setShow] = useState<boolean>(true);
+
   return (
-    <div>
+    <div
+      style={{
+        height: "500px",
+        width: "800px",
+        position: "absolute",
+        left: "0px",
+        top: "0px",
+      }}>
       <NodeEditor
         id={"#myInitialID"}
         config={config}

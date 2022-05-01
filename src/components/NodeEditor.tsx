@@ -24,7 +24,7 @@ import {
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
 import { LogicNode, selectedNode } from "../types/NodeTypes";
-import { clientDimensions, DragOffset } from "../types/utilTypes";
+import { DragOffset } from "../types/utilTypes";
 import { ConnectionStage } from "./ConnectionStage";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { NodeContextMenu } from "./NodeContextMenu";
@@ -99,12 +99,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const [dragOffset, setDragOffset] = useState<DragOffset>({
     offsetX: 0,
     offsetY: 0,
-  });
-
-  //width and height of the NodeEditor. Needed to draw the background grid correctly
-  const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
-    width: 0,
-    height: 0,
   });
 
   //Create new store Object if this nodeEditor does not already exist
@@ -383,26 +377,10 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (props.liveUpdate) execute();
   };
 
-  const updateBackground = () => {
-    if (!ref.current) return;
-
-    const width = ref.current.getBoundingClientRect().width;
-    const height = ref.current.getBoundingClientRect().height;
-
-    setEditorDimensions({ width: width, height: height });
-  };
-
   useEffect(() => {
     if (!dragNodeId) doLiveUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections, nodes]);
-
-  //Update background grid with nodeEditor width and height
-  useEffect(() => {
-    updateBackground();
-
-    window.onresize = updateBackground;
-  }, [zoom]);
 
   //Update store if this node Editor is first created
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -497,7 +475,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
         zoom={zoom}
         setZoom={setZoom}
         setConnections={setConnections}
-        editorDimensions={editorDimensions}
         nodeEditorOffset={nodeEditorOffset}
         updateMousePath={updateMousePath}
         panningOffset={panningOffset}
@@ -507,7 +484,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
         showEditorContexMenu={showContextMenu}
         hideNodeContextMenu={hideNodeContextMenu}
       />
-
       {nodes.map((node: LogicNode, index: number) => {
         return (
           <ReactEditorNode

@@ -1,10 +1,17 @@
-import { MouseEvent, WheelEvent } from "react";
+import { MouseEvent, useEffect, useRef, useState, WheelEvent } from "react";
 import { computeBezierCurve } from "../logic/Utils";
 import { ConnectionStageProps } from "../types/ConnectionStageTypes";
+import { clientDimensions } from "../types/utilTypes";
 import { BackgroundGrid } from "./BackgroundGrid";
 import { NodeConnection } from "./NodeConnection";
 
 export const ConnectionStage = (props: ConnectionStageProps) => {
+  //width and height of the NodeEditor. Needed to draw the background grid correctly
+  const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
+    width: 0,
+    height: 0,
+  });
+
   //update nodeEditor zoom
   const zoomListener = (e: WheelEvent) => {
     let newZoom = props.zoom;
@@ -26,10 +33,29 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
     props.setConnections(cons);
   };
 
+  const updateBackground = () => {
+    if (!ref.current) return;
+
+    const width = ref.current.getBoundingClientRect().width;
+    const height = ref.current.getBoundingClientRect().height;
+
+    setEditorDimensions({ width: width, height: height });
+  };
+
+  //Update background grid with nodeEditor width and height
+  useEffect(() => {
+    updateBackground();
+
+    window.onresize = updateBackground;
+  }, [props.zoom]);
+
   let pathId: number = 0;
+
+  const ref = useRef<SVGSVGElement>(null);
 
   return (
     <svg
+      ref={ref}
       className="NodeEditorSVG"
       onWheel={zoomListener}
       onContextMenu={(e) => {
@@ -38,8 +64,8 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
         props.showEditorContexMenu(e);
       }}>
       <BackgroundGrid
-        width={props.editorDimensions.width}
-        height={props.editorDimensions.height}
+        width={editorDimensions.width}
+        height={editorDimensions.height}
         offsetX={props.panningOffset.offsetX}
         offsetY={props.panningOffset.offsetY}
         zoom={props.zoom}

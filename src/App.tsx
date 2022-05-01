@@ -1,6 +1,5 @@
 import React from "react";
 import { NodeEditor } from "./components/NodeEditor";
-import { executeNodeGraph } from "./logic/NodeProcessing";
 import { ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
 
@@ -239,9 +238,6 @@ function App() {
         left: "0px",
         top: "0px",
       }}>
-      <button onClick={() => executeNodeGraph("#myInitialID", config, root)}>
-        test
-      </button>
       <NodeEditor
         id={"#myInitialID"}
         config={config}

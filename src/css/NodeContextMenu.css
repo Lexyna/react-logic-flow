@@ -1,5 +1,6 @@
 .NodeContextMenuContainer{
   position: fixed;
+  z-index: 1;
 }
 
 .NodeContextMenu {
@@ -12,7 +13,6 @@
   position: absolute;
   overflow-y: auto;
   overflow-x: hidden;
-  z-index: 1;
 }
 
 .NodeContextMenuItem {

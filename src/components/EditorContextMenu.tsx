@@ -1,10 +1,10 @@
 import { nanoid } from "nanoid";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
-import { ContextMenuProps } from "../types/ContextMenuTypes";
+import { EditorContextMenuProps } from "../types/ContextMenuTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
 import "./../css/NodeContextMenu.css";
 
-export const EditorContextMenu = (props: ContextMenuProps) => {
+export const EditorContextMenu = (props: EditorContextMenuProps) => {
   let listId = 0;
 
   const [searchText, setSearchText] = useState<string>("");

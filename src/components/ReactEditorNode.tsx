@@ -1,6 +1,7 @@
 import { MouseEvent } from "react";
 import { NodeProps } from "../types/NodeTypes";
 import "./../css/NodeContainer.css";
+import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactNodeIO } from "./NodeIO";
 
 export const ReactEditorNode = (props: NodeProps) => {
@@ -30,6 +31,7 @@ export const ReactEditorNode = (props: NodeProps) => {
         }}>
         {props.name}
       </header>
+      <NodeContextMenu show={false} x={0} y={0} />
       <ul>
         {/* IO Ports will never change => the can have a generic id */}
         {props.inputs.map((io, index) => {

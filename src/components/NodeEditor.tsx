@@ -36,6 +36,8 @@ let isSelected: boolean = false;
 export const NodeEditor = (props: NodeEditorProps) => {
   const rootId = props.id; // main id for the identification of this nodeEditor in the store
 
+  //-------------------------------------------------- Editor States --------------------------------------------------
+
   const rootPos = useSelector(selectRootNodePos(rootId));
 
   const savedNode = useSelector(selectNodeEditorNodes(rootId));
@@ -71,8 +73,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
   //top left positon of the node editor relative to the screen
   const [nodeEditorOffset, setNodeEditorOffset] = useState({ x: 0, y: 0 });
 
-  const dispatch = useDispatch();
-
   //conPosTable is used to store a function referncing the x,y location of each ioPort. This way, we can serrialize the connection Objects in the store without having to worry about losing the information to draw the svg paths
   const [conPosTable, setConPosTable] = useState<ConnectionPosTable>({});
 
@@ -101,16 +101,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
     offsetY: 0,
   });
 
-  //Create new store Object if this nodeEditor does not already exist
-  const createNewNodeEditor = () => {
-    const editor: NodeEditorStore = {
-      id: props.id,
-      rootNodePos: { x: 50, y: 50 },
-      nodes: [],
-      connections: [],
-    };
-    dispatch(addNodeEditor(editor));
-  };
+  const dispatch = useDispatch();
+
+  //-------------------------------------------------- Functions --------------------------------------------------
+
+  //Functions related to mouseEvents in the editor
 
   const setDragging = (isDragging: boolean) => {
     if (ref.current) {
@@ -121,55 +116,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setIsDragging(isDragging);
   };
 
-  //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
-  const updatedNodeIOPosition = (
-    nodeId: string,
-    id: string, //individual ioPort id => nodeID + [In|Out] + ioPort.index
-    updatedPos: ConnectionPosition
-  ) => {
-    if (conPosTable[nodeId]) if (conPosTable[nodeId][id]) return;
-
-    setConPosTable({
-      ...conPosTable,
-      [nodeId]: {
-        ...conPosTable[nodeId],
-        [id]: {
-          x: updatedPos.x,
-          y: updatedPos.y,
-        },
-      },
-    });
-  };
-
-  const onOutputClicked = (node: selectedNode) => {
-    selectedOutput = node;
-  };
-
   const selecteNodeToDrag = (id: string, x: number, y: number) => {
     setDragNodeId(id);
     setDragOffset({ offsetX: x, offsetY: y });
-  };
-
-  const updateNodePosition = (e: MouseEvent) => {
-    if (!dragNodeId) return;
-
-    const newNodes: LogicNode[] = nodes.map((n) => {
-      return { ...n };
-    });
-    newNodes.forEach((node, index) => {
-      if (node.id === dragNodeId) {
-        newNodes[index].x =
-          e.pageX / zoom -
-          dragOffset.offsetX / zoom -
-          panningOffset.offsetX / zoom;
-        newNodes[index].y =
-          e.pageY / zoom -
-          dragOffset.offsetY / zoom -
-          panningOffset.offsetY / zoom;
-      }
-    });
-
-    setNodes(newNodes);
   };
 
   const updateEditorOffset = (e: MouseEvent) => {
@@ -196,15 +145,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setDragging(false);
   };
 
-  const resetSelectedOutput = () => {
-    if (selectedOutput && isSelected) {
-      selectedOutput = null;
-      isSelected = false;
-      setMousePath("");
-    }
-    if (selectedOutput) isSelected = true;
-  };
-
   const updateMousePath = (e: MouseEvent) => {
     if (!selectedOutput) return;
     const x2 = e.clientX;
@@ -221,31 +161,19 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setMousePath(str);
   };
 
-  const updateExtraData = (
-    nodeID: string,
-    input: boolean,
-    index: number,
-    data: any
-  ) => {
-    const copyNodes = nodes.map((node) => {
-      return {
-        ...node,
-        inputs: node.inputs.map((io) => {
-          return { ...io };
-        }),
-        outputs: node.outputs.map((io) => {
-          return { ...io };
-        }),
-      };
-    });
+  //functions related to connections
 
-    copyNodes.forEach((node, nodeIndex) => {
-      if (node.id !== nodeID) return;
-      if (input) copyNodes[nodeIndex].inputs[index].data = data;
-      else copyNodes[nodeIndex].outputs[index].data = data;
-    });
+  const resetSelectedOutput = () => {
+    if (selectedOutput && isSelected) {
+      selectedOutput = null;
+      isSelected = false;
+      setMousePath("");
+    }
+    if (selectedOutput) isSelected = true;
+  };
 
-    setNodes(copyNodes);
+  const onOutputClicked = (node: selectedNode) => {
+    selectedOutput = node;
   };
 
   const onConnect = (node: selectedNode) => {
@@ -288,6 +216,96 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setConnections(cons);
   };
 
+  //functions related to the context Menu
+
+  const showContextMenu = (e: MouseEvent) => {
+    setContextMenuOptions({
+      showContextMenu: true,
+      x: e.clientX,
+      y: e.clientY,
+    });
+  };
+
+  const hideContextMenu = () => {
+    setContextMenuOptions({
+      ...contextMenuOptions,
+      showContextMenu: false,
+    });
+  };
+
+  const showNodeContextMenu = (e: MouseEvent, func: () => void) => {
+    hideContextMenu();
+    setNodeContextMenuOptions({
+      showContextMenu: true,
+      x: e.clientX,
+      y: e.clientY,
+      delete: func,
+    });
+  };
+
+  const hideNodeContextMenu = () => {
+    setNodeContextMenuOptions({
+      ...nodeContextMenuOptions,
+      showContextMenu: false,
+    });
+  };
+
+  // Functions to handle nodes
+
+  //Reorder node array so the currently selected Node will be darwn last
+  const reorderNode = (index: number) => {
+    const reorderedNodes = nodes.map((n) => {
+      return { ...n };
+    });
+    const activeNode = reorderedNodes[index];
+
+    reorderedNodes.splice(index, 1);
+    reorderedNodes.push(activeNode);
+    setNodes(reorderedNodes);
+  };
+
+  //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
+  const updatedNodeIOPosition = (
+    nodeId: string,
+    id: string, //individual ioPort id => nodeID + [In|Out] + ioPort.index
+    updatedPos: ConnectionPosition
+  ) => {
+    if (conPosTable[nodeId]) if (conPosTable[nodeId][id]) return;
+
+    setConPosTable({
+      ...conPosTable,
+      [nodeId]: {
+        ...conPosTable[nodeId],
+        [id]: {
+          x: updatedPos.x,
+          y: updatedPos.y,
+        },
+      },
+    });
+  };
+
+  const updateNodePosition = (e: MouseEvent) => {
+    if (!dragNodeId) return;
+
+    const newNodes: LogicNode[] = nodes.map((n) => {
+      return { ...n };
+    });
+    newNodes.forEach((node, index) => {
+      if (node.id === dragNodeId) {
+        newNodes[index].x =
+          e.pageX / zoom -
+          dragOffset.offsetX / zoom -
+          panningOffset.offsetX / zoom;
+        newNodes[index].y =
+          e.pageY / zoom -
+          dragOffset.offsetY / zoom -
+          panningOffset.offsetY / zoom;
+      }
+    });
+
+    setNodes(newNodes);
+  };
+
   const addNodeToEditor = (node: LogicNode) => {
     setNodes(nodes.concat(node));
     hideContextMenu();
@@ -311,49 +329,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setNodes(newNodes);
   };
 
-  const showContextMenu = (e: MouseEvent) => {
-    setContextMenuOptions({
-      showContextMenu: true,
-      x: e.clientX,
-      y: e.clientY,
-    });
-  };
-
-  const showNodeContextMenu = (e: MouseEvent, func: () => void) => {
-    hideContextMenu();
-    setNodeContextMenuOptions({
-      showContextMenu: true,
-      x: e.clientX,
-      y: e.clientY,
-      delete: func,
-    });
-  };
-
-  const hideContextMenu = () => {
-    setContextMenuOptions({
-      ...contextMenuOptions,
-      showContextMenu: false,
-    });
-  };
-
-  const hideNodeContextMenu = () => {
-    setNodeContextMenuOptions({
-      ...nodeContextMenuOptions,
-      showContextMenu: false,
-    });
-  };
-
-  //Reorder node array so the currently selected Node will be darwn last
-  const reorderNode = (index: number) => {
-    const reorderedNodes = nodes.map((n) => {
-      return { ...n };
-    });
-    const activeNode = reorderedNodes[index];
-
-    reorderedNodes.splice(index, 1);
-    reorderedNodes.push(activeNode);
-    setNodes(reorderedNodes);
-  };
+  //functions to execute the graph logic
 
   //Execute the defined node tree based on an abstract mapping of the nodes and it's connections
   const execute = () => {
@@ -372,10 +348,52 @@ export const NodeEditor = (props: NodeEditorProps) => {
     proccesstNodes(logicNodes, connections, rootId);
   };
 
-  //Executes logiGrapg after each node or connection upgrade
+  //Executes logicGraph after each node or connection updates
   const doLiveUpdate = () => {
     if (props.liveUpdate) execute();
   };
+
+  // Other functions
+
+  //Create new store Object if this nodeEditor does not already exist
+  const createNewNodeEditor = () => {
+    const editor: NodeEditorStore = {
+      id: props.id,
+      rootNodePos: { x: 50, y: 50 },
+      nodes: [],
+      connections: [],
+    };
+    dispatch(addNodeEditor(editor));
+  };
+
+  const updateExtraData = (
+    nodeID: string,
+    input: boolean,
+    index: number,
+    data: any
+  ) => {
+    const copyNodes = nodes.map((node) => {
+      return {
+        ...node,
+        inputs: node.inputs.map((io) => {
+          return { ...io };
+        }),
+        outputs: node.outputs.map((io) => {
+          return { ...io };
+        }),
+      };
+    });
+
+    copyNodes.forEach((node, nodeIndex) => {
+      if (node.id !== nodeID) return;
+      if (input) copyNodes[nodeIndex].inputs[index].data = data;
+      else copyNodes[nodeIndex].outputs[index].data = data;
+    });
+
+    setNodes(copyNodes);
+  };
+
+  // -------------------------------------------------- Effects --------------------------------------------------
 
   useEffect(() => {
     if (!dragNodeId) doLiveUpdate();
@@ -396,7 +414,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     }
   });
 
-  //When nodes change (positions/add/delete/etc.) => update the storr nodes
+  //When nodes change (positions/add/delete/etc.) => update the store nodes
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
     nodes.forEach((n) => {
@@ -473,13 +491,13 @@ export const NodeEditor = (props: NodeEditorProps) => {
       </button>
       <ConnectionStage
         zoom={zoom}
-        setZoom={setZoom}
-        setConnections={setConnections}
-        nodeEditorOffset={nodeEditorOffset}
-        updateMousePath={updateMousePath}
-        panningOffset={panningOffset}
         connections={connections}
         conPosTable={conPosTable}
+        nodeEditorOffset={nodeEditorOffset}
+        panningOffset={panningOffset}
+        setZoom={setZoom}
+        setConnections={setConnections}
+        updateMousePath={updateMousePath}
         mousePath={mousePath}
         showEditorContexMenu={showContextMenu}
         hideNodeContextMenu={hideNodeContextMenu}

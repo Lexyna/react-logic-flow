@@ -41,7 +41,6 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
 
     setEditorDimensions({ width: width, height: height });
   };
-
   //Update background grid with nodeEditor width and height
   useEffect(() => {
     updateBackground();

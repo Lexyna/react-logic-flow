@@ -358,6 +358,13 @@ export const NodeEditor = (props: NodeEditorProps) => {
     nodes.forEach((n) => {
       if (n.id !== id) newNodes.push(n);
     });
+
+    const newConnections: Connection[] = [];
+    connections.forEach((con) => {
+      if (con.input.id !== id && con.output.id !== id) newConnections.push(con);
+    });
+
+    setConnections(newConnections);
     setNodes(newNodes);
   };
 

@@ -113,7 +113,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //Functions related to mouseEvents in the editor
 
-  const setDragging = (isPanning: boolean) => {
+  const setPanning = (isPanning: boolean) => {
     if (ref.current) {
       if (isPanning) ref.current.classList.add("NodeEditorDrag");
       else ref.current.classList.remove("NodeEditorDrag");
@@ -143,12 +143,12 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   const onMouseDownHandler = (e: MouseEvent) => {
-    if (e.button === 1) setDragging(true);
+    if (e.button === 1) setPanning(true);
   };
 
   const onMouseUpHandler = (e: MouseEvent) => {
     setDragNodeId(null);
-    setDragging(false);
+    setPanning(false);
   };
 
   const updateMousePath = (e: MouseEvent) => {

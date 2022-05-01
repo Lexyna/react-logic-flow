@@ -78,12 +78,11 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
   return (
     <div style={style} className="NodeContextMenuContainer">
       {props.show ? (
-        <div
-          ref={ref}
-          className="NodeContextMenu"
-          onKeyDown={(e) => onKeyDownHandler(e)}
-          tabIndex={0}>
-          <div className="NodeContextMenuItem searchBar">
+        <div>
+          <div
+            className="NodeContextMenuItem searchBar"
+            onKeyDown={(e) => onKeyDownHandler(e)}
+            tabIndex={0}>
             <header>Search</header>
             <input
               autoFocus
@@ -92,23 +91,25 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
               onChange={(e) => updateTextSearch(e.target.value)}
             />
           </div>
-          {nodes.map((node, index) => {
-            listId++;
-            return (
-              <div
-                className={
-                  selectedIndex === index
-                    ? "NodeContextMenuItem selectedItem"
-                    : "NodeContextMenuItem"
-                }
-                key={listId}
-                onClick={(e) => addLogicNode(e.clientX, e.clientY, node)}
-                onMouseEnter={() => setSelectedIndex(index)}>
-                <header>{node.name}</header>
-                <span>{node.description}</span>
-              </div>
-            );
-          })}
+          <div ref={ref} className="NodeContextMenu">
+            {nodes.map((node, index) => {
+              listId++;
+              return (
+                <div
+                  className={
+                    selectedIndex === index
+                      ? "NodeContextMenuItem selectedItem"
+                      : "NodeContextMenuItem"
+                  }
+                  key={listId}
+                  onClick={(e) => addLogicNode(e.clientX, e.clientY, node)}
+                  onMouseEnter={() => setSelectedIndex(index)}>
+                  <header>{node.name}</header>
+                  <span>{node.description}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : null}
     </div>

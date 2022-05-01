@@ -6,11 +6,11 @@
 .NodeContextMenu {
   display: block;
   width: auto;
-  min-width: 10rem;
+  min-width: 14rem;
   max-height: 20rem;
   background-color: rgba(63, 63, 63, .7);
   border: 1px solid gray;
-  border-radius: 1rem;
+  border-radius: 0rem 0rem 1rem 0rem;
   box-shadow: 0px 6px 14px #000000dd;
   position: absolute;
   overflow-y: auto;
@@ -19,12 +19,20 @@
 
 .searchBar{
   font-size:x-large;
+  background-color: rgba(63, 63, 63, 1);
+  width: 14rem;
+  border: 1px solid gray !important;
+  border-radius: 1rem 0rem 0rem 0rem;
+  padding-bottom: 0.3rem;
+}
+
+.ContextMenuNodes {
+  overflow-y: auto;
 }
 
 .NodeContextMenuItem {
   border-bottom: 1px solid gray;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
+  border-right: 1px solid gray;
   overflow-wrap: normal;
 }
 

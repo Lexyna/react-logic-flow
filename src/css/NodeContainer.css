@@ -59,7 +59,7 @@
 
 .NodeContainer>ul>li>span {
     padding-left: 1rem;
-    padding-right: 1rem;
+    padding-right: 0.3rem;
     color: black;
     font-family: 'Courier New', Courier, monospace;
 }
@@ -89,6 +89,6 @@
 }
 
 .NodeContainer>ul>li.Output {
-    text-align: right;
-    margin-right: 0.6rem;
+  text-align: right;
+  margin-right: 0.6rem;
 }

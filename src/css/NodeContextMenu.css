@@ -22,6 +22,10 @@
   overflow-wrap: normal;
 }
 
+.selectedItem {
+  background-color: blue !important;
+}
+
 .NodeContextMenuItem>header {
   color: black;
   text-align: left;

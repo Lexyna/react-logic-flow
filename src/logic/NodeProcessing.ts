@@ -134,8 +134,7 @@ export const executeNode = (
   if (abstractNode.loopCount > 2) cycleGraph = true;
 
   if (cycleGraph) {
-    window.alert("impossible constalation");
-    return;
+    throw new Error("Inavlid Graph configuration, graph cannot be cyclic!");
   }
 
   const nodeId: string = abstractNode.id;

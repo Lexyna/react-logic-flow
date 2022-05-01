@@ -1,12 +1,50 @@
+import { ReduxNode } from "../store/reducers/NodeEditorSlice";
+import { store } from "../store/stroe";
 import {
   AbstractInput,
   AbstractNode,
   AbstractOutput,
 } from "../types/NodeComputationalTypes";
 import { Connection } from "../types/NodeEditorTypes";
-import { LogicNode } from "../types/NodeTypes";
+import { LogicNode, ProtoNode } from "../types/NodeTypes";
+import { createLogicNodeArray } from "./Utils";
 
 let cycleGraph: boolean = false;
+
+export const executeNodeGraph = (
+  id: string,
+  config: ProtoNode[],
+  root: ProtoNode
+) => {
+  const state = store.getState();
+
+  if (!state.nodeEditors[id]) throw new Error("Id not found");
+
+  const editorState = state.nodeEditors[id];
+
+  const nodes: ReduxNode[] = editorState.nodes;
+  const connections: Connection[] = editorState.connections;
+
+  //check if the passed config is valid
+  nodes.forEach((node) => {
+    let isValid: boolean = false;
+    config.forEach((con) => {
+      if (node.configId === con.id) isValid = true;
+    });
+    if (!isValid) throw new Error("Invalid configuration provided");
+  });
+
+  const logicNode = createLogicNodeArray(config, nodes).concat({
+    ...root,
+    name: root.name + "(Root)",
+    id: id,
+    configId: root.id,
+    x: 0,
+    y: 0,
+  });
+
+  proccesstNodes(logicNode, connections, id);
+};
 
 export const proccesstNodes = (
   nodes: LogicNode[],
@@ -96,8 +134,7 @@ export const executeNode = (
   if (abstractNode.loopCount > 2) cycleGraph = true;
 
   if (cycleGraph) {
-    window.alert("impossible constalation");
-    return;
+    throw new Error("Inavlid Graph configuration, graph cannot be cyclic!");
   }
 
   const nodeId: string = abstractNode.id;

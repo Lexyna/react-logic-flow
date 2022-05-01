@@ -24,20 +24,12 @@ import {
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode, selectedNode } from "../types/NodeTypes";
+import { clientDimensions, DragOffset } from "../types/utilTypes";
 import { BackgroundGrid } from "./BackgroundGrid";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { NodeConnection } from "./NodeConnection";
 import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
-
-interface clientDimensions {
-  width: number;
-  height: number;
-}
-export interface DragOffset {
-  offsetX: number;
-  offsetY: number;
-}
 
 let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;

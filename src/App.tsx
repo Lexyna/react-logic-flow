@@ -191,7 +191,7 @@ const divNode: ProtoNode = {
     in2: ProtoIO<number, any>,
     out: ProtoIO<number, any>
   ) => {
-    out.value = in1.value * in2.value;
+    out.value = in1.value / in2.value;
     console.log("Div: " + out.value);
   },
 };

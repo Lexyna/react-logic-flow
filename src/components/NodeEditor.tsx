@@ -2,7 +2,7 @@ import { MouseEvent, useEffect, useRef, useState, WheelEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
-import { computeBezierCurve } from "../logic/Utils";
+import { computeBezierCurve, createLogicNodeArray } from "../logic/Utils";
 import {
   addNodeEditor,
   NodeEditorStore,
@@ -23,7 +23,7 @@ import {
   NodeContextMenuOptions,
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
-import { LogicNode, ProtoNode, selectedNode } from "../types/NodeTypes";
+import { LogicNode, selectedNode } from "../types/NodeTypes";
 import { clientDimensions, DragOffset } from "../types/utilTypes";
 import { BackgroundGrid } from "./BackgroundGrid";
 import { EditorContextMenu } from "./EditorContextMenu";
@@ -34,52 +34,8 @@ import { ReactEditorNode } from "./ReactEditorNode";
 let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
-const getProtoNodeById = (
-  protoNodes: ProtoNode[],
-  id: string
-): ProtoNode | null => {
-  for (let i = 0; i < protoNodes.length; i++)
-    if (protoNodes[i].id === id) return protoNodes[i];
-
-  return null;
-};
-
-const createLogicNodeArray = (
-  configNodes: ProtoNode[],
-  nodes: ReduxNode[]
-): LogicNode[] => {
-  const logicNodes: LogicNode[] = [];
-
-  nodes.forEach((node) => {
-    const configNode = getProtoNodeById(configNodes, node.configId);
-    if (!configNode) return;
-
-    //Create IOPorts
-    const inputs = configNode.inputs.map((io, index) => {
-      return { ...io, data: node.inputs[index] };
-    });
-
-    const outputs = configNode.outputs.map((io, index) => {
-      return { ...io, data: node.outputs[index] };
-    });
-
-    logicNodes.push({
-      id: node.nodeId,
-      configId: configNode.id,
-      name: configNode.name,
-      x: node.x,
-      y: node.y,
-      inputs: inputs,
-      outputs: outputs,
-      forward: configNode.forward,
-    });
-  });
-
-  return logicNodes;
-};
-
 export const NodeEditor = (props: NodeEditorProps) => {
-  const rootId = props.id; // main id for the indetification of this nodeEditor in the store
+  const rootId = props.id; // main id for the identification of this nodeEditor in the store
 
   const rootPos = useSelector(selectRootNodePos(rootId));
 

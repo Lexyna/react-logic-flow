@@ -59,15 +59,15 @@
 
 .NodeContainer>ul>li>span {
     padding-left: 1rem;
-    padding-right: 1rem;
+    padding-right: 0.3rem;
     color: black;
     font-family: 'Courier New', Courier, monospace;
 }
 
 .NodeContainer>ul>li>i {
     position: absolute;
-    width: .6rem;
-    height: .6rem;
+    width: .7rem;
+    height: .7rem;
     background-color: black;
     border-radius: 1rem;
     cursor: pointer;
@@ -78,15 +78,17 @@
 }
 
 .NodeContainer>ul>li.Input>i {
-    left: -.3rem;
+    left: -.2rem;
     top: .4rem;
 }
 
 .NodeContainer>ul>li.Output>i {
-    right: -.25rem;
-    top: 40%
+    right: -.3rem;
+    top: 30%;
+    margin-right: -0.6rem;
 }
 
 .NodeContainer>ul>li.Output {
-    text-align: right;
+  text-align: right;
+  margin-right: 0.6rem;
 }

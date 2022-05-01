@@ -1,8 +1,8 @@
-import { MouseEvent, useEffect, useRef, useState, WheelEvent } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
 import { proccesstNodes } from "../logic/NodeProcessing";
-import { computeBezierCurve } from "../logic/Utils";
+import { computeBezierCurve, createLogicNodeArray } from "../logic/Utils";
 import {
   addNodeEditor,
   NodeEditorStore,
@@ -16,78 +16,29 @@ import {
   updateRootNodePos,
 } from "../store/reducers/NodeEditorSlice";
 import {
+  ContextMenuOptions,
+  NodeContextMenuOptions,
+} from "../types/ContextMenuTypes";
+import {
   Connection,
   ConnectionPosition,
   ConnectionPosTable,
-  ContextMenuOptions,
-  NodeContextMenuOptions,
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
-import { LogicNode, ProtoNode, selectedNode } from "../types/NodeTypes";
-import { BackgroundGrid } from "./BackgroundGrid";
+import { LogicNode, selectedNode } from "../types/NodeTypes";
+import { DragOffset } from "../types/utilTypes";
+import { ConnectionStage } from "./ConnectionStage";
 import { EditorContextMenu } from "./EditorContextMenu";
-import { NodeConnection } from "./NodeConnection";
 import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
-
-interface clientDimensions {
-  width: number;
-  height: number;
-}
-export interface DragOffset {
-  offsetX: number;
-  offsetY: number;
-}
 
 let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
-const getProtoNodeById = (
-  protoNodes: ProtoNode[],
-  id: string
-): ProtoNode | null => {
-  for (let i = 0; i < protoNodes.length; i++)
-    if (protoNodes[i].id === id) return protoNodes[i];
-
-  return null;
-};
-
-const createLogicNodeArray = (
-  configNodes: ProtoNode[],
-  nodes: ReduxNode[]
-): LogicNode[] => {
-  const logicNodes: LogicNode[] = [];
-
-  nodes.forEach((node) => {
-    const configNode = getProtoNodeById(configNodes, node.configId);
-    if (!configNode) return;
-
-    //Create IOPorts
-    const inputs = configNode.inputs.map((io, index) => {
-      return { ...io, data: node.inputs[index] };
-    });
-
-    const outputs = configNode.outputs.map((io, index) => {
-      return { ...io, data: node.outputs[index] };
-    });
-
-    logicNodes.push({
-      id: node.nodeId,
-      configId: configNode.id,
-      name: configNode.name,
-      x: node.x,
-      y: node.y,
-      inputs: inputs,
-      outputs: outputs,
-      forward: configNode.forward,
-    });
-  });
-
-  return logicNodes;
-};
-
 export const NodeEditor = (props: NodeEditorProps) => {
-  const rootId = props.id; // main id for the indetification of this nodeEditor in the store
+  const rootId = props.id; // main id for the identification of this nodeEditor in the store
+
+  //-------------------------------------------------- Editor States --------------------------------------------------
 
   const rootPos = useSelector(selectRootNodePos(rootId));
 
@@ -115,7 +66,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     );
   };
 
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isPanning, setIsPanning] = useState<boolean>(false);
   const [panningOffset, setPanningOffset] = useState<DragOffset>({
     offsetX: 0,
     offsetY: 0,
@@ -124,13 +75,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
   //top left positon of the node editor relative to the screen
   const [nodeEditorOffset, setNodeEditorOffset] = useState({ x: 0, y: 0 });
 
-  const dispatch = useDispatch();
-
   //conPosTable is used to store a function referncing the x,y location of each ioPort. This way, we can serrialize the connection Objects in the store without having to worry about losing the information to draw the svg paths
   const [conPosTable, setConPosTable] = useState<ConnectionPosTable>({});
 
-  const [dragNodeId, setDragNodeId] = useState<string | null>(""); //Identify the node to be dragged
-  const [mousePath, setMousePath] = useState<string>(""); //stroke path for output to mouse bezier curve - if any
+  //Identify the node to be dragged
+  const [dragNodeId, setDragNodeId] = useState<string | null>("");
+
+  //stroke path from output to mouse; bezier curve - if any
+  const [previewPath, setPreviewPath] = useState<string>("");
 
   //Helper state to draw the contextMenu
   const [contextMenuOptions, setContextMenuOptions] =
@@ -140,6 +92,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       y: 0,
     });
 
+  //Helper state to draw node specific ContextMenu
   const [nodeContextMenuOptions, setNodeContextMenuOptions] =
     useState<NodeContextMenuOptions>({
       showContextMenu: false,
@@ -149,59 +102,26 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
 
   const [zoom, setZoom] = useState(1);
+
+  //Drag offset of the node the is being dragged
   const [dragOffset, setDragOffset] = useState<DragOffset>({
     offsetX: 0,
     offsetY: 0,
   });
 
-  //width and height of the NodeEditor. Needed to draw the background grid correctly
-  const [editorDimensions, setEditorDimensions] = useState<clientDimensions>({
-    width: 0,
-    height: 0,
-  });
+  const dispatch = useDispatch();
 
-  //Create new store Object if this nodeEditor does not already exist
-  const createNewNodeEditor = () => {
-    const editor: NodeEditorStore = {
-      id: props.id,
-      rootNodePos: { x: 50, y: 50 },
-      nodes: [],
-      connections: [],
-    };
-    dispatch(addNodeEditor(editor));
-  };
+  //-------------------------------------------------- Functions --------------------------------------------------
 
-  const setDragging = (isDragging: boolean) => {
+  //Functions related to mouseEvents in the editor
+
+  const setPanning = (isPanning: boolean) => {
     if (ref.current) {
-      if (isDragging) ref.current.classList.add("NodeEditorDrag");
+      if (isPanning) ref.current.classList.add("NodeEditorDrag");
       else ref.current.classList.remove("NodeEditorDrag");
     }
 
-    setIsDragging(isDragging);
-  };
-
-  //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
-  const updatedNodeIOPosition = (
-    nodeId: string,
-    id: string, //individual ioPort id => nodeID + [In|Out] + ioPort.index
-    updatedPos: ConnectionPosition
-  ) => {
-    if (conPosTable[nodeId]) if (conPosTable[nodeId][id]) return;
-
-    setConPosTable({
-      ...conPosTable,
-      [nodeId]: {
-        ...conPosTable[nodeId],
-        [id]: {
-          x: updatedPos.x,
-          y: updatedPos.y,
-        },
-      },
-    });
-  };
-
-  const onOutputClicked = (node: selectedNode) => {
-    selectedOutput = node;
+    setIsPanning(isPanning);
   };
 
   const selecteNodeToDrag = (id: string, x: number, y: number) => {
@@ -209,30 +129,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setDragOffset({ offsetX: x, offsetY: y });
   };
 
-  const updateNodePosition = (e: MouseEvent) => {
-    if (!dragNodeId) return;
-
-    const newNodes: LogicNode[] = nodes.map((n) => {
-      return { ...n };
-    });
-    newNodes.forEach((node, index) => {
-      if (node.id === dragNodeId) {
-        newNodes[index].x =
-          e.pageX / zoom -
-          dragOffset.offsetX / zoom -
-          panningOffset.offsetX / zoom;
-        newNodes[index].y =
-          e.pageY / zoom -
-          dragOffset.offsetY / zoom -
-          panningOffset.offsetY / zoom;
-      }
-    });
-
-    setNodes(newNodes);
-  };
-
   const updateEditorOffset = (e: MouseEvent) => {
-    if (!isDragging) return;
+    if (!isPanning) return;
 
     setPanningOffset({
       offsetX: panningOffset.offsetX + e.movementX,
@@ -242,29 +140,20 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const onMove = (e: MouseEvent) => {
     updateNodePosition(e);
-    updateMousePath(e);
+    updatePreviewConnectionPath(e);
     updateEditorOffset(e);
   };
 
   const onMouseDownHandler = (e: MouseEvent) => {
-    if (e.button === 1) setDragging(true);
+    if (e.button === 1) setPanning(true);
   };
 
   const onMouseUpHandler = (e: MouseEvent) => {
     setDragNodeId(null);
-    setDragging(false);
+    setPanning(false);
   };
 
-  const resetSelectedOutput = () => {
-    if (selectedOutput && isSelected) {
-      selectedOutput = null;
-      isSelected = false;
-      setMousePath("");
-    }
-    if (selectedOutput) isSelected = true;
-  };
-
-  const updateMousePath = (e: MouseEvent) => {
+  const updatePreviewConnectionPath = (e: MouseEvent) => {
     if (!selectedOutput) return;
     const x2 = e.clientX;
     const y2 = e.clientY;
@@ -277,36 +166,25 @@ export const NodeEditor = (props: NodeEditorProps) => {
       x2 / zoom - nodeEditorOffset.x,
       y2 / zoom - nodeEditorOffset.y
     );
-    setMousePath(str);
+    setPreviewPath(str);
   };
 
-  const updateExtraData = (
-    nodeID: string,
-    input: boolean,
-    index: number,
-    data: any
-  ) => {
-    const copyNodes = nodes.map((node) => {
-      return {
-        ...node,
-        inputs: node.inputs.map((io) => {
-          return { ...io };
-        }),
-        outputs: node.outputs.map((io) => {
-          return { ...io };
-        }),
-      };
-    });
+  //functions related to connections
 
-    copyNodes.forEach((node, nodeIndex) => {
-      if (node.id !== nodeID) return;
-      if (input) copyNodes[nodeIndex].inputs[index].data = data;
-      else copyNodes[nodeIndex].outputs[index].data = data;
-    });
-
-    setNodes(copyNodes);
+  const resetSelectedOutput = () => {
+    if (selectedOutput && isSelected) {
+      selectedOutput = null;
+      isSelected = false;
+      setPreviewPath("");
+    }
+    if (selectedOutput) isSelected = true;
   };
 
+  const onOutputClicked = (node: selectedNode) => {
+    selectedOutput = node;
+  };
+
+  //connect the selectdOutput node with the passed input node
   const onConnect = (node: selectedNode) => {
     const cons = connections.map((con) => {
       return { ...con };
@@ -336,15 +214,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setConnections(cons);
   };
 
-  const onRemoveConnecton = (index: number) => {
-    const cons = connections.map((con) => {
-      return { ...con };
-    });
-    cons.splice(index, 1);
-
-    setConnections(cons);
-  };
-
   //Right click on an output node, to remove all connected nodes
   const onRemoveAllConnections = (nodeId: string, index: number) => {
     const cons = connections.map((n) => {
@@ -354,6 +223,96 @@ export const NodeEditor = (props: NodeEditorProps) => {
       if (cons[i].output.id === nodeId && cons[i].output.index === index)
         cons.splice(i, 1);
     setConnections(cons);
+  };
+
+  //functions related to the context Menu
+
+  const showContextMenu = (e: MouseEvent) => {
+    setContextMenuOptions({
+      showContextMenu: true,
+      x: e.clientX,
+      y: e.clientY,
+    });
+  };
+
+  const hideContextMenu = () => {
+    setContextMenuOptions({
+      ...contextMenuOptions,
+      showContextMenu: false,
+    });
+  };
+
+  const showNodeContextMenu = (e: MouseEvent, func: () => void) => {
+    hideContextMenu();
+    setNodeContextMenuOptions({
+      showContextMenu: true,
+      x: e.clientX,
+      y: e.clientY,
+      delete: func,
+    });
+  };
+
+  const hideNodeContextMenu = () => {
+    setNodeContextMenuOptions({
+      ...nodeContextMenuOptions,
+      showContextMenu: false,
+    });
+  };
+
+  // Functions to handle nodes
+
+  //Reorder node array so the currently selected Node will be darwn last
+  const reorderNode = (index: number) => {
+    const reorderedNodes = nodes.map((n) => {
+      return { ...n };
+    });
+    const activeNode = reorderedNodes[index];
+
+    reorderedNodes.splice(index, 1);
+    reorderedNodes.push(activeNode);
+    setNodes(reorderedNodes);
+  };
+
+  //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
+  const updatedNodeIOPosition = (
+    nodeId: string,
+    id: string, //individual ioPort id => nodeID + [In|Out] + ioPort.index
+    updatedPos: ConnectionPosition
+  ) => {
+    if (conPosTable[nodeId]) if (conPosTable[nodeId][id]) return;
+
+    setConPosTable({
+      ...conPosTable,
+      [nodeId]: {
+        ...conPosTable[nodeId],
+        [id]: {
+          x: updatedPos.x,
+          y: updatedPos.y,
+        },
+      },
+    });
+  };
+
+  const updateNodePosition = (e: MouseEvent) => {
+    if (!dragNodeId) return;
+
+    const newNodes: LogicNode[] = nodes.map((n) => {
+      return { ...n };
+    });
+    newNodes.forEach((node, index) => {
+      if (node.id === dragNodeId) {
+        newNodes[index].x =
+          e.pageX / zoom -
+          dragOffset.offsetX / zoom -
+          panningOffset.offsetX / zoom;
+        newNodes[index].y =
+          e.pageY / zoom -
+          dragOffset.offsetY / zoom -
+          panningOffset.offsetY / zoom;
+      }
+    });
+
+    setNodes(newNodes);
   };
 
   const addNodeToEditor = (node: LogicNode) => {
@@ -379,49 +338,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setNodes(newNodes);
   };
 
-  const showContextMenu = (e: MouseEvent) => {
-    setContextMenuOptions({
-      showContextMenu: true,
-      x: e.clientX,
-      y: e.clientY,
-    });
-  };
-
-  const showNodeContextMenu = (e: MouseEvent, func: () => void) => {
-    hideContextMenu();
-    setNodeContextMenuOptions({
-      showContextMenu: true,
-      x: e.clientX,
-      y: e.clientY,
-      delete: func,
-    });
-  };
-
-  const hideContextMenu = () => {
-    setContextMenuOptions({
-      ...contextMenuOptions,
-      showContextMenu: false,
-    });
-  };
-
-  const hideNodeContextMenu = () => {
-    setNodeContextMenuOptions({
-      ...nodeContextMenuOptions,
-      showContextMenu: false,
-    });
-  };
-
-  //Reorder node array so the currently selected Node will be darwn last
-  const reorderNode = (index: number) => {
-    const reorderedNodes = nodes.map((n) => {
-      return { ...n };
-    });
-    const activeNode = reorderedNodes[index];
-
-    reorderedNodes.splice(index, 1);
-    reorderedNodes.push(activeNode);
-    setNodes(reorderedNodes);
-  };
+  //functions to execute the graph logic
 
   //Execute the defined node tree based on an abstract mapping of the nodes and it's connections
   const execute = () => {
@@ -440,31 +357,57 @@ export const NodeEditor = (props: NodeEditorProps) => {
     proccesstNodes(logicNodes, connections, rootId);
   };
 
-  //Executes logiGrapg after each node or connection upgrade
+  //Executes logicGraph after each node or connection updates
   const doLiveUpdate = () => {
     if (props.liveUpdate) execute();
   };
 
-  const updateBackground = () => {
-    if (!ref.current) return;
+  // Other functions
 
-    const width = ref.current.getBoundingClientRect().width;
-    const height = ref.current.getBoundingClientRect().height;
-
-    setEditorDimensions({ width: width, height: height });
+  //Create new store Object if this nodeEditor does not already exist
+  const createNewNodeEditor = () => {
+    const editor: NodeEditorStore = {
+      id: props.id,
+      rootNodePos: { x: 50, y: 50 },
+      nodes: [],
+      connections: [],
+    };
+    dispatch(addNodeEditor(editor));
   };
+
+  const updateExtraData = (
+    nodeID: string,
+    input: boolean,
+    index: number,
+    data: any
+  ) => {
+    const copyNodes = nodes.map((node) => {
+      return {
+        ...node,
+        inputs: node.inputs.map((io) => {
+          return { ...io };
+        }),
+        outputs: node.outputs.map((io) => {
+          return { ...io };
+        }),
+      };
+    });
+
+    copyNodes.forEach((node, nodeIndex) => {
+      if (node.id !== nodeID) return;
+      if (input) copyNodes[nodeIndex].inputs[index].data = data;
+      else copyNodes[nodeIndex].outputs[index].data = data;
+    });
+
+    setNodes(copyNodes);
+  };
+
+  // -------------------------------------------------- Effects --------------------------------------------------
 
   useEffect(() => {
     if (!dragNodeId) doLiveUpdate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections, nodes]);
-
-  //Update background grid with nodeEditor width and height
-  useEffect(() => {
-    updateBackground();
-
-    window.onresize = updateBackground;
-  }, [zoom]);
 
   //Update store if this node Editor is first created
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -480,7 +423,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     }
   });
 
-  //When nodes change (positions/add/delete/etc.) => update the storr nodes
+  //When nodes change (positions/add/delete/etc.) => update the store nodes
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
     nodes.forEach((n) => {
@@ -522,19 +465,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes]);
 
-  //update nodeEditor zoom
-  const zoomListener = (e: WheelEvent) => {
-    let newZoom = zoom;
-    if (e.deltaY > 0) newZoom += 0.05;
-    else newZoom -= 0.05;
-
-    if (newZoom < 0.3 || newZoom > 1.2) return;
-
-    setZoom(newZoom);
-    updateMousePath(e as MouseEvent);
-  };
-
-  let pathId: number = 0;
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -544,7 +474,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
       className="NodeEditor"
       onMouseUp={onMouseUpHandler}
       onMouseDown={onMouseDownHandler}
-      onClick={resetSelectedOutput}
+      onClick={() => {
+        resetSelectedOutput();
+        hideNodeContextMenu();
+        hideContextMenu();
+      }}
       onMouseMove={onMove}>
       <EditorContextMenu
         config={props.config}
@@ -564,69 +498,19 @@ export const NodeEditor = (props: NodeEditorProps) => {
       <button style={{ position: "absolute" }} onClick={execute}>
         proccess me
       </button>
-
-      <svg
-        className="NodeEditorSVG"
-        onClick={() => {
-          hideContextMenu();
-          hideNodeContextMenu();
-        }}
-        onWheel={zoomListener}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          hideNodeContextMenu();
-          showContextMenu(e);
-        }}>
-        <BackgroundGrid
-          width={editorDimensions.width}
-          height={editorDimensions.height}
-          offsetX={panningOffset.offsetX}
-          offsetY={panningOffset.offsetY}
-          zoom={zoom}
-        />
-        {connections.map((con, index) => {
-          const inId = con.input.id + "In" + con.input.index;
-          const outId = con.output.id + "Out" + con.output.index;
-
-          if (!conPosTable[con.input.id]) return null;
-          if (!conPosTable[con.output.id]) return null;
-
-          if (!conPosTable[con.input.id][inId]) return null;
-          if (!conPosTable[con.output.id][outId]) return null;
-
-          const str = computeBezierCurve(
-            conPosTable[con.output.id][outId].x() / zoom -
-              nodeEditorOffset.x / zoom,
-            conPosTable[con.output.id][outId].y() / zoom -
-              nodeEditorOffset.y / zoom,
-            conPosTable[con.input.id][inId].x() / zoom -
-              nodeEditorOffset.x / zoom,
-            conPosTable[con.input.id][inId].y() / zoom -
-              nodeEditorOffset.y / zoom
-          );
-          pathId++;
-          return (
-            <NodeConnection
-              key={pathId}
-              index={index}
-              color={con.output.color}
-              zoom={zoom}
-              d={str}
-              removeConnection={onRemoveConnecton}
-            />
-          );
-        })}
-        <svg>
-          <path
-            style={{ transform: `scale(${zoom})` }}
-            fill="none"
-            stroke="gray"
-            strokeWidth={2}
-            strokeDasharray="20,5,5,10,5,5"
-            d={mousePath}
-          />
-        </svg>
-      </svg>
+      <ConnectionStage
+        zoom={zoom}
+        connections={connections}
+        conPosTable={conPosTable}
+        nodeEditorOffset={nodeEditorOffset}
+        panningOffset={panningOffset}
+        setZoom={setZoom}
+        setConnections={setConnections}
+        updatePreviewConnectionPath={updatePreviewConnectionPath}
+        mousePath={previewPath}
+        showEditorContexMenu={showContextMenu}
+        hideNodeContextMenu={hideNodeContextMenu}
+      />
       {nodes.map((node: LogicNode, index: number) => {
         return (
           <ReactEditorNode

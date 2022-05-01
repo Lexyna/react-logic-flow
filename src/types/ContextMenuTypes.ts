@@ -1,5 +1,5 @@
-import { DragOffset } from "../components/NodeEditor";
 import { LogicNode, ProtoNode } from "./NodeTypes";
+import { DragOffset } from "./utilTypes";
 
 export interface EditorContextMenuProps {
   config: ProtoNode[];
@@ -13,6 +13,19 @@ export interface EditorContextMenuProps {
 
 export interface NodeContextMenuProps {
   show: boolean;
+  x: number;
+  y: number;
+  delete: () => void;
+}
+
+export interface ContextMenuOptions {
+  showContextMenu: boolean;
+  x: number;
+  y: number;
+}
+
+export interface NodeContextMenuOptions {
+  showContextMenu: boolean;
   x: number;
   y: number;
   delete: () => void;

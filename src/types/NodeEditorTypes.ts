@@ -28,16 +28,3 @@ export interface NodeEditorProps {
   root: ProtoNode;
   liveUpdate: boolean;
 }
-
-export interface ContextMenuOptions {
-  showContextMenu: boolean;
-  x: number;
-  y: number;
-}
-
-export interface NodeContextMenuOptions {
-  showContextMenu: boolean;
-  x: number;
-  y: number;
-  delete: () => void;
-}

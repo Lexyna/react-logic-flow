@@ -232,11 +232,11 @@ function App() {
   return (
     <div
       style={{
-        height: "100vh",
-        width: "100%",
+        height: "400px",
+        width: "600px",
         position: "absolute",
-        left: "0px",
-        top: "0px",
+        left: "100px",
+        top: "100px",
       }}>
       <NodeEditor
         id={"#myInitialID"}

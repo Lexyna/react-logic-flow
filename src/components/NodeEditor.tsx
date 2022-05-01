@@ -208,9 +208,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
     newNodes.forEach((node, index) => {
       if (node.id === dragNodeId) {
         newNodes[index].x =
-          e.pageX / zoom - dragOffset.offsetX - panningOffset.offsetX;
+          e.pageX / zoom - dragOffset.offsetX / zoom - panningOffset.offsetX;
         newNodes[index].y =
-          e.pageY / zoom - dragOffset.offsetY - panningOffset.offsetY;
+          e.pageY / zoom - dragOffset.offsetY / zoom - panningOffset.offsetY;
       }
     });
 
@@ -252,16 +252,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const updateMousePath = (e: MouseEvent) => {
     if (!selectedOutput) return;
-    const x2 = e.clientX / zoom;
-    const y2 = e.clientY / zoom;
+    const x2 = e.clientX;
+    const y2 = e.clientY;
 
     const outId = selectedOutput.id + "Out" + selectedOutput.index;
 
     const str = computeBezierCurve(
-      conPosTable[selectedOutput.id][outId].x() - nodeEditorOffset.x,
-      conPosTable[selectedOutput.id][outId].y() - nodeEditorOffset.y,
-      x2 - nodeEditorOffset.x,
-      y2 - nodeEditorOffset.y
+      conPosTable[selectedOutput.id][outId].x() / zoom - nodeEditorOffset.x,
+      conPosTable[selectedOutput.id][outId].y() / zoom - nodeEditorOffset.y,
+      x2 / zoom - nodeEditorOffset.x,
+      y2 / zoom - nodeEditorOffset.y
     );
     setMousePath(str);
   };
@@ -479,7 +479,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (e.deltaY > 0) newZoom += 0.05;
     else newZoom -= 0.05;
 
-    if (newZoom < 0.2 || newZoom > 1.2) return;
+    if (newZoom < 0.3 || newZoom > 1.2) return;
 
     setZoom(newZoom);
     updateMousePath(e as MouseEvent);
@@ -492,7 +492,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     <div
       ref={ref}
       id={props.id}
-      //style={{ transform: `scale(${zoom})` }}
       className="NodeEditor"
       onMouseUp={onMouseUpHandler}
       onMouseDown={onMouseDownHandler}
@@ -524,7 +523,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
           height={editorDimensions.height}
           offsetX={panningOffset.offsetX}
           offsetY={panningOffset.offsetY}
-          zoom={1}
+          zoom={zoom}
         />
         {connections.map((con, index) => {
           const inId = con.input.id + "In" + con.input.index;
@@ -537,10 +536,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
           if (!conPosTable[con.output.id][outId]) return null;
 
           const str = computeBezierCurve(
-            conPosTable[con.output.id][outId].x() - nodeEditorOffset.x,
-            conPosTable[con.output.id][outId].y() - nodeEditorOffset.y,
-            conPosTable[con.input.id][inId].x() - nodeEditorOffset.x,
-            conPosTable[con.input.id][inId].y() - nodeEditorOffset.y
+            conPosTable[con.output.id][outId].x() / zoom -
+              nodeEditorOffset.x / zoom,
+            conPosTable[con.output.id][outId].y() / zoom -
+              nodeEditorOffset.y / zoom,
+            conPosTable[con.input.id][inId].x() / zoom -
+              nodeEditorOffset.x / zoom,
+            conPosTable[con.input.id][inId].y() / zoom -
+              nodeEditorOffset.y / zoom
           );
           pathId++;
           return (
@@ -548,6 +551,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
               key={pathId}
               index={index}
               color={con.output.color}
+              zoom={zoom}
               d={str}
               removeConnection={onRemoveConnecton}
             />
@@ -555,6 +559,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         })}
         <svg>
           <path
+            style={{ transform: `scale(${zoom})` }}
             fill="none"
             stroke="gray"
             strokeWidth={2}
@@ -567,8 +572,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
         return (
           <ReactEditorNode
             index={index}
-            x={node.x + panningOffset.offsetX}
-            y={node.y + panningOffset.offsetY}
+            x={node.x * zoom + panningOffset.offsetX}
+            y={node.y * zoom + panningOffset.offsetY}
             editorOffset={nodeEditorOffset}
             zoom={zoom}
             name={node.name}

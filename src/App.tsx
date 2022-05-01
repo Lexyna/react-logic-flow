@@ -232,7 +232,14 @@ function App() {
   const [show, setShow] = useState<boolean>(true);
 
   return (
-    <div style={{ height: "100vh" }}>
+    <div
+      style={{
+        height: "500px",
+        width: "800px",
+        position: "absolute",
+        left: "0px",
+        top: "0px",
+      }}>
       <NodeEditor
         id={"#myInitialID"}
         config={config}

@@ -10,7 +10,6 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
   const style = {
     top: `${props.y}px`,
     left: `${props.x}px`,
-    zoom: `${1 / props.zoom}`,
   };
 
   const addLogicNode = (e: MouseEvent, protoNode: ProtoNode) => {
@@ -18,8 +17,8 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
       id: nanoid(),
       configId: protoNode.id,
       name: protoNode.name,
-      x: e.clientX - props.panning.offsetX,
-      y: e.clientY - props.panning.offsetY,
+      x: e.clientX / props.zoom - props.panning.offsetX,
+      y: e.clientY / props.zoom - props.panning.offsetY,
       inputs: protoNode.inputs,
       outputs: protoNode.outputs,
       forward: protoNode.forward,

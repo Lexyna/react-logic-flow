@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { NodeEditor } from "./components/NodeEditor";
 import { ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
@@ -229,8 +229,6 @@ const root: ProtoNode = {
 };
 
 function App() {
-  const [show, setShow] = useState<boolean>(true);
-
   return (
     <div
       style={{

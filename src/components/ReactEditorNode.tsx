@@ -1,18 +1,9 @@
-import { MouseEvent, useState } from "react";
-import { ContextMenuOptions } from "../types/NodeEditorTypes";
+import { MouseEvent } from "react";
 import { NodeProps } from "../types/NodeTypes";
 import "./../css/NodeContainer.css";
-import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactNodeIO } from "./NodeIO";
 
 export const ReactEditorNode = (props: NodeProps) => {
-  const [contextMenuOptions, setContextMenuOptions] =
-    useState<ContextMenuOptions>({
-      showContextMenu: false,
-      x: 0,
-      y: 0,
-    });
-
   const style = {
     top: props.y - props.editorOffset.y + "px",
     left: props.x - props.editorOffset.x + "px",
@@ -30,51 +21,30 @@ export const ReactEditorNode = (props: NodeProps) => {
 
   const deleteNode = () => {
     props.deleteNode(props.id);
-    hideContextMenu();
-  };
-
-  const showContextMenu = (e: MouseEvent) => {
-    setContextMenuOptions({
-      showContextMenu: true,
-      x: e.clientX,
-      y: e.clientY,
-    });
-  };
-
-  const hideContextMenu = () => {
-    setContextMenuOptions({
-      ...contextMenuOptions,
-      showContextMenu: false,
-    });
   };
 
   let ioKey: number = 0;
 
   return (
     <div>
-      <NodeContextMenu
-        show={contextMenuOptions.showContextMenu}
-        x={contextMenuOptions.x}
-        y={contextMenuOptions.y}
-        delete={deleteNode}
-      />
       <div
         className="NodeContainer"
         style={style}
         onContextMenu={(e) => {
           e.preventDefault();
-          showContextMenu(e);
+          props.showContextMenu(e, deleteNode);
         }}
-        onClick={hideContextMenu}>
+        onClick={props.hideContextMenu}>
         <header
           onMouseDown={(e: MouseEvent) => {
             e.preventDefault();
+            props.hideContextMenu();
             onDrag(e);
           }}>
           {props.name}
         </header>
         <ul>
-          {/* IO Ports will never change => the can have a generic id */}
+          {/* IO Ports will never change => they can have a generic id */}
           {props.inputs.map((io, index) => {
             ioKey++;
             return (

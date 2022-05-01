@@ -20,12 +20,14 @@ import {
   ConnectionPosition,
   ConnectionPosTable,
   ContextMenuOptions,
+  NodeContextMenuOptions,
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode, selectedNode } from "../types/NodeTypes";
 import { BackgroundGrid } from "./BackgroundGrid";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { NodeConnection } from "./NodeConnection";
+import { NodeContextMenu } from "./NodeContextMenu";
 import { ReactEditorNode } from "./ReactEditorNode";
 
 interface clientDimensions {
@@ -136,6 +138,14 @@ export const NodeEditor = (props: NodeEditorProps) => {
       showContextMenu: false,
       x: 0,
       y: 0,
+    });
+
+  const [nodeContextMenuOptions, setNodeContextMenuOptions] =
+    useState<NodeContextMenuOptions>({
+      showContextMenu: false,
+      x: 0,
+      y: 0,
+      delete: () => {},
     });
 
   const [zoom, setZoom] = useState(1);
@@ -364,6 +374,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       if (con.input.id !== id && con.output.id !== id) newConnections.push(con);
     });
 
+    hideNodeContextMenu();
     setConnections(newConnections);
     setNodes(newNodes);
   };
@@ -376,9 +387,26 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
   };
 
+  const showNodeContextMenu = (e: MouseEvent, func: () => void) => {
+    hideContextMenu();
+    setNodeContextMenuOptions({
+      showContextMenu: true,
+      x: e.clientX,
+      y: e.clientY,
+      delete: func,
+    });
+  };
+
   const hideContextMenu = () => {
     setContextMenuOptions({
       ...contextMenuOptions,
+      showContextMenu: false,
+    });
+  };
+
+  const hideNodeContextMenu = () => {
+    setNodeContextMenuOptions({
+      ...nodeContextMenuOptions,
       showContextMenu: false,
     });
   };
@@ -527,16 +555,26 @@ export const NodeEditor = (props: NodeEditorProps) => {
         zoom={zoom}
         addNode={addNodeToEditor}
       />
+      <NodeContextMenu
+        show={nodeContextMenuOptions.showContextMenu}
+        x={nodeContextMenuOptions.x}
+        y={nodeContextMenuOptions.y}
+        delete={nodeContextMenuOptions.delete}
+      />
       <button style={{ position: "absolute" }} onClick={execute}>
         proccess me
       </button>
 
       <svg
         className="NodeEditorSVG"
-        onClick={hideContextMenu}
+        onClick={() => {
+          hideContextMenu();
+          hideNodeContextMenu();
+        }}
         onWheel={zoomListener}
         onContextMenu={(e) => {
           e.preventDefault();
+          hideNodeContextMenu();
           showContextMenu(e);
         }}>
         <BackgroundGrid
@@ -601,6 +639,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
             inputs={node.inputs}
             outputs={node.outputs}
             dragHandler={selecteNodeToDrag}
+            showContextMenu={showNodeContextMenu}
+            hideContextMenu={hideNodeContextMenu}
             deleteNode={deleteNodeFromEditor}
             reorderNode={reorderNode}
             onInputClicked={onConnect}

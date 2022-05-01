@@ -10,7 +10,6 @@ export const NodeContextMenu = (props: ContextMenuProps) => {
   const style = {
     top: `${props.y}px`,
     left: `${props.x}px`,
-    zoom: `${1 / props.zoom}`,
   };
 
   const addLogicNode = (e: MouseEvent, protoNode: ProtoNode) => {

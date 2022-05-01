@@ -11,7 +11,7 @@ export interface ConnectionStageProps {
   mousePath: string;
   setZoom: (zoom: number) => void;
   setConnections: (cons: Connection[]) => void;
-  updateMousePath: (e: MouseEvent) => void;
+  updatePreviewConnectionPath: (e: MouseEvent) => void;
   showEditorContexMenu: (e: MouseEvent) => void;
   hideNodeContextMenu: () => void;
 }

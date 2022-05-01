@@ -21,7 +21,7 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
     if (newZoom < 0.3 || newZoom > 1.2) return;
 
     props.setZoom(newZoom);
-    props.updateMousePath(e as MouseEvent);
+    props.updatePreviewConnectionPath(e as MouseEvent);
   };
 
   const onRemoveConnecton = (index: number) => {
@@ -41,6 +41,7 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
 
     setEditorDimensions({ width: width, height: height });
   };
+
   //Update background grid with nodeEditor width and height
   useEffect(() => {
     updateBackground();

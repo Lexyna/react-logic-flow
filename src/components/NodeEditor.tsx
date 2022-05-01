@@ -138,7 +138,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const onMove = (e: MouseEvent) => {
     updateNodePosition(e);
-    updateMousePath(e);
+    updatePreviewConnectionPath(e);
     updateEditorOffset(e);
   };
 
@@ -151,7 +151,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setPanning(false);
   };
 
-  const updateMousePath = (e: MouseEvent) => {
+  const updatePreviewConnectionPath = (e: MouseEvent) => {
     if (!selectedOutput) return;
     const x2 = e.clientX;
     const y2 = e.clientY;
@@ -503,7 +503,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
         panningOffset={panningOffset}
         setZoom={setZoom}
         setConnections={setConnections}
-        updateMousePath={updateMousePath}
+        updatePreviewConnectionPath={updatePreviewConnectionPath}
         mousePath={mousePath}
         showEditorContexMenu={showContextMenu}
         hideNodeContextMenu={hideNodeContextMenu}

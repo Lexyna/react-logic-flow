@@ -234,8 +234,8 @@ function App() {
   return (
     <div
       style={{
-        height: "500px",
-        width: "800px",
+        height: "100vh",
+        width: "100%",
         position: "absolute",
         left: "0px",
         top: "0px",

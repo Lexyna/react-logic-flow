@@ -66,8 +66,8 @@
 
 .NodeContainer>ul>li>i {
     position: absolute;
-    width: .7rem;
-    height: .7rem;
+    width: .65rem;
+    height: .65rem;
     background-color: black;
     border-radius: 1rem;
     cursor: pointer;

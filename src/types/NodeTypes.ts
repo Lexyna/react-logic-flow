@@ -1,3 +1,4 @@
+import { MouseEvent } from "react";
 import { ProtoIO } from "./IOTypes";
 import { ConnectionPosition } from "./NodeEditorTypes";
 
@@ -21,6 +22,9 @@ export interface NodeProps {
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
   dragHandler: (id: string, x: number, y: number) => void | null;
+  showContextMenu: (e: MouseEvent, func: () => void) => void;
+  hideContextMenu: () => void;
+  deleteNode: (id: string) => void;
   reorderNode: (index: number) => void;
   onInputClicked: (node: selectedNode) => void;
   onOutputClicked: (node: selectedNode) => void;

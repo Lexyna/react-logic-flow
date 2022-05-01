@@ -34,3 +34,10 @@ export interface ContextMenuOptions {
   x: number;
   y: number;
 }
+
+export interface NodeContextMenuOptions {
+  showContextMenu: boolean;
+  x: number;
+  y: number;
+  delete: () => void;
+}

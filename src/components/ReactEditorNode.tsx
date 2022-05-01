@@ -19,62 +19,76 @@ export const ReactEditorNode = (props: NodeProps) => {
     props.reorderNode(props.index);
   };
 
+  const deleteNode = () => {
+    props.deleteNode(props.id);
+  };
+
   let ioKey: number = 0;
 
   return (
-    <div className="NodeContainer" style={style}>
-      <header
-        onMouseDown={(e: MouseEvent) => {
+    <div>
+      <div
+        className="NodeContainer"
+        style={style}
+        onContextMenu={(e) => {
           e.preventDefault();
-          onDrag(e);
-        }}>
-        {props.name}
-      </header>
-      <ul>
-        {/* IO Ports will never change => the can have a generic id */}
-        {props.inputs.map((io, index) => {
-          ioKey++;
-          return (
-            <ReactNodeIO
-              key={ioKey}
-              nodeId={props.id}
-              isInput={true}
-              index={index}
-              type={io.type}
-              value={io.value}
-              color={io.color}
-              label={io.name}
-              extra={io.extra}
-              data={io.data}
-              onClick={props.onInputClicked}
-              onRightClick={null}
-              updateData={props.updateExtraData}
-              updateIOPosition={props.updateIOPosition}
-            />
-          );
-        })}
-        {props.outputs.map((io, index) => {
-          ioKey++;
-          return (
-            <ReactNodeIO
-              key={ioKey}
-              nodeId={props.id}
-              isInput={false}
-              index={index}
-              type={io.type}
-              value={io.value}
-              color={io.color}
-              label={io.name}
-              extra={io.extra}
-              data={io.data}
-              onClick={props.onOutputClicked}
-              onRightClick={props.onOutputRightClikced}
-              updateData={props.updateExtraData}
-              updateIOPosition={props.updateIOPosition}
-            />
-          );
-        })}
-      </ul>
+          props.showContextMenu(e, deleteNode);
+        }}
+        onClick={props.hideContextMenu}>
+        <header
+          onMouseDown={(e: MouseEvent) => {
+            e.preventDefault();
+            props.hideContextMenu();
+            onDrag(e);
+          }}>
+          {props.name}
+        </header>
+        <ul>
+          {/* IO Ports will never change => they can have a generic id */}
+          {props.inputs.map((io, index) => {
+            ioKey++;
+            return (
+              <ReactNodeIO
+                key={ioKey}
+                nodeId={props.id}
+                isInput={true}
+                index={index}
+                type={io.type}
+                value={io.value}
+                color={io.color}
+                label={io.name}
+                extra={io.extra}
+                data={io.data}
+                onClick={props.onInputClicked}
+                onRightClick={null}
+                updateData={props.updateExtraData}
+                updateIOPosition={props.updateIOPosition}
+              />
+            );
+          })}
+          {props.outputs.map((io, index) => {
+            ioKey++;
+            return (
+              <ReactNodeIO
+                key={ioKey}
+                nodeId={props.id}
+                isInput={false}
+                index={index}
+                type={io.type}
+                value={io.value}
+                color={io.color}
+                label={io.name}
+                extra={io.extra}
+                data={io.data}
+                onClick={props.onOutputClicked}
+                onRightClick={props.onOutputRightClikced}
+                updateData={props.updateExtraData}
+                updateIOPosition={props.updateIOPosition}
+              />
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 };

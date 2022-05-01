@@ -16,11 +16,13 @@ import {
   updateRootNodePos,
 } from "../store/reducers/NodeEditorSlice";
 import {
+  ContextMenuOptions,
+  NodeContextMenuOptions,
+} from "../types/ContextMenuTypes";
+import {
   Connection,
   ConnectionPosition,
   ConnectionPosTable,
-  ContextMenuOptions,
-  NodeContextMenuOptions,
   NodeEditorProps,
 } from "../types/NodeEditorTypes";
 import { LogicNode, selectedNode } from "../types/NodeTypes";

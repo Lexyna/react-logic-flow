@@ -64,7 +64,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     );
   };
 
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isPanning, setIsPanning] = useState<boolean>(false);
   const [panningOffset, setPanningOffset] = useState<DragOffset>({
     offsetX: 0,
     offsetY: 0,
@@ -76,8 +76,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
   //conPosTable is used to store a function referncing the x,y location of each ioPort. This way, we can serrialize the connection Objects in the store without having to worry about losing the information to draw the svg paths
   const [conPosTable, setConPosTable] = useState<ConnectionPosTable>({});
 
-  const [dragNodeId, setDragNodeId] = useState<string | null>(""); //Identify the node to be dragged
-  const [mousePath, setMousePath] = useState<string>(""); //stroke path for output to mouse bezier curve - if any
+  //Identify the node to be dragged
+  const [dragNodeId, setDragNodeId] = useState<string | null>("");
+
+  //stroke path from output to mouse; bezier curve - if any
+  const [mousePath, setMousePath] = useState<string>("");
 
   //Helper state to draw the contextMenu
   const [contextMenuOptions, setContextMenuOptions] =
@@ -87,6 +90,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       y: 0,
     });
 
+  //Helper state to draw node specific ContextMenu
   const [nodeContextMenuOptions, setNodeContextMenuOptions] =
     useState<NodeContextMenuOptions>({
       showContextMenu: false,
@@ -96,6 +100,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
 
   const [zoom, setZoom] = useState(1);
+
+  //Drag offset of the node the is being dragged
   const [dragOffset, setDragOffset] = useState<DragOffset>({
     offsetX: 0,
     offsetY: 0,
@@ -107,13 +113,13 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //Functions related to mouseEvents in the editor
 
-  const setDragging = (isDragging: boolean) => {
+  const setDragging = (isPanning: boolean) => {
     if (ref.current) {
-      if (isDragging) ref.current.classList.add("NodeEditorDrag");
+      if (isPanning) ref.current.classList.add("NodeEditorDrag");
       else ref.current.classList.remove("NodeEditorDrag");
     }
 
-    setIsDragging(isDragging);
+    setIsPanning(isPanning);
   };
 
   const selecteNodeToDrag = (id: string, x: number, y: number) => {
@@ -122,7 +128,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   const updateEditorOffset = (e: MouseEvent) => {
-    if (!isDragging) return;
+    if (!isPanning) return;
 
     setPanningOffset({
       offsetX: panningOffset.offsetX + e.movementX,

@@ -474,11 +474,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
         hideNodeContextMenu();
         hideContextMenu();
       }}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        hideNodeContextMenu();
-        showContextMenu(e);
-      }}
       onMouseMove={onMove}>
       <EditorContextMenu
         config={props.config}
@@ -509,6 +504,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
         connections={connections}
         conPosTable={conPosTable}
         mousePath={mousePath}
+        showEditorContexMenu={showContextMenu}
+        hideNodeContextMenu={hideNodeContextMenu}
       />
 
       {nodes.map((node: LogicNode, index: number) => {

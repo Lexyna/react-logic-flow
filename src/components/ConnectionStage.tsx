@@ -31,15 +31,11 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
   return (
     <svg
       className="NodeEditorSVG"
-      onClick={() => {
-        //hideContextMenu();
-        //hideNodeContextMenu();
-      }}
       onWheel={zoomListener}
       onContextMenu={(e) => {
         e.preventDefault();
-        //hideNodeContextMenu();
-        //showContextMenu(e);
+        props.hideNodeContextMenu();
+        props.showEditorContexMenu(e);
       }}>
       <BackgroundGrid
         width={props.editorDimensions.width}

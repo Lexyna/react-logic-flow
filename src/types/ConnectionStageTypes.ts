@@ -13,4 +13,6 @@ export interface ConnectionStageProps {
   connections: Connection[];
   conPosTable: ConnectionPosTable;
   mousePath: string;
+  showEditorContexMenu: (e: MouseEvent) => void;
+  hideNodeContextMenu: () => void;
 }

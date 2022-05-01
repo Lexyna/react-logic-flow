@@ -351,6 +351,16 @@ export const NodeEditor = (props: NodeEditorProps) => {
     hideContextMenu();
   };
 
+  const deleteNodeFromEditor = (id: string) => {
+    if (id === rootId) return;
+
+    const newNodes: LogicNode[] = [];
+    nodes.forEach((n) => {
+      if (n.id !== id) newNodes.push(n);
+    });
+    setNodes(newNodes);
+  };
+
   const showContextMenu = (e: MouseEvent) => {
     setContextMenuOptions({
       showContextMenu: true,
@@ -584,6 +594,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
             inputs={node.inputs}
             outputs={node.outputs}
             dragHandler={selecteNodeToDrag}
+            deleteNode={deleteNodeFromEditor}
             reorderNode={reorderNode}
             onInputClicked={onConnect}
             onOutputClicked={onOutputClicked}

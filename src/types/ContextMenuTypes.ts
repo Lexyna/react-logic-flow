@@ -15,4 +15,5 @@ export interface NodeContextMenuProps {
   show: boolean;
   x: number;
   y: number;
+  delete: () => void;
 }

@@ -76,7 +76,7 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
-    <div style={style} className="NodeContextMenuContainer">
+    <div style={style} className="ContextMenuContainer">
       {props.show ? (
         <div>
           <div
@@ -91,7 +91,7 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
               onChange={(e) => updateTextSearch(e.target.value)}
             />
           </div>
-          <div ref={ref} className="NodeContextMenu">
+          <div ref={ref} className="EditorContextMenu">
             {nodes.map((node, index) => {
               listId++;
               return (

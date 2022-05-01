@@ -1,6 +1,6 @@
 .NodeConnection {
   stroke-dasharray: 15, 5, 5, 10, 5, 5;
-  animation: connectionAnimation 30s linear infinite; 
+  animation: connectionAnimation 50s linear infinite; 
 }
 
 @keyframes connectionAnimation {

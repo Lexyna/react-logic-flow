@@ -39,15 +39,24 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
     const width = ref.current.getBoundingClientRect().width;
     const height = ref.current.getBoundingClientRect().height;
 
-    setEditorDimensions({ width: width, height: height });
+    setEditorDimensions((dim) => {
+      if (dim.width === width && dim.height === height) return dim;
+      return {
+        width: width,
+        height: height,
+      };
+    });
   };
 
-  //Update background grid with nodeEditor width and height
+  //Update background grid with nodeEditor width and height after each change to the editor
   useEffect(() => {
     updateBackground();
+  });
 
+  //setup eventListeners to update bg Grid when componene size changes
+  useEffect(() => {
     window.onresize = updateBackground;
-  }, [props.zoom]);
+  }, []);
 
   let pathId: number = 0;
 

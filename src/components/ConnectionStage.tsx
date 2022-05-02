@@ -68,6 +68,7 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
         height={editorDimensions.height}
         offsetX={props.panningOffset.offsetX}
         offsetY={props.panningOffset.offsetY}
+        editorOffset={props.nodeEditorOffset}
         zoom={props.zoom}
       />
       {props.connections.map((con, index) => {

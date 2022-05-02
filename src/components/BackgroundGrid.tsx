@@ -21,21 +21,24 @@ export const BackgroundGrid = (props: GridProps) => {
   const defaultLines: line[] = [];
   const boldLines: line[] = [];
 
-  for (let i = -gridPadding; i < lineWidth; i += gridPadding) {
+  const editorOffsetX = props.editorOffset.x;
+  const editorOffsetY = props.editorOffset.y;
+
+  for (let i = -gridPadding; i < lineWidth + editorOffsetX; i += gridPadding) {
     boldLine++;
 
     defaultLines.push({
-      startX: i + (props.offsetX % gridPadding),
+      startX: i + (props.offsetX % gridPadding) - editorOffsetX,
       startY: 0,
-      endX: i + (props.offsetX % gridPadding),
+      endX: i + (props.offsetX % gridPadding) - editorOffsetX,
       endY: lineHeight,
       color: defaultColor,
     });
     if (boldLine % 8 === 0)
       boldLines.push({
-        startX: i + (props.offsetX % (8 * gridPadding)),
+        startX: i + (props.offsetX % (8 * gridPadding)) - editorOffsetX,
         startY: 0,
-        endX: i + (props.offsetX % (8 * gridPadding)),
+        endX: i + (props.offsetX % (8 * gridPadding)) - editorOffsetX,
         endY: lineHeight,
         color: boldColor,
       });
@@ -43,22 +46,22 @@ export const BackgroundGrid = (props: GridProps) => {
 
   boldLine = 7;
 
-  for (let i = -gridPadding; i < lineHeight; i += gridPadding) {
+  for (let i = -gridPadding; i < lineHeight + editorOffsetY; i += gridPadding) {
     boldLine++;
 
     defaultLines.push({
       startX: 0,
-      startY: i + (props.offsetY % gridPadding),
+      startY: i + (props.offsetY % gridPadding) - editorOffsetY,
       endX: lineWidth,
-      endY: i + (props.offsetY % gridPadding),
+      endY: i + (props.offsetY % gridPadding) - editorOffsetY,
       color: defaultColor,
     });
     if (boldLine % 8 === 0)
       boldLines.push({
         startX: 0,
-        startY: i + (props.offsetY % (gridPadding * 8)),
+        startY: i + (props.offsetY % (gridPadding * 8)) - editorOffsetY,
         endX: lineWidth,
-        endY: i + (props.offsetY % (gridPadding * 8)),
+        endY: i + (props.offsetY % (gridPadding * 8)) - editorOffsetY,
         color: boldColor,
       });
   }

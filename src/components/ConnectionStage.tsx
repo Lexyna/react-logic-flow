@@ -62,7 +62,7 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
     const height = ref.current.getBoundingClientRect().height;
 
     setEditorDimensions({ width: width, height: height });
-  }, [props.zoom]);
+  }, [props.zoom, props.panningOffset]);
 
   //setup eventListeners to update bg Grid when componene size changes
   useEffect(() => {

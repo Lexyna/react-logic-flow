@@ -17,6 +17,7 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
 
   const onRightClick = (e: MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!props.onRightClick) return;
     props.onRightClick(props.nodeId, props.index);
   };

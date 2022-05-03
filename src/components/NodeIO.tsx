@@ -34,7 +34,7 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
     const x = () => {
       if (!dotRef.current) return -1;
       return (
-        dotRef.current.getBoundingClientRect().left +
+        dotRef.current.getBoundingClientRect().x +
         dotRef.current.getBoundingClientRect().width
       );
     };

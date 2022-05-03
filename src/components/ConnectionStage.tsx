@@ -53,6 +53,17 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
     updateBackground();
   });
 
+  //Zoomlistener updates the editorDimension when a zoomig event occurs, rerendering the component and adjusting the connections
+  //we have to do this, because the io port position of the nodes haven't been updated yet.
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const width = ref.current.getBoundingClientRect().width;
+    const height = ref.current.getBoundingClientRect().height;
+
+    setEditorDimensions({ width: width, height: height });
+  }, [props.zoom]);
+
   //setup eventListeners to update bg Grid when componene size changes
   useEffect(() => {
     window.onresize = updateBackground;

@@ -39,15 +39,35 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
     const width = ref.current.getBoundingClientRect().width;
     const height = ref.current.getBoundingClientRect().height;
 
-    setEditorDimensions({ width: width, height: height });
+    setEditorDimensions((dim) => {
+      if (dim.width === width && dim.height === height) return dim;
+      return {
+        width: width,
+        height: height,
+      };
+    });
   };
 
-  //Update background grid with nodeEditor width and height
+  //Update background grid with nodeEditor width and height after each change to the editor
   useEffect(() => {
     updateBackground();
+  });
 
+  //Zoomlistener updates the editorDimension when a zoomig event occurs, rerendering the component and adjusting the connections
+  //we have to do this, because the io port position of the nodes haven't been updated yet.
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const width = ref.current.getBoundingClientRect().width;
+    const height = ref.current.getBoundingClientRect().height;
+
+    setEditorDimensions({ width: width, height: height });
+  }, [props.zoom, props.panningOffset]);
+
+  //setup eventListeners to update bg Grid when componene size changes
+  useEffect(() => {
     window.onresize = updateBackground;
-  }, [props.zoom]);
+  }, []);
 
   let pathId: number = 0;
 
@@ -68,6 +88,7 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
         height={editorDimensions.height}
         offsetX={props.panningOffset.offsetX}
         offsetY={props.panningOffset.offsetY}
+        editorOffset={props.nodeEditorOffset}
         zoom={props.zoom}
       />
       {props.connections.map((con, index) => {

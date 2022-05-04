@@ -161,10 +161,12 @@ export const NodeEditor = (props: NodeEditorProps) => {
     const outId = selectedOutput.id + "Out" + selectedOutput.index;
 
     const str = computeBezierCurve(
-      conPosTable[selectedOutput.id][outId].x() / zoom - nodeEditorOffset.x,
-      conPosTable[selectedOutput.id][outId].y() / zoom - nodeEditorOffset.y,
-      x2 / zoom - nodeEditorOffset.x,
-      y2 / zoom - nodeEditorOffset.y
+      conPosTable[selectedOutput.id][outId].x() / zoom -
+        nodeEditorOffset.x / zoom,
+      conPosTable[selectedOutput.id][outId].y() / zoom -
+        nodeEditorOffset.y / zoom,
+      x2 / zoom - nodeEditorOffset.x / zoom,
+      y2 / zoom - nodeEditorOffset.y / zoom
     );
     setPreviewPath(str);
   };

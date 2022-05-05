@@ -203,28 +203,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
       cons
     );
 
-    /*let connectionExists = false;
-
-    cons.forEach((con, index) => {
-      if (con.input.id === node.id && con.input.index === node.index) {
-        connectionExists = true;
-        if (selectedOutput) {
-          if (con.input.type !== selectedOutput.type) return;
-          cons[index].output = selectedOutput;
-        } else {
-          selectedOutput = cons[index].output;
-          cons.splice(index, 1);
-        }
-      }
-    });
-
-    if (
-      !connectionExists &&
-      selectedOutput &&
-      node.type === selectedOutput.type
-    )
-      cons.push({ input: node, output: selectedOutput });*/
-
     setConnections(newConnections);
   };
 

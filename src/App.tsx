@@ -76,7 +76,17 @@ export const OperationSelect = (props: ExtraProps<number, Operations>) => {
   );
 };
 
-const ioNumber: ProtoIO<number, any> = {
+const ioNumberIN: ProtoIO<number, any> = {
+  name: "const",
+  type: "number",
+  conMapping: CONTYPE.SINGLE,
+  color: "rgba(0, 200, 100)",
+  data: {},
+  extra: null,
+  value: 0,
+};
+
+const ioNumberOUT: ProtoIO<number, any> = {
   name: "const",
   type: "number",
   conMapping: CONTYPE.MULTI,
@@ -110,7 +120,7 @@ const operationNode: ProtoNode = {
   id: "OperationalNode",
   name: "Operation",
   description: "use a operation",
-  inputs: [ioNumber, ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
   outputs: [ioNumberSelect],
   forward: (
     io1: ProtoIO<number, any>,
@@ -138,8 +148,8 @@ const addNode: ProtoNode = {
   id: "addNode",
   name: "Add",
   description: "Adds two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -154,8 +164,8 @@ const subNode: ProtoNode = {
   id: "subNode",
   name: "Sub",
   description: "Subs two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -170,8 +180,8 @@ const mulNode: ProtoNode = {
   id: "MulNode",
   name: "Mul",
   description: "Multiplicates two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -186,8 +196,8 @@ const divNode: ProtoNode = {
   id: "DivNode",
   name: "Div",
   description: "Divides two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -223,7 +233,7 @@ const root: ProtoNode = {
   id: "root",
   name: "Const",
   description: "A root Node",
-  inputs: [ioNumber],
+  inputs: [ioNumberIN],
   outputs: [],
   forward: (io: ProtoIO<number, any>) => {
     console.log("root: " + io.value);

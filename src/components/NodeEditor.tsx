@@ -263,7 +263,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   // Functions to handle nodes
 
-  //Reorder node array so the currently selected Node will be darwn last
+  //To display the selected node ontop, we have to reorder the array
   const reorderNode = (index: number) => {
     const reorderedNodes = nodes.map((n: LogicNode) => {
       return { ...n };
@@ -275,7 +275,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setNodes(reorderedNodes);
   };
 
-  //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
+  //To keep a io ports serializable, we have to populate a second object with a function to return the relative position of each io port
   const updatedNodeIOPosition = (
     nodeId: string,
     id: string, //individual ioPort id => nodeID + [In|Out] + ioPort.index
@@ -342,7 +342,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //functions to execute the graph logic
 
-  //Execute the defined node tree based on an abstract mapping of the nodes and it's connections
   const execute = () => {
     const logicNodes: LogicNode[] = nodes.map((node: LogicNode) => {
       return {
@@ -359,14 +358,12 @@ export const NodeEditor = (props: NodeEditorProps) => {
     proccesstNodes(logicNodes, connections, rootId);
   };
 
-  //Executes logicGraph after each node or connection updates
   const doLiveUpdate = () => {
     if (props.liveUpdate) execute();
   };
 
   // Other functions
 
-  //Create new store Object if this nodeEditor does not already exist
   const createNewNodeEditor = () => {
     const editor: NodeEditorStore = {
       id: props.id,
@@ -411,7 +408,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections, nodes]);
 
-  //Update store if this node Editor is first created
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!nodeEditorStore) {
@@ -425,7 +421,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     }
   });
 
-  //When nodes change (positions/add/delete/etc.) => update the store nodes
+  //To keep track of te nodes position whenever they get changed
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
     nodes.forEach((n: LogicNode) => {

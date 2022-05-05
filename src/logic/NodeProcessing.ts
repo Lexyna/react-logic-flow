@@ -100,7 +100,7 @@ export const convertNodes = (
     };
 
     node.inputs.forEach((io, index) =>
-      abstractInputs.push({ output: null, node: abstractNode, index: index })
+      abstractInputs.push({ output: [], node: abstractNode, index: index })
     );
     node.outputs.forEach((io, index) =>
       abstractOutput.push({ paths: [], node: abstractNode, index: index })
@@ -116,7 +116,9 @@ export const convertNodes = (
     const [inNode, outNode] = getInputOutputNodes(abstractNodes, con);
     if (!inNode || !outNode) return;
 
-    inNode.inputs[con.input.index].output = outNode.outputs[con.output.index];
+    inNode.inputs[con.input.index].output.push(
+      outNode.outputs[con.output.index]
+    );
     outNode.outputs[con.output.index].paths.push(
       inNode.inputs[con.input.index]
     );
@@ -143,7 +145,7 @@ export const executeNode = (
   //resolve all node dependencies (all input nodes)
   const dependencies: AbstractNode[] = [];
   abstractNode.inputs.forEach((io) => {
-    if (io.output) dependencies.push(io.output.node);
+    if (io.output) dependencies.push(io.output[0].node);
   });
   dependencies.forEach((dep) => {
     if (!dep.isComputed) executeNode(dep, logicNodes);
@@ -156,10 +158,10 @@ export const executeNode = (
     if (!input.output) return;
     const connectorNode: LogicNode = getNode(
       logicNodes,
-      input.output.node.id
+      input.output[0].node.id
     ) as LogicNode;
     logicNode.inputs[index].value =
-      connectorNode.outputs[input.output.index].value;
+      connectorNode.outputs[input.output[0].index].value;
   });
 
   logicNode.forward(...logicNode.inputs, ...logicNode.outputs);

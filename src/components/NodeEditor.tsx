@@ -194,14 +194,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
     });
 
     if (!selectedOutput) {
-      cons.forEach((con: Connection, index: number) => {
+      for (let i = 0; i < cons.length; i++)
         if (
-          con.input.id === selectedInput.id &&
-          con.input.index === selectedInput.index
-        )
-          selectedOutput = cons[index].output;
-        cons.splice(index, 1);
-      });
+          cons[i].input.id === selectedInput.id &&
+          cons[i].input.index === selectedInput.index
+        ) {
+          selectedOutput = cons[i].output;
+          cons.splice(i, 1);
+          break;
+        }
       setConnections(cons);
       return;
     }

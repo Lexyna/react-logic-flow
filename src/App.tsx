@@ -164,7 +164,7 @@ const subNode: ProtoNode = {
   id: "subNode",
   name: "Sub",
   description: "Subs two numnbers",
-  inputs: [ioNumberOUT, ioNumberOUT],
+  inputs: [ioNumberIN, ioNumberIN],
   outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,

@@ -12,6 +12,7 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
       color: props.color,
       index: props.index,
       type: props.type,
+      conMapping: props.conMapping,
     });
   };
 

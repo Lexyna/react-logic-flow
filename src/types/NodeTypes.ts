@@ -1,10 +1,11 @@
 import { MouseEvent } from "react";
-import { ProtoIO } from "./IOTypes";
+import { CONTYPE, ProtoIO } from "./IOTypes";
 import { ConnectionPosition } from "./NodeEditorTypes";
 
 //Passed type to identify the currently selected Node in the Editor
 export interface selectedNode {
   type: string;
+  conMapping: CONTYPE;
   color: string;
   index: number;
   id: string;

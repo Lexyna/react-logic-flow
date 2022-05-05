@@ -265,7 +265,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //Reorder node array so the currently selected Node will be darwn last
   const reorderNode = (index: number) => {
-    const reorderedNodes = nodes.map((n) => {
+    const reorderedNodes = nodes.map((n: LogicNode) => {
       return { ...n };
     });
     const activeNode = reorderedNodes[index];
@@ -298,7 +298,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const updateNodePosition = (e: MouseEvent) => {
     if (!dragNodeId) return;
 
-    const newNodes: LogicNode[] = nodes.map((n) => {
+    const newNodes: LogicNode[] = nodes.map((n: LogicNode) => {
       return { ...n };
     });
     newNodes.forEach((node, index) => {
@@ -326,7 +326,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (id === rootId) return;
 
     const newNodes: LogicNode[] = [];
-    nodes.forEach((n) => {
+    nodes.forEach((n: LogicNode) => {
       if (n.id !== id) newNodes.push(n);
     });
 
@@ -344,7 +344,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //Execute the defined node tree based on an abstract mapping of the nodes and it's connections
   const execute = () => {
-    const logicNodes: LogicNode[] = nodes.map((node) => {
+    const logicNodes: LogicNode[] = nodes.map((node: LogicNode) => {
       return {
         ...node,
         inputs: node.inputs.map((io) => {
@@ -383,7 +383,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     index: number,
     data: any
   ) => {
-    const copyNodes = nodes.map((node) => {
+    const copyNodes = nodes.map((node: LogicNode) => {
       return {
         ...node,
         inputs: node.inputs.map((io) => {
@@ -395,7 +395,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       };
     });
 
-    copyNodes.forEach((node, nodeIndex) => {
+    copyNodes.forEach((node: LogicNode, nodeIndex: number) => {
       if (node.id !== nodeID) return;
       if (input) copyNodes[nodeIndex].inputs[index].data = data;
       else copyNodes[nodeIndex].outputs[index].data = data;
@@ -428,7 +428,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   //When nodes change (positions/add/delete/etc.) => update the store nodes
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
-    nodes.forEach((n) => {
+    nodes.forEach((n: LogicNode) => {
       if (n.configId === props.root.id) {
         dispatch(
           updateRootNodePos({

@@ -11,6 +11,7 @@ export enum CONTYPE {
 export interface ProtoIO<T, K> {
   name: string;
   type: string;
+  conMapping: CONTYPE;
   color: string;
   data: K;
   extra: React.FC<ExtraProps<T, K>> | null;

@@ -189,13 +189,24 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //connect the selectdOutput node with the passed input node
   const onConnect = (selectedInput: selectedNode) => {
-    if (!selectedOutput) return;
-
-    if (selectedOutput.type !== selectedInput.type) return;
-
     const cons = connections.map((con) => {
       return { ...con };
     });
+
+    if (!selectedOutput) {
+      cons.forEach((con: Connection, index: number) => {
+        if (
+          con.input.id === selectedInput.id &&
+          con.input.index === selectedInput.index
+        )
+          selectedOutput = cons[index].output;
+        cons.splice(index, 1);
+      });
+      setConnections(cons);
+      return;
+    }
+
+    if (selectedOutput.type !== selectedInput.type) return;
 
     const newConnections = createNewConnection(
       selectedOutput,

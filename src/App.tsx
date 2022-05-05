@@ -79,7 +79,7 @@ export const OperationSelect = (props: ExtraProps<number, Operations>) => {
 const ioNumber: ProtoIO<number, any> = {
   name: "const",
   type: "number",
-  conMapping: CONTYPE.ONE_TO_MANY,
+  conMapping: CONTYPE.MULTI,
   color: "rgba(0, 200, 100)",
   data: {},
   extra: null,
@@ -88,7 +88,7 @@ const ioNumber: ProtoIO<number, any> = {
 
 const ioNumberInput: ProtoIO<number, inputData> = {
   name: "const",
-  conMapping: CONTYPE.MANY_TO_ONE,
+  conMapping: CONTYPE.MULTI,
   type: "number",
   color: "rgb(0, 200, 100)",
   data: { val: 0 },
@@ -99,7 +99,7 @@ const ioNumberInput: ProtoIO<number, inputData> = {
 const ioNumberSelect: ProtoIO<number, Operations> = {
   name: "Out",
   type: "number",
-  conMapping: CONTYPE.MANY_TO_ONE,
+  conMapping: CONTYPE.MULTI,
   color: "rgb(0, 200, 100)",
   data: { type: OPS.ADD },
   extra: OperationSelect,

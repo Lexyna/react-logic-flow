@@ -1,6 +1,7 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
+import { createNewConnection } from "../logic/ConnetionMapping";
 import { proccesstNodes } from "../logic/NodeProcessing";
 import { computeBezierCurve, createLogicNodeArray } from "../logic/Utils";
 import {
@@ -187,11 +188,22 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   //connect the selectdOutput node with the passed input node
-  const onConnect = (node: selectedNode) => {
+  const onConnect = (selectedInput: selectedNode) => {
+    if (!selectedOutput) return;
+
+    if (selectedOutput.type !== selectedInput.type) return;
+
     const cons = connections.map((con) => {
       return { ...con };
     });
-    let connectionExists = false;
+
+    const newConnections = createNewConnection(
+      selectedOutput,
+      selectedInput,
+      cons
+    );
+
+    /*let connectionExists = false;
 
     cons.forEach((con, index) => {
       if (con.input.id === node.id && con.input.index === node.index) {
@@ -211,9 +223,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
       selectedOutput &&
       node.type === selectedOutput.type
     )
-      cons.push({ input: node, output: selectedOutput });
+      cons.push({ input: node, output: selectedOutput });*/
 
-    setConnections(cons);
+    setConnections(newConnections);
   };
 
   //Right click on an output node, to remove all connected nodes

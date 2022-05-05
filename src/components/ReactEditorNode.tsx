@@ -54,6 +54,7 @@ export const ReactEditorNode = (props: NodeProps) => {
                 isInput={true}
                 index={index}
                 type={io.type}
+                conMapping={io.conMapping}
                 value={io.value}
                 color={io.color}
                 label={io.name}
@@ -75,6 +76,7 @@ export const ReactEditorNode = (props: NodeProps) => {
                 isInput={false}
                 index={index}
                 type={io.type}
+                conMapping={io.conMapping}
                 value={io.value}
                 color={io.color}
                 label={io.name}

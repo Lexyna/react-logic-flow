@@ -23,6 +23,7 @@ export interface NodeIOProps<T, K> {
   index: number;
   isInput: boolean;
   type: string;
+  conMapping: CONTYPE;
   label: string;
   color: string;
   value: T;

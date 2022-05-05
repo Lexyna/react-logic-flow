@@ -1,4 +1,3 @@
-import React from "react";
 import { NodeEditor } from "./components/NodeEditor";
 import { ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";

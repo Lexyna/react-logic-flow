@@ -1,6 +1,13 @@
 import { ConnectionPosition } from "./NodeEditorTypes";
 import { selectedNode } from "./NodeTypes";
 
+export enum CONTYPE {
+  ONE_TO_MANY = "ONE_TO_MANY",
+  MANY_TO_ONE = "MANY_TO_ONE",
+  ONE_TO_ONE = "ONE_TO_ONE",
+  MANY_TO_MANY = "MANY_TO_MAY",
+}
+
 export interface ProtoIO<T, K> {
   name: string;
   type: string;

@@ -2,7 +2,7 @@ import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
 import { createNewConnection } from "../logic/ConnetionMapping";
-import { proccesstNodes } from "../logic/NodeProcessing";
+import { createOneTimeGraph } from "../logic/NodeProcessing";
 import { computeBezierCurve, createLogicNodeArray } from "../logic/Utils";
 import {
   addNodeEditor,
@@ -357,7 +357,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
       };
     });
 
-    proccesstNodes(logicNodes, connections, rootId);
+    //proccesstNodes(logicNodes, connections, rootId);
+    createOneTimeGraph(props.id, props.config, props.root);
   };
 
   const doLiveUpdate = () => {

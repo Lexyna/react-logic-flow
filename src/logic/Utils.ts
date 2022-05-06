@@ -72,3 +72,39 @@ export const createLogicNodeArray = (
 
   return logicNodes;
 };
+
+export const createLogicNodeArrayWithGraphId = (
+  configNodes: ProtoNode[],
+  nodes: ReduxNode[],
+  graphId: string
+): LogicNode[] => {
+  const logicNodes: LogicNode[] = [];
+
+  nodes.forEach((node) => {
+    const configNode = getProtoNodeById(configNodes, node.configId);
+    if (!configNode) return;
+
+    //Create IOPorts
+    const inputs = configNode.inputs.map((io, index) => {
+      return { ...io, data: node.inputs[index] };
+    });
+
+    const outputs = configNode.outputs.map((io, index) => {
+      return { ...io, data: node.outputs[index] };
+    });
+
+    logicNodes.push({
+      id: node.nodeId,
+      configId: configNode.id,
+      graphId: graphId,
+      name: configNode.name,
+      x: node.x,
+      y: node.y,
+      inputs: inputs,
+      outputs: outputs,
+      forward: configNode.forward,
+    });
+  });
+
+  return logicNodes;
+};

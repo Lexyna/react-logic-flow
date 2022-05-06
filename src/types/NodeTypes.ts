@@ -47,6 +47,7 @@ export interface NodeProps {
 export interface LogicNode {
   id: string;
   configId: string;
+  graphId?: string;
   name: string;
   x: number;
   y: number;

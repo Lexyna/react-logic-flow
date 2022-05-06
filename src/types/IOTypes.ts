@@ -24,6 +24,7 @@ export interface LogicIO<T, K> {
   data: K;
   extra: React.FC<ExtraProps<T, K>> | null;
   value: T;
+  graphId: string;
   nodeId: string;
   index: number;
 }

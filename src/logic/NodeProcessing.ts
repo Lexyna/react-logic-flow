@@ -1,5 +1,7 @@
+import { nanoid } from "nanoid";
 import { ReduxNode } from "../store/reducers/NodeEditorSlice";
 import { store } from "../store/stroe";
+import { LogicIO, ProtoIO } from "../types/IOTypes";
 import {
   AbstractInput,
   AbstractNode,
@@ -7,7 +9,7 @@ import {
 } from "../types/NodeComputationalTypes";
 import { Connection } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
-import { createLogicNodeArray } from "./Utils";
+import { createLogicNodeArray, createLogicNodeArrayWithGraphId } from "./Utils";
 
 let cycleGraph: boolean = false;
 
@@ -175,4 +177,155 @@ export const executeNode = (
     });
   });
   next.forEach((nextNode) => executeNode(nextNode, logicNodes));
+};
+
+//new processing method
+
+interface LogicGraph {
+  [k: string]: {
+    nodes: LogicNode[];
+    connetions: Connection[];
+    graphId: string;
+  };
+}
+
+const logicGraphs: LogicGraph = {};
+
+export const createLivingGarph = (id: string, config: ProtoNode[]) => {
+  const state = store.getState();
+
+  if (!state.nodeEditors[id]) throw new Error("Id not found");
+
+  const editorState = state.nodeEditors[id];
+
+  const nodes: ReduxNode[] = editorState.nodes;
+  const connections: Connection[] = editorState.connections;
+
+  //check if the passed config is valid
+  nodes.forEach((node) => {
+    let isValid: boolean = false;
+    config.forEach((con) => {
+      if (node.configId === con.id) isValid = true;
+    });
+    if (!isValid) throw new Error("Invalid configuration provided");
+  });
+
+  const logicNodes: LogicNode[] = createLogicNodeArray(config, nodes);
+
+  logicGraphs[id] = {
+    nodes: logicNodes,
+    connetions: connections,
+    graphId: id,
+  };
+};
+
+export const createOneTimeGraph = (
+  id: string,
+  config: ProtoNode[],
+  root: ProtoNode
+) => {
+  console.log("Executing");
+  const state = store.getState();
+
+  if (!state.nodeEditors[id]) throw new Error("Id not found");
+
+  const editorState = state.nodeEditors[id];
+
+  const nodes: ReduxNode[] = editorState.nodes;
+  const connections: Connection[] = editorState.connections;
+
+  const graphId = nanoid();
+
+  //check if the passed config is valid
+  nodes.forEach((node) => {
+    let isValid: boolean = false;
+    config.forEach((con) => {
+      if (node.configId === con.id) isValid = true;
+    });
+    if (!isValid) throw new Error("Invalid configuration provided");
+  });
+
+  const logicRoot: LogicNode = {
+    ...root,
+    name: root.name + "(Root)",
+    id: id,
+    configId: root.id,
+    graphId: graphId,
+    x: 0,
+    y: 0,
+  };
+
+  const logicNodes = createLogicNodeArrayWithGraphId(
+    config,
+    nodes,
+    graphId
+  ).concat(logicRoot);
+
+  logicGraphs[graphId] = {
+    nodes: logicNodes,
+    connetions: connections,
+    graphId: id,
+  };
+
+  fireNode(logicRoot);
+
+  //delete that graph Id
+};
+
+const fireNode = (logicNode: LogicNode) => {
+  //resolve dependencies
+
+  const logicInput: LogicIO<any, any>[] = logicNode.inputs.map((io, index) => {
+    return {
+      ...io,
+      graphId: logicNode.graphId ? logicNode.graphId : "",
+      nodeId: logicNode.id,
+      index: index,
+    };
+  });
+
+  const logicOutput: LogicIO<any, any>[] = logicNode.inputs.map((io, index) => {
+    return {
+      ...io,
+      graphId: logicNode.graphId ? logicNode.graphId : "",
+      nodeId: logicNode.id,
+      index: index,
+    };
+  });
+
+  logicNode.forward(...logicInput, ...logicOutput);
+};
+
+export const next = (io: ProtoIO<any, any>) => {
+  const logicIO: LogicIO<any, any> = io as LogicIO<any, any>;
+
+  if (!logicIO.graphId) return;
+  if (!logicGraphs[logicIO.graphId]) return;
+
+  const graph = logicGraphs[logicIO.graphId];
+
+  let targetNode: LogicNode | null = null;
+
+  graph.connetions.forEach((con) => {
+    if (con.input.id === logicIO.nodeId && con.input.index === logicIO.index) {
+      targetNode = searchLogicNode(con.output.id, logicIO.graphId);
+      return;
+    }
+  });
+
+  if (!targetNode) return;
+
+  fireNode(targetNode);
+};
+
+const searchLogicNode = (graphId: string, nodeId: string): LogicNode | null => {
+  if (!logicGraphs[graphId]) return null;
+
+  const graph = logicGraphs[graphId];
+
+  for (let i = 0; i < graph.nodes.length; i++) {
+    if (graph.nodes[i].id === nodeId) return graph.nodes[i];
+  }
+
+  return null;
 };

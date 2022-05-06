@@ -16,6 +16,18 @@ export interface ProtoIO<T, K> {
   value: T;
 }
 
+export interface LogicIO<T, K> {
+  name: string;
+  type: string;
+  conMapping: CONTYPE;
+  color: string;
+  data: K;
+  extra: React.FC<ExtraProps<T, K>> | null;
+  value: T;
+  nodeId: string;
+  index: number;
+}
+
 export interface NodeIOProps<T, K> {
   nodeId: string;
   index: number;

@@ -1,4 +1,5 @@
 import { NodeEditor } from "./components/NodeEditor";
+import { next } from "./logic/NodeProcessing";
 import { CONTYPE, ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
 
@@ -220,12 +221,24 @@ const constNode: ProtoNode = {
   },
 };
 
+const printNode: ProtoNode = {
+  id: "printNode",
+  name: "Print",
+  description: "A node that outputs a number",
+  inputs: [ioNumberIN],
+  outputs: [],
+  forward: (io: ProtoIO<number, inputData>) => {
+    console.log("out: " + io.value);
+  },
+};
+
 const config: ProtoNode[] = [
   constNode,
   addNode,
   subNode,
   mulNode,
   divNode,
+  printNode,
   operationNode,
 ];
 
@@ -234,9 +247,10 @@ const root: ProtoNode = {
   name: "Const",
   description: "A root Node",
   inputs: [ioNumberIN],
-  outputs: [],
-  forward: (io: ProtoIO<number, any>) => {
+  outputs: [ioNumberOUT],
+  forward: (io: ProtoIO<number, any>, out: ProtoIO<number, any>) => {
     console.log("root: " + io.value);
+    next(out);
   },
 };
 

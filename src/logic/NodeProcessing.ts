@@ -272,10 +272,6 @@ export const createOneTimeGraph = (
   //delete that graph Id
 };
 
-interface dependency {
-  index: number;
-}
-
 const getConnectedNodeAndIndex = (
   logicNode: LogicNode,
   index: number
@@ -356,8 +352,11 @@ export const next = (io: ProtoIO<any, any>) => {
   let targetNode: LogicNode | null = null;
 
   graph.connetions.forEach((con) => {
-    if (con.input.id === logicIO.nodeId && con.input.index === logicIO.index) {
-      targetNode = searchLogicNode(con.output.id, logicIO.graphId);
+    if (
+      con.output.id === logicIO.nodeId &&
+      con.output.index === logicIO.index
+    ) {
+      targetNode = searchLogicNode(logicIO.graphId, con.input.id);
       return;
     }
   });

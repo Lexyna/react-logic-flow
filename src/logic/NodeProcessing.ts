@@ -272,8 +272,50 @@ export const createOneTimeGraph = (
   //delete that graph Id
 };
 
+interface dependency {
+  index: number;
+}
+
+const getConnectedNodeAndIndex = (
+  logicNode: LogicNode,
+  index: number
+): [LogicNode | null, number | null] => {
+  if (!logicNode.graphId) return [null, null];
+  const graphId = logicNode.graphId;
+
+  if (!logicGraphs[graphId]) return [null, null];
+
+  for (let i = 0; i < logicGraphs[graphId].connetions.length; i++)
+    if (
+      logicGraphs[graphId].connetions[i].input.id === logicNode.id &&
+      logicGraphs[graphId].connetions[i].input.index === index
+    ) {
+      const connectedNode = searchLogicNode(
+        graphId,
+        logicGraphs[graphId].connetions[i].output.id
+      );
+      return [connectedNode, logicGraphs[graphId].connetions[i].output.index];
+    }
+
+  return [null, null];
+};
+
+const resolveDependencies = (logicNode: LogicNode) => {
+  logicNode.inputs.forEach((io, index) => {
+    const [dependencyNode, outputIndex] = getConnectedNodeAndIndex(
+      logicNode,
+      index
+    );
+    if (dependencyNode && !(outputIndex === null)) {
+      fireNode(dependencyNode);
+      logicNode.inputs[index].value = dependencyNode.outputs[outputIndex].value;
+    }
+  });
+};
+
 const fireNode = (logicNode: LogicNode) => {
   //resolve dependencies
+  resolveDependencies(logicNode);
 
   const logicInput: LogicIO<any, any>[] = logicNode.inputs.map((io, index) => {
     return {
@@ -284,16 +326,23 @@ const fireNode = (logicNode: LogicNode) => {
     };
   });
 
-  const logicOutput: LogicIO<any, any>[] = logicNode.inputs.map((io, index) => {
-    return {
-      ...io,
-      graphId: logicNode.graphId ? logicNode.graphId : "",
-      nodeId: logicNode.id,
-      index: index,
-    };
-  });
+  const logicOutput: LogicIO<any, any>[] = logicNode.outputs.map(
+    (io, index) => {
+      return {
+        ...io,
+        graphId: logicNode.graphId ? logicNode.graphId : "",
+        nodeId: logicNode.id,
+        index: index,
+      };
+    }
+  );
 
   logicNode.forward(...logicInput, ...logicOutput);
+
+  //map computed values back to original ProtoIO
+  logicOutput.forEach((io, index) => {
+    logicNode.outputs[index].value = io.value;
+  });
 };
 
 export const next = (io: ProtoIO<any, any>) => {

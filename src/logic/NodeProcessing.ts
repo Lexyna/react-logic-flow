@@ -332,9 +332,7 @@ const resolveDependencies = (logicNode: LogicNode) => {
 };
 
 const fireNode = (logicNode: LogicNode) => {
-  //resolve dependencies
   resolveDependencies(logicNode);
-
   logicNode.forward(...logicNode.inputs, ...logicNode.outputs);
 };
 

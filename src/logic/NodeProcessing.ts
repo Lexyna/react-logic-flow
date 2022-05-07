@@ -4,7 +4,7 @@ import { store } from "../store/stroe";
 import { ACTIVATION, LogicIO, ProtoIO } from "../types/IOTypes";
 import { Connection } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
-import { createLogicNodeArray, createLogicNodeArrayWithGraphId } from "./Utils";
+import { createLogicNodeArrayWithGraphId } from "./Utils";
 
 interface LogicGraph {
   [k: string]: {
@@ -16,12 +16,16 @@ interface LogicGraph {
 
 const logicGraphs: LogicGraph = {};
 
-export const createLivingGarph = (id: string, config: ProtoNode[]) => {
+export const createLivingGarph = (
+  editorId: string,
+  config: ProtoNode[]
+): string => {
   const state = store.getState();
+  if (!state.nodeEditors[editorId]) throw new Error("Id not found");
 
-  if (!state.nodeEditors[id]) throw new Error("Id not found");
+  const graphId = nanoid();
 
-  const editorState = state.nodeEditors[id];
+  const editorState = state.nodeEditors[editorId];
 
   const nodes: ReduxNode[] = editorState.nodes;
   const connections: Connection[] = editorState.connections;
@@ -35,13 +39,18 @@ export const createLivingGarph = (id: string, config: ProtoNode[]) => {
     if (!isValid) throw new Error("Invalid configuration provided");
   });
 
-  const logicNodes: LogicNode[] = createLogicNodeArray(config, nodes);
+  const logicNodes: LogicNode[] = createLogicNodeArrayWithGraphId(
+    config,
+    nodes,
+    graphId
+  );
 
-  logicGraphs[id] = {
+  logicGraphs[graphId] = {
     nodes: logicNodes,
     connetions: connections,
-    graphId: id,
+    graphId: graphId,
   };
+  return graphId;
 };
 
 export const deleteLivingGraph = (id: string) => {
@@ -50,16 +59,16 @@ export const deleteLivingGraph = (id: string) => {
 };
 
 export const createOneTimeGraph = (
-  id: string,
+  editorId: string,
   config: ProtoNode[],
   root: ProtoNode
 ) => {
   console.log("Executing");
   const state = store.getState();
 
-  if (!state.nodeEditors[id]) throw new Error("Id not found");
+  if (!state.nodeEditors[editorId]) throw new Error("Id not found");
 
-  const editorState = state.nodeEditors[id];
+  const editorState = state.nodeEditors[editorId];
 
   const nodes: ReduxNode[] = editorState.nodes;
   const connections: Connection[] = editorState.connections;
@@ -80,7 +89,7 @@ export const createOneTimeGraph = (
       ...io,
       data: root.inputs[index],
       graphId: graphId,
-      nodeId: id,
+      nodeId: editorId,
       index: index,
     };
   });
@@ -90,7 +99,7 @@ export const createOneTimeGraph = (
       ...io,
       data: root.outputs[index],
       graphId: graphId,
-      nodeId: id,
+      nodeId: editorId,
       index: index,
     };
   });
@@ -98,7 +107,7 @@ export const createOneTimeGraph = (
   const logicRoot: LogicNode = {
     ...root,
     name: root.name + "(Root)",
-    id: id,
+    id: editorId,
     configId: root.id,
     autoUpdate: !(root.autoUpdate === undefined) ? root.autoUpdate : true,
     inputs: rootInputs,
@@ -117,11 +126,10 @@ export const createOneTimeGraph = (
   logicGraphs[graphId] = {
     nodes: logicNodes,
     connetions: connections,
-    graphId: id,
+    graphId: editorId,
   };
 
   fireNode(logicRoot, false);
-
   delete logicGraphs[graphId];
 };
 

@@ -5,7 +5,7 @@ import { LogicIO, ProtoIO } from "../types/IOTypes";
 import {
   AbstractInput,
   AbstractNode,
-  AbstractOutput,
+  AbstractOutput
 } from "../types/NodeComputationalTypes";
 import { Connection } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
@@ -41,6 +41,7 @@ export const executeNodeGraph = (
     name: root.name + "(Root)",
     id: id,
     configId: root.id,
+    autoUpdate: !(root.autoUpdate === undefined) ? root.autoUpdate : true,
     x: 0,
     y: 0,
   });
@@ -270,6 +271,7 @@ export const createOneTimeGraph = (
     name: root.name + "(Root)",
     id: id,
     configId: root.id,
+    autoUpdate: !(root.autoUpdate === undefined) ? root.autoUpdate : true,
     inputs: rootInputs,
     outputs: rootOutputs,
     graphId: graphId,
@@ -289,7 +291,7 @@ export const createOneTimeGraph = (
     graphId: id,
   };
 
-  fireNode(logicRoot);
+  fireNode(logicRoot, false);
 
   //delete that graph Id
 };
@@ -325,14 +327,15 @@ const resolveDependencies = (logicNode: LogicNode) => {
       index
     );
     if (dependencyNode && !(outputIndex === null)) {
-      fireNode(dependencyNode);
+      fireNode(dependencyNode, true);
       logicNode.inputs[index].value = dependencyNode.outputs[outputIndex].value;
     }
   });
 };
 
-const fireNode = (logicNode: LogicNode) => {
+const fireNode = (logicNode: LogicNode, isDependancy: boolean) => {
   resolveDependencies(logicNode);
+  if (isDependancy && !logicNode.autoUpdate) return;
   logicNode.forward(...logicNode.inputs, ...logicNode.outputs);
 };
 
@@ -358,7 +361,7 @@ export const next = (io: ProtoIO<any, any>) => {
 
   if (!targetNode) return;
 
-  fireNode(targetNode);
+  fireNode(targetNode, false);
 };
 
 const searchLogicNode = (graphId: string, nodeId: string): LogicNode | null => {

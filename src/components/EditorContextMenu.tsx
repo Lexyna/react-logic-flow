@@ -49,6 +49,9 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
       name: protoNode.name,
       x: x / props.zoom - props.panning.offsetX / props.zoom,
       y: y / props.zoom - props.panning.offsetY / props.zoom,
+      autoUpdate: !(protoNode.autoUpdate === undefined)
+        ? protoNode.autoUpdate
+        : true,
       inputs: protoNode.inputs,
       outputs: protoNode.outputs,
       forward: protoNode.forward,

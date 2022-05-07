@@ -65,6 +65,9 @@ export const createLogicNodeArray = (
       name: configNode.name,
       x: node.x,
       y: node.y,
+      autoUpdate: !(configNode.autoUpdate === undefined)
+        ? configNode.autoUpdate
+        : true,
       inputs: inputs,
       outputs: outputs,
       forward: configNode.forward,
@@ -112,6 +115,9 @@ export const createLogicNodeArrayWithGraphId = (
       name: configNode.name,
       x: node.x,
       y: node.y,
+      autoUpdate: !(configNode.autoUpdate === undefined)
+        ? configNode.autoUpdate
+        : true,
       inputs: inputs,
       outputs: outputs,
       forward: configNode.forward,

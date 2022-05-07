@@ -50,6 +50,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
       name: props.root.name + "(Root)",
       id: rootId,
       configId: props.root.id,
+      autoUpdate: !(props.root.autoUpdate === undefined)
+        ? props.root.autoUpdate
+        : true,
       x: rootPos.x,
       y: rootPos.y,
     })

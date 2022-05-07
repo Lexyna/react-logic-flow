@@ -246,6 +246,7 @@ const root: ProtoNode = {
   id: "root",
   name: "Const",
   description: "A root Node",
+  autoUpdate: false,
   inputs: [ioNumberIN],
   outputs: [ioNumberOUT],
   forward: (io: ProtoIO<number, any>, out: ProtoIO<number, any>) => {

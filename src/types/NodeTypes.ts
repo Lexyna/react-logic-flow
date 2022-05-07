@@ -51,6 +51,7 @@ export interface LogicNode {
   name: string;
   x: number;
   y: number;
+  autoUpdate: boolean;
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
   forward: (...io: any[]) => void;
@@ -60,6 +61,7 @@ export interface ProtoNode {
   id: string;
   name: string;
   description: string;
+  autoUpdate?: boolean;
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
   forward: (...io: any[]) => void;

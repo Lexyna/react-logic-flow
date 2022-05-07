@@ -245,11 +245,33 @@ export const createOneTimeGraph = (
     if (!isValid) throw new Error("Invalid configuration provided");
   });
 
+  const rootInputs: LogicIO<any, any>[] = root.inputs.map((io, index) => {
+    return {
+      ...io,
+      data: root.inputs[index],
+      graphId: graphId,
+      nodeId: id,
+      index: index,
+    };
+  });
+
+  const rootOutputs: LogicIO<any, any>[] = root.outputs.map((io, index) => {
+    return {
+      ...io,
+      data: root.outputs[index],
+      graphId: graphId,
+      nodeId: id,
+      index: index,
+    };
+  });
+
   const logicRoot: LogicNode = {
     ...root,
     name: root.name + "(Root)",
     id: id,
     configId: root.id,
+    inputs: rootInputs,
+    outputs: rootOutputs,
     graphId: graphId,
     x: 0,
     y: 0,

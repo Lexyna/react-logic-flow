@@ -221,14 +221,36 @@ const constNode: ProtoNode = {
   },
 };
 
+const forNode: ProtoNode = {
+  id: "forNode100",
+  name: "for loop",
+  description: "A node that fire a 100 times",
+  inputs: [ioNumberIN],
+  outputs: [ioNumberInput, ioNumberOUT],
+  autoUpdate: false,
+  forward: (
+    activate: ProtoIO<number, any>,
+    nextNode: ProtoIO<number, inputData>,
+    iteratorValue: ProtoIO<number, any>
+  ) => {
+    for (let i = 0; i < nextNode.data.val; i++) {
+      iteratorValue.value = i;
+      next(nextNode);
+    }
+  },
+};
+
 const printNode: ProtoNode = {
   id: "printNode",
   name: "Print",
   description: "A node that outputs a number",
-  inputs: [ioNumberIN],
+  inputs: [ioNumberIN, ioNumberIN],
   outputs: [],
-  forward: (io: ProtoIO<number, inputData>) => {
-    console.log("out: " + io.value);
+  forward: (
+    io: ProtoIO<number, inputData>,
+    io2: ProtoIO<number, inputData>
+  ) => {
+    console.log("print: " + io2.value);
   },
 };
 
@@ -238,6 +260,7 @@ const config: ProtoNode[] = [
   subNode,
   mulNode,
   divNode,
+  forNode,
   printNode,
   operationNode,
 ];
@@ -251,6 +274,7 @@ const root: ProtoNode = {
   outputs: [ioNumberOUT],
   forward: (io: ProtoIO<number, any>, out: ProtoIO<number, any>) => {
     console.log("root: " + io.value);
+    out.value = io.value;
     next(out);
   },
 };

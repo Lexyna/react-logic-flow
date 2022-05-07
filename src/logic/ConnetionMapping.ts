@@ -13,7 +13,7 @@ export const createNewConnection = (
 
   switch (input.conMapping) {
     case CONTYPE.SINGLE:
-      deleteAllConntections(input, cons);
+      deleteAllConntections(input, cons, true);
       break;
     case CONTYPE.MULTI:
       break;
@@ -23,7 +23,7 @@ export const createNewConnection = (
 
   switch (output.conMapping) {
     case CONTYPE.SINGLE:
-      deleteAllConntections(output, cons);
+      deleteAllConntections(output, cons, false);
       break;
     case CONTYPE.MULTI:
       break;
@@ -36,11 +36,15 @@ export const createNewConnection = (
   return cons;
 };
 
-const deleteAllConntections = (io: selectedNode, connections: Connection[]) => {
+const deleteAllConntections = (
+  io: selectedNode,
+  connections: Connection[],
+  isInput: boolean
+) => {
   connections.forEach((con: Connection, index: number) => {
-    if (con.input.id === io.id && con.input.index === io.index)
+    if (con.input.id === io.id && con.input.index === io.index && isInput)
       connections.splice(index, 1);
-    if (con.output.id === io.id && con.output.index === io.index)
+    if (con.output.id === io.id && con.output.index === io.index && !isInput)
       connections.splice(index, 1);
   });
   return connections;

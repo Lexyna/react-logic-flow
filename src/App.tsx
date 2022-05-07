@@ -1,6 +1,6 @@
 import { NodeEditor } from "./components/NodeEditor";
 import { next } from "./logic/NodeProcessing";
-import { CONTYPE, ExtraProps, ProtoIO } from "./types/IOTypes";
+import { ACTIVATION, CONTYPE, ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
 
 interface inputData {
@@ -117,6 +117,26 @@ const ioNumberSelect: ProtoIO<number, Operations> = {
   value: 0,
 };
 
+const ioActivationIn: ProtoIO<null, null> = {
+  name: "<=",
+  type: ACTIVATION,
+  conMapping: CONTYPE.MULTI,
+  color: "rgb(0, 100, 200)",
+  data: null,
+  extra: null,
+  value: null,
+};
+
+const ioActivationOut: ProtoIO<null, null> = {
+  name: "=>",
+  type: ACTIVATION,
+  conMapping: CONTYPE.SINGLE,
+  color: "rgb(0, 100, 200)",
+  data: null,
+  extra: null,
+  value: null,
+};
+
 const operationNode: ProtoNode = {
   id: "OperationalNode",
   name: "Operation",
@@ -225,15 +245,15 @@ const forNode: ProtoNode = {
   id: "forNode100",
   name: "for loop",
   description: "A node that fire a 100 times",
-  inputs: [ioNumberIN],
-  outputs: [ioNumberInput, ioNumberOUT],
+  inputs: [ioActivationIn],
+  outputs: [ioActivationOut, ioNumberOUT],
   autoUpdate: false,
   forward: (
-    activate: ProtoIO<number, any>,
-    nextNode: ProtoIO<number, inputData>,
+    activate: ProtoIO<null, null>,
+    nextNode: ProtoIO<null, null>,
     iteratorValue: ProtoIO<number, any>
   ) => {
-    for (let i = 0; i < nextNode.data.val; i++) {
+    for (let i = 0; i < 100; i++) {
       iteratorValue.value = i;
       next(nextNode);
     }
@@ -244,12 +264,9 @@ const printNode: ProtoNode = {
   id: "printNode",
   name: "Print",
   description: "A node that outputs a number",
-  inputs: [ioNumberIN, ioNumberIN],
+  inputs: [ioActivationIn, ioNumberIN],
   outputs: [],
-  forward: (
-    io: ProtoIO<number, inputData>,
-    io2: ProtoIO<number, inputData>
-  ) => {
+  forward: (io: ProtoIO<null, null>, io2: ProtoIO<number, inputData>) => {
     console.log("print: " + io2.value);
   },
 };
@@ -271,11 +288,15 @@ const root: ProtoNode = {
   description: "A root Node",
   autoUpdate: false,
   inputs: [ioNumberIN],
-  outputs: [ioNumberOUT],
-  forward: (io: ProtoIO<number, any>, out: ProtoIO<number, any>) => {
+  outputs: [ioActivationOut, ioNumberOUT],
+  forward: (
+    io: ProtoIO<number, any>,
+    nextNode: ProtoIO<null, null>,
+    out: ProtoIO<number, any>
+  ) => {
     console.log("root: " + io.value);
     out.value = io.value;
-    next(out);
+    next(nextNode);
   },
 };
 

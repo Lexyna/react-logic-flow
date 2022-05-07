@@ -1,11 +1,12 @@
 import { ConnectionPosition } from "./NodeEditorTypes";
 import { selectedNode } from "./NodeTypes";
 
+export const ACTIVATION: string = "ACTIVATION";
+
 export enum CONTYPE {
   SINGLE = "SINGLE",
   MULTI = "MULTII",
 }
-
 export interface ProtoIO<T, K> {
   name: string;
   type: string;

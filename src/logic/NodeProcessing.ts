@@ -1,11 +1,11 @@
 import { nanoid } from "nanoid";
 import { ReduxNode } from "../store/reducers/NodeEditorSlice";
 import { store } from "../store/stroe";
-import { LogicIO, ProtoIO } from "../types/IOTypes";
+import { ACTIVATION, LogicIO, ProtoIO } from "../types/IOTypes";
 import {
   AbstractInput,
   AbstractNode,
-  AbstractOutput
+  AbstractOutput,
 } from "../types/NodeComputationalTypes";
 import { Connection } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
@@ -322,6 +322,7 @@ const getConnectedNodeAndIndex = (
 
 const resolveDependencies = (logicNode: LogicNode) => {
   logicNode.inputs.forEach((io, index) => {
+    if (io.type === ACTIVATION) return;
     const [dependencyNode, outputIndex] = getConnectedNodeAndIndex(
       logicNode,
       index

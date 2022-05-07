@@ -260,6 +260,20 @@ const forNode: ProtoNode = {
   },
 };
 
+const keyListenerNode: ProtoNode = {
+  id: "keyListenerNode",
+  name: "keyListener",
+  description: "A node that fires when a kay is pressed",
+  inputs: [ioActivationIn],
+  outputs: [ioActivationOut],
+  forward: (io: ProtoIO<null, null>, nextNode: ProtoIO<null, null>) => {
+    window.addEventListener("keydown", () => {
+      console.log("detected Key event");
+      next(nextNode);
+    });
+  },
+};
+
 const printNode: ProtoNode = {
   id: "printNode",
   name: "Print",
@@ -278,6 +292,7 @@ const config: ProtoNode[] = [
   mulNode,
   divNode,
   forNode,
+  keyListenerNode,
   printNode,
   operationNode,
 ];

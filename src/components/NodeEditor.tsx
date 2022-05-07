@@ -2,7 +2,7 @@ import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
 import { createNewConnection } from "../logic/ConnetionMapping";
-import { createOneTimeGraph } from "../logic/NodeProcessing";
+import { createLivingGarph, createOneTimeGraph } from "../logic/NodeProcessing";
 import { computeBezierCurve, createLogicNodeArray } from "../logic/Utils";
 import {
   addNodeEditor,
@@ -348,24 +348,15 @@ export const NodeEditor = (props: NodeEditorProps) => {
   //functions to execute the graph logic
 
   const execute = () => {
-    const logicNodes: LogicNode[] = nodes.map((node: LogicNode) => {
-      return {
-        ...node,
-        inputs: node.inputs.map((io) => {
-          return { ...io };
-        }),
-        outputs: node.outputs.map((io) => {
-          return { ...io };
-        }),
-      };
-    });
-
-    //proccesstNodes(logicNodes, connections, rootId);
     createOneTimeGraph(props.id, props.config, props.root);
   };
 
   const doLiveUpdate = () => {
     if (props.liveUpdate) execute();
+  };
+
+  const setupLivingGraph = () => {
+    createLivingGarph(props.id, props.config);
   };
 
   // Other functions
@@ -501,6 +492,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
       />
       <button style={{ position: "absolute" }} onClick={execute}>
         proccess me
+      </button>
+      <button
+        style={{ position: "absolute", left: "10rem" }}
+        onClick={setupLivingGraph}>
+        Create living Grapg
       </button>
       <ConnectionStage
         zoom={zoom}

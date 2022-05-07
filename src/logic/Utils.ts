@@ -1,4 +1,5 @@
 import { ReduxNode } from "../store/reducers/NodeEditorSlice";
+import { LogicIO } from "../types/IOTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
 
 /** returns the stroke path for the Path svg element as Bézier curve */
@@ -84,13 +85,24 @@ export const createLogicNodeArrayWithGraphId = (
     const configNode = getProtoNodeById(configNodes, node.configId);
     if (!configNode) return;
 
-    //Create IOPorts
-    const inputs = configNode.inputs.map((io, index) => {
-      return { ...io, data: node.inputs[index] };
+    const inputs: LogicIO<any, any>[] = configNode.inputs.map((io, index) => {
+      return {
+        ...io,
+        data: node.inputs[index],
+        graphId: graphId,
+        nodeId: node.nodeId,
+        index: index,
+      };
     });
 
-    const outputs = configNode.outputs.map((io, index) => {
-      return { ...io, data: node.outputs[index] };
+    const outputs: LogicIO<any, any>[] = configNode.outputs.map((io, index) => {
+      return {
+        ...io,
+        data: node.outputs[index],
+        graphId: graphId,
+        nodeId: node.nodeId,
+        index: index,
+      };
     });
 
     logicNodes.push({

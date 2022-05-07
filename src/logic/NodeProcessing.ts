@@ -313,32 +313,7 @@ const fireNode = (logicNode: LogicNode) => {
   //resolve dependencies
   resolveDependencies(logicNode);
 
-  const logicInput: LogicIO<any, any>[] = logicNode.inputs.map((io, index) => {
-    return {
-      ...io,
-      graphId: logicNode.graphId ? logicNode.graphId : "",
-      nodeId: logicNode.id,
-      index: index,
-    };
-  });
-
-  const logicOutput: LogicIO<any, any>[] = logicNode.outputs.map(
-    (io, index) => {
-      return {
-        ...io,
-        graphId: logicNode.graphId ? logicNode.graphId : "",
-        nodeId: logicNode.id,
-        index: index,
-      };
-    }
-  );
-
-  logicNode.forward(...logicInput, ...logicOutput);
-
-  //map computed values back to original ProtoIO
-  logicOutput.forEach((io, index) => {
-    logicNode.outputs[index].value = io.value;
-  });
+  logicNode.forward(...logicNode.inputs, ...logicNode.outputs);
 };
 
 export const next = (io: ProtoIO<any, any>) => {

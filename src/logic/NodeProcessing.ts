@@ -44,6 +44,11 @@ export const createLivingGarph = (id: string, config: ProtoNode[]) => {
   };
 };
 
+export const deleteLivingGraph = (id: string) => {
+  if (!logicGraphs[id]) return;
+  delete logicGraphs[id];
+};
+
 export const createOneTimeGraph = (
   id: string,
   config: ProtoNode[],
@@ -117,7 +122,7 @@ export const createOneTimeGraph = (
 
   fireNode(logicRoot, false);
 
-  //delete that graph Id
+  delete logicGraphs[graphId];
 };
 
 const getConnectedNodeAndIndex = (

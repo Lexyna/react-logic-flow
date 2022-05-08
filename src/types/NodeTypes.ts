@@ -55,6 +55,8 @@ export interface LogicNode {
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
   forward: (...io: ProtoIO<any, any>[]) => void;
+  setup?: (...io: ProtoIO<any, any>[]) => void;
+  cleanup?: (...io: ProtoIO<any, any>[]) => void;
 }
 
 export interface ProtoNode {
@@ -65,4 +67,6 @@ export interface ProtoNode {
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
   forward: (...io: ProtoIO<any, any>[]) => void;
+  setup?: (...io: ProtoIO<any, any>[]) => void;
+  cleanup?: (...io: ProtoIO<any, any>[]) => void;
 }

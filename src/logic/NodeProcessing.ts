@@ -132,6 +132,10 @@ export const createOneTimeGraph = (
     graphId
   ).concat(logicRoot);
 
+  logicNodes.forEach((node) => {
+    if (node.setup) node.setup(...node.inputs, ...node.outputs);
+  });
+
   logicGraphs[graphId] = {
     nodes: logicNodes,
     connetions: connections,
@@ -139,6 +143,11 @@ export const createOneTimeGraph = (
   };
 
   fireNode(logicRoot, false);
+
+  logicNodes.forEach((node) => {
+    if (node.cleanup) node.cleanup(...node.inputs, ...node.outputs);
+  });
+
   delete logicGraphs[graphId];
 };
 

@@ -1,3 +1,4 @@
+import { ProtoIO } from "./IOTypes";
 import { ProtoNode, selectedNode } from "./NodeTypes";
 
 export interface Connection {
@@ -27,4 +28,9 @@ export interface NodeEditorProps {
   config: ProtoNode[];
   root?: ProtoNode;
   liveUpdate: boolean;
+}
+
+export interface ProtoIOMapper {
+  input: ProtoIO<any, any> | null;
+  output: ProtoIO<any, any> | null;
 }

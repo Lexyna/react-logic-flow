@@ -1,8 +1,8 @@
 .NodeContainer {
-    display: inline-block;
+    display: block;
     background-color: rgba(63, 63, 63, .7);
     max-width: 250px;
-    min-width: 100px;
+    min-width: 80px;
     width: auto;
     height: auto;
     position: absolute;
@@ -42,6 +42,7 @@
 .NodeContainer>ul {
     margin: 0;
     padding: 0;
+    display:flex;
     list-style: none;
     user-select: none; /* supported by Chrome and Opera */
     -webkit-touch-callout: none;
@@ -53,12 +54,17 @@
 
 .NodeContainer>ul>li {
     position: relative;
+    display: flex;
     margin-top: 8px;
     margin-bottom: 8px;
+    padding-left: 1rem;
+}
+
+.NodeContainer>ul>li.Output {
+  margin-left: auto;
 }
 
 .NodeContainer>ul>li>span {
-    padding-left: 1rem;
     padding-right: 0.3rem;
     color: black;
     font-family: 'Courier New', Courier, monospace;

@@ -55,6 +55,8 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
       inputs: protoNode.inputs,
       outputs: protoNode.outputs,
       forward: protoNode.forward,
+      setup: protoNode.setup,
+      cleanup: protoNode.cleanup,
     };
     props.addNode(logicNode);
   };

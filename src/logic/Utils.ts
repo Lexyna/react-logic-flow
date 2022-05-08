@@ -71,6 +71,8 @@ export const createLogicNodeArray = (
       inputs: inputs,
       outputs: outputs,
       forward: configNode.forward,
+      setup: configNode.setup,
+      cleanup: configNode.cleanup,
     });
   });
 
@@ -121,6 +123,8 @@ export const createLogicNodeArrayWithGraphId = (
       inputs: inputs,
       outputs: outputs,
       forward: configNode.forward,
+      setup: configNode.setup,
+      cleanup: configNode.cleanup,
     });
   });
 

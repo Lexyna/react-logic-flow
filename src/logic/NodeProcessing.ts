@@ -45,6 +45,10 @@ export const createLivingGarph = (
     graphId
   );
 
+  logicNodes.forEach((node) => {
+    if (node.setup) node.setup(...node.inputs, ...node.outputs);
+  });
+
   logicGraphs[graphId] = {
     nodes: logicNodes,
     connetions: connections,
@@ -55,6 +59,11 @@ export const createLivingGarph = (
 
 export const deleteLivingGraph = (id: string) => {
   if (!logicGraphs[id]) return;
+
+  logicGraphs[id].nodes.forEach((node) => {
+    if (node.cleanup) node.cleanup(...node.inputs, ...node.outputs);
+  });
+
   delete logicGraphs[id];
 };
 

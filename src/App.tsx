@@ -267,6 +267,13 @@ const keyListenerNode: ProtoNode = {
   inputs: [ioActivationIn],
   outputs: [ioActivationOut],
   forward: (io: ProtoIO<null, null>, nextNode: ProtoIO<null, null>) => {
+    console.log("Process forward node");
+    /*window.addEventListener("keydown", () => {
+      console.log("detected Key event");
+      next(nextNode);
+    });*/
+  },
+  setup: (io: ProtoIO<null, null>, nextNode: ProtoIO<null, null>) => {
     window.addEventListener("keydown", () => {
       console.log("detected Key event");
       next(nextNode);

@@ -34,7 +34,7 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
         return index;
       });
     if (e.key === "Enter")
-      if (ref.current)
+      if (ref.current && nodes[selectedIndex])
         addLogicNode(
           ref.current.getBoundingClientRect().x,
           ref.current.getBoundingClientRect().y,

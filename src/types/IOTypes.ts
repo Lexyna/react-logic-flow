@@ -1,13 +1,33 @@
 import { ConnectionPosition } from "./NodeEditorTypes";
 import { selectedNode } from "./NodeTypes";
 
+export const ACTIVATION: string = "ACTIVATION";
+
+export enum CONTYPE {
+  SINGLE = "SINGLE",
+  MULTI = "MULTII",
+}
 export interface ProtoIO<T, K> {
   name: string;
   type: string;
+  conMapping: CONTYPE;
   color: string;
   data: K;
   extra: React.FC<ExtraProps<T, K>> | null;
   value: T;
+}
+
+export interface LogicIO<T, K> {
+  name: string;
+  type: string;
+  conMapping: CONTYPE;
+  color: string;
+  data: K;
+  extra: React.FC<ExtraProps<T, K>> | null;
+  value: T;
+  graphId: string;
+  nodeId: string;
+  index: number;
 }
 
 export interface NodeIOProps<T, K> {
@@ -15,6 +35,7 @@ export interface NodeIOProps<T, K> {
   index: number;
   isInput: boolean;
   type: string;
+  conMapping: CONTYPE;
   label: string;
   color: string;
   value: T;

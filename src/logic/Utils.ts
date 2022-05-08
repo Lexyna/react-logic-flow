@@ -1,4 +1,5 @@
 import { ReduxNode } from "../store/reducers/NodeEditorSlice";
+import { LogicIO } from "../types/IOTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
 
 /** returns the stroke path for the Path svg element as Bézier curve */
@@ -64,9 +65,66 @@ export const createLogicNodeArray = (
       name: configNode.name,
       x: node.x,
       y: node.y,
+      autoUpdate: !(configNode.autoUpdate === undefined)
+        ? configNode.autoUpdate
+        : true,
       inputs: inputs,
       outputs: outputs,
       forward: configNode.forward,
+      setup: configNode.setup,
+      cleanup: configNode.cleanup,
+    });
+  });
+
+  return logicNodes;
+};
+
+export const createLogicNodeArrayWithGraphId = (
+  configNodes: ProtoNode[],
+  nodes: ReduxNode[],
+  graphId: string
+): LogicNode[] => {
+  const logicNodes: LogicNode[] = [];
+
+  nodes.forEach((node) => {
+    const configNode = getProtoNodeById(configNodes, node.configId);
+    if (!configNode) return;
+
+    const inputs: LogicIO<any, any>[] = configNode.inputs.map((io, index) => {
+      return {
+        ...io,
+        data: node.inputs[index],
+        graphId: graphId,
+        nodeId: node.nodeId,
+        index: index,
+      };
+    });
+
+    const outputs: LogicIO<any, any>[] = configNode.outputs.map((io, index) => {
+      return {
+        ...io,
+        data: node.outputs[index],
+        graphId: graphId,
+        nodeId: node.nodeId,
+        index: index,
+      };
+    });
+
+    logicNodes.push({
+      id: node.nodeId,
+      configId: configNode.id,
+      graphId: graphId,
+      name: configNode.name,
+      x: node.x,
+      y: node.y,
+      autoUpdate: !(configNode.autoUpdate === undefined)
+        ? configNode.autoUpdate
+        : true,
+      inputs: inputs,
+      outputs: outputs,
+      forward: configNode.forward,
+      setup: configNode.setup,
+      cleanup: configNode.cleanup,
     });
   });
 

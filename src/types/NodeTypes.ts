@@ -1,10 +1,11 @@
 import { MouseEvent } from "react";
-import { ProtoIO } from "./IOTypes";
+import { CONTYPE, ProtoIO } from "./IOTypes";
 import { ConnectionPosition } from "./NodeEditorTypes";
 
 //Passed type to identify the currently selected Node in the Editor
 export interface selectedNode {
   type: string;
+  conMapping: CONTYPE;
   color: string;
   index: number;
   id: string;
@@ -46,19 +47,26 @@ export interface NodeProps {
 export interface LogicNode {
   id: string;
   configId: string;
+  graphId?: string;
   name: string;
   x: number;
   y: number;
+  autoUpdate: boolean;
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
-  forward: (...io: any[]) => void;
+  forward: (...io: ProtoIO<any, any>[]) => void;
+  setup?: (...io: ProtoIO<any, any>[]) => void;
+  cleanup?: (...io: ProtoIO<any, any>[]) => void;
 }
 
 export interface ProtoNode {
   id: string;
   name: string;
   description: string;
+  autoUpdate?: boolean;
   inputs: ProtoIO<any, any>[];
   outputs: ProtoIO<any, any>[];
-  forward: (...io: any[]) => void;
+  forward: (...io: ProtoIO<any, any>[]) => void;
+  setup?: (...io: ProtoIO<any, any>[]) => void;
+  cleanup?: (...io: ProtoIO<any, any>[]) => void;
 }

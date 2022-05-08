@@ -1,6 +1,6 @@
-import React from "react";
 import { NodeEditor } from "./components/NodeEditor";
-import { ExtraProps, ProtoIO } from "./types/IOTypes";
+import { next } from "./logic/NodeProcessing";
+import { ACTIVATION, CONTYPE, ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
 
 interface inputData {
@@ -77,9 +77,20 @@ export const OperationSelect = (props: ExtraProps<number, Operations>) => {
   );
 };
 
-const ioNumber: ProtoIO<number, any> = {
+const ioNumberIN: ProtoIO<number, any> = {
   name: "const",
   type: "number",
+  conMapping: CONTYPE.SINGLE,
+  color: "rgba(0, 200, 100)",
+  data: {},
+  extra: null,
+  value: 0,
+};
+
+const ioNumberOUT: ProtoIO<number, any> = {
+  name: "const",
+  type: "number",
+  conMapping: CONTYPE.MULTI,
   color: "rgba(0, 200, 100)",
   data: {},
   extra: null,
@@ -88,6 +99,7 @@ const ioNumber: ProtoIO<number, any> = {
 
 const ioNumberInput: ProtoIO<number, inputData> = {
   name: "const",
+  conMapping: CONTYPE.MULTI,
   type: "number",
   color: "rgb(0, 200, 100)",
   data: { val: 0 },
@@ -98,17 +110,38 @@ const ioNumberInput: ProtoIO<number, inputData> = {
 const ioNumberSelect: ProtoIO<number, Operations> = {
   name: "Out",
   type: "number",
+  conMapping: CONTYPE.MULTI,
   color: "rgb(0, 200, 100)",
   data: { type: OPS.ADD },
   extra: OperationSelect,
   value: 0,
 };
 
+const ioActivationIn: ProtoIO<null, null> = {
+  name: "<=",
+  type: ACTIVATION,
+  conMapping: CONTYPE.MULTI,
+  color: "rgb(0, 100, 200)",
+  data: null,
+  extra: null,
+  value: null,
+};
+
+const ioActivationOut: ProtoIO<null, null> = {
+  name: "=>",
+  type: ACTIVATION,
+  conMapping: CONTYPE.SINGLE,
+  color: "rgb(0, 100, 200)",
+  data: null,
+  extra: null,
+  value: null,
+};
+
 const operationNode: ProtoNode = {
   id: "OperationalNode",
   name: "Operation",
   description: "use a operation",
-  inputs: [ioNumber, ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
   outputs: [ioNumberSelect],
   forward: (
     io1: ProtoIO<number, any>,
@@ -136,8 +169,8 @@ const addNode: ProtoNode = {
   id: "addNode",
   name: "Add",
   description: "Adds two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -152,8 +185,8 @@ const subNode: ProtoNode = {
   id: "subNode",
   name: "Sub",
   description: "Subs two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -168,8 +201,8 @@ const mulNode: ProtoNode = {
   id: "MulNode",
   name: "Mul",
   description: "Multiplicates two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -184,8 +217,8 @@ const divNode: ProtoNode = {
   id: "DivNode",
   name: "Div",
   description: "Divides two numnbers",
-  inputs: [ioNumber, ioNumber],
-  outputs: [ioNumber],
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
   forward: (
     in1: ProtoIO<number, any>,
     in2: ProtoIO<number, any>,
@@ -208,12 +241,68 @@ const constNode: ProtoNode = {
   },
 };
 
+const forNode: ProtoNode = {
+  id: "forNode100",
+  name: "for loop",
+  description: "A node that fire a 100 times",
+  inputs: [ioActivationIn],
+  outputs: [ioActivationOut, ioNumberOUT],
+  autoUpdate: false,
+  forward: (
+    activate: ProtoIO<null, null>,
+    nextNode: ProtoIO<null, null>,
+    iteratorValue: ProtoIO<number, any>
+  ) => {
+    for (let i = 0; i < 100; i++) {
+      iteratorValue.value = i;
+      next(nextNode);
+    }
+  },
+};
+
+let listener: any = null;
+
+const keyListenerNode: ProtoNode = {
+  id: "keyListenerNode",
+  name: "keyListener",
+  description: "A node that fires when a kay is pressed",
+  inputs: [ioActivationIn],
+  outputs: [ioActivationOut],
+  forward: (io: ProtoIO<null, null>, nextNode: ProtoIO<null, null>) => {
+    console.log("Process forward node");
+  },
+  setup: (io: ProtoIO<null, null>, nextNode: ProtoIO<null, null>) => {
+    listener = (e: KeyboardEvent) => {
+      console.log("detected Key event");
+      next(nextNode);
+    };
+    window.addEventListener("keydown", listener);
+  },
+  cleanup: (io: ProtoIO<null, null>, nextNode: ProtoIO<null, null>) => {
+    if (listener) window.removeEventListener("keydown", listener);
+  },
+};
+
+const printNode: ProtoNode = {
+  id: "printNode",
+  name: "Print",
+  description: "A node that outputs a number",
+  inputs: [ioActivationIn, ioNumberIN],
+  outputs: [],
+  forward: (io: ProtoIO<null, null>, io2: ProtoIO<number, inputData>) => {
+    console.log("print: " + io2.value);
+  },
+};
+
 const config: ProtoNode[] = [
   constNode,
   addNode,
   subNode,
   mulNode,
   divNode,
+  forNode,
+  keyListenerNode,
+  printNode,
   operationNode,
 ];
 
@@ -221,10 +310,17 @@ const root: ProtoNode = {
   id: "root",
   name: "Const",
   description: "A root Node",
-  inputs: [ioNumber],
-  outputs: [],
-  forward: (io: ProtoIO<number, any>) => {
+  autoUpdate: false,
+  inputs: [ioNumberIN],
+  outputs: [ioActivationOut, ioNumberOUT],
+  forward: (
+    io: ProtoIO<number, any>,
+    nextNode: ProtoIO<null, null>,
+    out: ProtoIO<number, any>
+  ) => {
     console.log("root: " + io.value);
+    out.value = io.value;
+    next(nextNode);
   },
 };
 

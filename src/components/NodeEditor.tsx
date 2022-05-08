@@ -1,7 +1,8 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../css/NodeEditor.css";
-import { proccesstNodes } from "../logic/NodeProcessing";
+import { createNewConnection } from "../logic/ConnetionMapping";
+import { createLivingGarph, createOneTimeGraph } from "../logic/NodeProcessing";
 import { computeBezierCurve, createLogicNodeArray } from "../logic/Utils";
 import {
   addNodeEditor,
@@ -44,14 +45,21 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const savedNode = useSelector(selectNodeEditorNodes(rootId));
   const [nodes, setNodes] = useState<LogicNode[]>(
-    createLogicNodeArray(props.config, savedNode).concat({
-      ...props.root,
-      name: props.root.name + "(Root)",
-      id: rootId,
-      configId: props.root.id,
-      x: rootPos.x,
-      y: rootPos.y,
-    })
+    createLogicNodeArray(props.config, savedNode).concat(
+      props.root
+        ? {
+            ...props.root,
+            name: props.root.name + "(Root)",
+            id: rootId,
+            configId: props.root.id,
+            autoUpdate: !(props.root.autoUpdate === undefined)
+              ? props.root.autoUpdate
+              : true,
+            x: rootPos.x,
+            y: rootPos.y,
+          }
+        : []
+    )
   );
 
   const nodeEditorStore = useSelector(selectNodeEditor(rootId));
@@ -187,33 +195,34 @@ export const NodeEditor = (props: NodeEditorProps) => {
   };
 
   //connect the selectdOutput node with the passed input node
-  const onConnect = (node: selectedNode) => {
+  const onConnect = (selectedInput: selectedNode) => {
     const cons = connections.map((con) => {
       return { ...con };
     });
-    let connectionExists = false;
 
-    cons.forEach((con, index) => {
-      if (con.input.id === node.id && con.input.index === node.index) {
-        connectionExists = true;
-        if (selectedOutput) {
-          if (con.input.type !== selectedOutput.type) return;
-          cons[index].output = selectedOutput;
-        } else {
-          selectedOutput = cons[index].output;
-          cons.splice(index, 1);
+    if (!selectedOutput) {
+      for (let i = 0; i < cons.length; i++)
+        if (
+          cons[i].input.id === selectedInput.id &&
+          cons[i].input.index === selectedInput.index
+        ) {
+          selectedOutput = cons[i].output;
+          cons.splice(i, 1);
+          break;
         }
-      }
-    });
+      setConnections(cons);
+      return;
+    }
 
-    if (
-      !connectionExists &&
-      selectedOutput &&
-      node.type === selectedOutput.type
-    )
-      cons.push({ input: node, output: selectedOutput });
+    if (selectedOutput.type !== selectedInput.type) return;
 
-    setConnections(cons);
+    const newConnections = createNewConnection(
+      selectedOutput,
+      selectedInput,
+      cons
+    );
+
+    setConnections(newConnections);
   };
 
   //Right click on an output node, to remove all connected nodes
@@ -263,9 +272,9 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   // Functions to handle nodes
 
-  //Reorder node array so the currently selected Node will be darwn last
+  //To display the selected node ontop, we have to reorder the array
   const reorderNode = (index: number) => {
-    const reorderedNodes = nodes.map((n) => {
+    const reorderedNodes = nodes.map((n: LogicNode) => {
       return { ...n };
     });
     const activeNode = reorderedNodes[index];
@@ -275,7 +284,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     setNodes(reorderedNodes);
   };
 
-  //Whenever a new node is added to the Editor, push the ref function for the io ports into conPosTable
+  //To keep a io ports serializable, we have to populate a second object with a function to return the relative position of each io port
   const updatedNodeIOPosition = (
     nodeId: string,
     id: string, //individual ioPort id => nodeID + [In|Out] + ioPort.index
@@ -298,7 +307,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   const updateNodePosition = (e: MouseEvent) => {
     if (!dragNodeId) return;
 
-    const newNodes: LogicNode[] = nodes.map((n) => {
+    const newNodes: LogicNode[] = nodes.map((n: LogicNode) => {
       return { ...n };
     });
     newNodes.forEach((node, index) => {
@@ -326,7 +335,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     if (id === rootId) return;
 
     const newNodes: LogicNode[] = [];
-    nodes.forEach((n) => {
+    nodes.forEach((n: LogicNode) => {
       if (n.id !== id) newNodes.push(n);
     });
 
@@ -342,31 +351,20 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   //functions to execute the graph logic
 
-  //Execute the defined node tree based on an abstract mapping of the nodes and it's connections
   const execute = () => {
-    const logicNodes: LogicNode[] = nodes.map((node) => {
-      return {
-        ...node,
-        inputs: node.inputs.map((io) => {
-          return { ...io };
-        }),
-        outputs: node.outputs.map((io) => {
-          return { ...io };
-        }),
-      };
-    });
-
-    proccesstNodes(logicNodes, connections, rootId);
+    if (props.root) createOneTimeGraph(props.id, props.config, props.root);
   };
 
-  //Executes logicGraph after each node or connection updates
   const doLiveUpdate = () => {
     if (props.liveUpdate) execute();
   };
 
+  const setupLivingGraph = () => {
+    createLivingGarph(props.id, props.config);
+  };
+
   // Other functions
 
-  //Create new store Object if this nodeEditor does not already exist
   const createNewNodeEditor = () => {
     const editor: NodeEditorStore = {
       id: props.id,
@@ -383,7 +381,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
     index: number,
     data: any
   ) => {
-    const copyNodes = nodes.map((node) => {
+    const copyNodes = nodes.map((node: LogicNode) => {
       return {
         ...node,
         inputs: node.inputs.map((io) => {
@@ -395,7 +393,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       };
     });
 
-    copyNodes.forEach((node, nodeIndex) => {
+    copyNodes.forEach((node: LogicNode, nodeIndex: number) => {
       if (node.id !== nodeID) return;
       if (input) copyNodes[nodeIndex].inputs[index].data = data;
       else copyNodes[nodeIndex].outputs[index].data = data;
@@ -411,7 +409,6 @@ export const NodeEditor = (props: NodeEditorProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connections, nodes]);
 
-  //Update store if this node Editor is first created
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!nodeEditorStore) {
@@ -425,11 +422,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
     }
   });
 
-  //When nodes change (positions/add/delete/etc.) => update the store nodes
+  //To keep track of te nodes position whenever they get changed
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
-    nodes.forEach((n) => {
-      if (n.configId === props.root.id) {
+    nodes.forEach((n: LogicNode) => {
+      if (props.root && n.configId === props.root.id) {
         dispatch(
           updateRootNodePos({
             id: rootId,
@@ -499,6 +496,11 @@ export const NodeEditor = (props: NodeEditorProps) => {
       />
       <button style={{ position: "absolute" }} onClick={execute}>
         proccess me
+      </button>
+      <button
+        style={{ position: "absolute", left: "10rem" }}
+        onClick={setupLivingGraph}>
+        Create living Graph
       </button>
       <ConnectionStage
         zoom={zoom}

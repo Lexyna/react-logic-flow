@@ -1,26 +1,31 @@
+import { nanoid } from "nanoid";
 import { ReduxNode } from "../store/reducers/NodeEditorSlice";
 import { store } from "../store/stroe";
-import {
-  AbstractInput,
-  AbstractNode,
-  AbstractOutput,
-} from "../types/NodeComputationalTypes";
+import { ACTIVATION, LogicIO, ProtoIO } from "../types/IOTypes";
 import { Connection } from "../types/NodeEditorTypes";
 import { LogicNode, ProtoNode } from "../types/NodeTypes";
-import { createLogicNodeArray } from "./Utils";
+import { createLogicNodeArrayWithGraphId } from "./Utils";
 
-let cycleGraph: boolean = false;
+interface LogicGraph {
+  [k: string]: {
+    nodes: LogicNode[];
+    connetions: Connection[];
+    graphId: string;
+  };
+}
 
-export const executeNodeGraph = (
-  id: string,
-  config: ProtoNode[],
-  root: ProtoNode
-) => {
+const logicGraphs: LogicGraph = {};
+
+export const createLivingGarph = (
+  editorId: string,
+  config: ProtoNode[]
+): string => {
   const state = store.getState();
+  if (!state.nodeEditors[editorId]) throw new Error("Id not found");
 
-  if (!state.nodeEditors[id]) throw new Error("Id not found");
+  const graphId = nanoid();
 
-  const editorState = state.nodeEditors[id];
+  const editorState = state.nodeEditors[editorId];
 
   const nodes: ReduxNode[] = editorState.nodes;
   const connections: Connection[] = editorState.connections;
@@ -34,143 +39,195 @@ export const executeNodeGraph = (
     if (!isValid) throw new Error("Invalid configuration provided");
   });
 
-  const logicNode = createLogicNodeArray(config, nodes).concat({
+  const logicNodes: LogicNode[] = createLogicNodeArrayWithGraphId(
+    config,
+    nodes,
+    graphId
+  );
+
+  logicNodes.forEach((node) => {
+    if (node.setup) node.setup(...node.inputs, ...node.outputs);
+  });
+
+  logicGraphs[graphId] = {
+    nodes: logicNodes,
+    connetions: connections,
+    graphId: graphId,
+  };
+  return graphId;
+};
+
+export const deleteLivingGraph = (id: string) => {
+  if (!logicGraphs[id]) return;
+
+  logicGraphs[id].nodes.forEach((node) => {
+    if (node.cleanup) node.cleanup(...node.inputs, ...node.outputs);
+  });
+
+  delete logicGraphs[id];
+};
+
+export const createOneTimeGraph = (
+  editorId: string,
+  config: ProtoNode[],
+  root: ProtoNode
+) => {
+  console.log("Executing");
+  const state = store.getState();
+
+  if (!state.nodeEditors[editorId]) throw new Error("Id not found");
+
+  const editorState = state.nodeEditors[editorId];
+
+  const nodes: ReduxNode[] = editorState.nodes;
+  const connections: Connection[] = editorState.connections;
+
+  const graphId = nanoid();
+
+  //check if the passed config is valid
+  nodes.forEach((node) => {
+    let isValid: boolean = false;
+    config.forEach((con) => {
+      if (node.configId === con.id) isValid = true;
+    });
+    if (!isValid) throw new Error("Invalid configuration provided");
+  });
+
+  const rootInputs: LogicIO<any, any>[] = root.inputs.map((io, index) => {
+    return {
+      ...io,
+      data: root.inputs[index],
+      graphId: graphId,
+      nodeId: editorId,
+      index: index,
+    };
+  });
+
+  const rootOutputs: LogicIO<any, any>[] = root.outputs.map((io, index) => {
+    return {
+      ...io,
+      data: root.outputs[index],
+      graphId: graphId,
+      nodeId: editorId,
+      index: index,
+    };
+  });
+
+  const logicRoot: LogicNode = {
     ...root,
     name: root.name + "(Root)",
-    id: id,
+    id: editorId,
     configId: root.id,
+    autoUpdate: !(root.autoUpdate === undefined) ? root.autoUpdate : true,
+    inputs: rootInputs,
+    outputs: rootOutputs,
+    graphId: graphId,
     x: 0,
     y: 0,
+  };
+
+  const logicNodes = createLogicNodeArrayWithGraphId(
+    config,
+    nodes,
+    graphId
+  ).concat(logicRoot);
+
+  logicNodes.forEach((node) => {
+    if (node.setup) node.setup(...node.inputs, ...node.outputs);
   });
 
-  proccesstNodes(logicNode, connections, id);
-};
+  logicGraphs[graphId] = {
+    nodes: logicNodes,
+    connetions: connections,
+    graphId: editorId,
+  };
 
-export const proccesstNodes = (
-  nodes: LogicNode[],
-  cons: Connection[],
-  rootId: string
-) => {
-  const abstractNodes = convertNodes(nodes, cons);
-  const rootNode = getRootNode(abstractNodes, rootId) as AbstractNode;
-  executeNode(rootNode, nodes);
-  cycleGraph = false;
-};
+  fireNode(logicRoot, false);
 
-//Helper function returns the two connected Nodes from a Connection Object
-export const getInputOutputNodes = (
-  nodes: AbstractNode[],
-  connection: Connection
-): [AbstractNode | undefined, AbstractNode | undefined] => {
-  let inputeNode, outputNode;
-  nodes.forEach((node) => {
-    if (node.id === connection.input.id) inputeNode = node;
-    if (node.id === connection.output.id) outputNode = node;
+  logicNodes.forEach((node) => {
+    if (node.cleanup) node.cleanup(...node.inputs, ...node.outputs);
   });
-  return [inputeNode, outputNode];
+
+  delete logicGraphs[graphId];
 };
 
-const getRootNode = (nodes: AbstractNode[], rootId: string) => {
-  for (let i = 0; i < nodes.length; i++)
-    if (nodes[i].id === rootId) return nodes[i];
+const getConnectedNodeAndIndex = (
+  logicNode: LogicNode,
+  index: number
+): [LogicNode | null, number | null] => {
+  if (!logicNode.graphId) return [null, null];
+  const graphId = logicNode.graphId;
+
+  if (!logicGraphs[graphId]) return [null, null];
+
+  for (let i = 0; i < logicGraphs[graphId].connetions.length; i++)
+    if (
+      logicGraphs[graphId].connetions[i].input.id === logicNode.id &&
+      logicGraphs[graphId].connetions[i].input.index === index
+    ) {
+      const connectedNode = searchLogicNode(
+        graphId,
+        logicGraphs[graphId].connetions[i].output.id
+      );
+      return [connectedNode, logicGraphs[graphId].connetions[i].output.index];
+    }
+
+  return [null, null];
 };
 
-const getNode = (nodes: LogicNode[], id: string) => {
-  for (let i = 0; i < nodes.length; i++)
-    if (nodes[i].id === id) return nodes[i];
-};
-
-export const convertNodes = (
-  nodes: LogicNode[],
-  connections: Connection[]
-): AbstractNode[] => {
-  const abstractNodes: AbstractNode[] = [];
-
-  nodes.forEach((node) => {
-    const abstractInputs: AbstractInput[] = [];
-    const abstractOutput: AbstractOutput[] = [];
-
-    const abstractNode: AbstractNode = {
-      id: node.id,
-      loopCount: 0,
-      isComputed: false,
-      visited: false,
-      inputs: [],
-      outputs: [],
-    };
-
-    node.inputs.forEach((io, index) =>
-      abstractInputs.push({ output: null, node: abstractNode, index: index })
+const resolveDependencies = (logicNode: LogicNode) => {
+  logicNode.inputs.forEach((io, index) => {
+    if (io.type === ACTIVATION) return;
+    const [dependencyNode, outputIndex] = getConnectedNodeAndIndex(
+      logicNode,
+      index
     );
-    node.outputs.forEach((io, index) =>
-      abstractOutput.push({ paths: [], node: abstractNode, index: index })
-    );
-
-    abstractNode.inputs = abstractInputs;
-    abstractNode.outputs = abstractOutput;
-
-    abstractNodes.push(abstractNode);
+    if (dependencyNode && !(outputIndex === null)) {
+      fireNode(dependencyNode, true);
+      logicNode.inputs[index].value = dependencyNode.outputs[outputIndex].value;
+    }
   });
-
-  connections.forEach((con) => {
-    const [inNode, outNode] = getInputOutputNodes(abstractNodes, con);
-    if (!inNode || !outNode) return;
-
-    inNode.inputs[con.input.index].output = outNode.outputs[con.output.index];
-    outNode.outputs[con.output.index].paths.push(
-      inNode.inputs[con.input.index]
-    );
-  });
-
-  return abstractNodes;
 };
 
-export const executeNode = (
-  abstractNode: AbstractNode,
-  logicNodes: LogicNode[]
-) => {
-  abstractNode.visited = true;
-  abstractNode.loopCount++;
-  if (abstractNode.loopCount > 2) cycleGraph = true;
+const fireNode = (logicNode: LogicNode, isDependancy: boolean) => {
+  resolveDependencies(logicNode);
+  if (isDependancy && !logicNode.autoUpdate) return;
+  logicNode.forward(...logicNode.inputs, ...logicNode.outputs);
+};
 
-  if (cycleGraph) {
-    throw new Error("Inavlid Graph configuration, graph cannot be cyclic!");
+export const next = (io: ProtoIO<any, any>) => {
+  const logicIO: LogicIO<any, any> = io as LogicIO<any, any>;
+
+  if (!logicIO.graphId) return;
+  if (!logicGraphs[logicIO.graphId]) return;
+
+  const graph = logicGraphs[logicIO.graphId];
+
+  let targetNode: LogicNode | null = null;
+
+  graph.connetions.forEach((con) => {
+    if (
+      con.output.id === logicIO.nodeId &&
+      con.output.index === logicIO.index
+    ) {
+      targetNode = searchLogicNode(logicIO.graphId, con.input.id);
+      return;
+    }
+  });
+
+  if (!targetNode) return;
+
+  fireNode(targetNode, false);
+};
+
+const searchLogicNode = (graphId: string, nodeId: string): LogicNode | null => {
+  if (!logicGraphs[graphId]) return null;
+
+  const graph = logicGraphs[graphId];
+
+  for (let i = 0; i < graph.nodes.length; i++) {
+    if (graph.nodes[i].id === nodeId) return graph.nodes[i];
   }
 
-  const nodeId: string = abstractNode.id;
-  const logicNode = getNode(logicNodes, nodeId) as LogicNode;
-
-  //resolve all node dependencies (all input nodes)
-  const dependencies: AbstractNode[] = [];
-  abstractNode.inputs.forEach((io) => {
-    if (io.output) dependencies.push(io.output.node);
-  });
-  dependencies.forEach((dep) => {
-    if (!dep.isComputed) executeNode(dep, logicNodes);
-  });
-
-  if (abstractNode.isComputed) return;
-
-  //set input values
-  abstractNode.inputs.forEach((input, index) => {
-    if (!input.output) return;
-    const connectorNode: LogicNode = getNode(
-      logicNodes,
-      input.output.node.id
-    ) as LogicNode;
-    logicNode.inputs[index].value =
-      connectorNode.outputs[input.output.index].value;
-  });
-
-  logicNode.forward(...logicNode.inputs, ...logicNode.outputs);
-  abstractNode.isComputed = true;
-
-  const next: AbstractNode[] = [];
-  abstractNode.outputs.forEach((io) => {
-    io.paths.forEach((path) => {
-      if (path.output && !path.node.isComputed && !path.node.visited)
-        next.push(path.node);
-    });
-  });
-  next.forEach((nextNode) => executeNode(nextNode, logicNodes));
+  return null;
 };

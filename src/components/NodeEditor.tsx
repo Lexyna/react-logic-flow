@@ -521,6 +521,8 @@ export const NodeEditor = (props: NodeEditorProps) => {
             index={index}
             x={node.x * zoom + panningOffset.offsetX}
             y={node.y * zoom + panningOffset.offsetY}
+            color={node.color ? node.color : "rgba(63, 63, 63, .7)"}
+            headerColor={node.headerColor ? node.headerColor : "#297286BB"}
             editorOffset={nodeEditorOffset}
             zoom={zoom}
             name={node.name}

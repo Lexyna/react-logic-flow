@@ -1,6 +1,5 @@
 .NodeContainer {
     display: block;
-    background-color: rgba(63, 63, 63, .7);
     max-width: 250px;
     min-width: 100px;
     width: auto;
@@ -24,7 +23,6 @@
 
 .NodeContainer>header {
     display: block;
-    background-color: #297286BB;
     color:white;
     border-radius: 5px 5px 0px 0px;
     text-align: left;

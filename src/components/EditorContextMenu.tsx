@@ -47,6 +47,8 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
       id: nanoid(),
       configId: protoNode.id,
       name: protoNode.name,
+      color: protoNode.color ? protoNode.color : "rgba(63, 63, 63, .7)",
+      headerColor: protoNode.headerColor ? protoNode.headerColor : "#297286BB",
       x: x / props.zoom - props.panning.offsetX / props.zoom,
       y: y / props.zoom - props.panning.offsetY / props.zoom,
       autoUpdate: !(protoNode.autoUpdate === undefined)

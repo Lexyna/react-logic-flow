@@ -10,6 +10,11 @@ export const ReactEditorNode = (props: NodeProps) => {
     left: props.x - props.editorOffset.x + "px",
     transform: `scale(${props.zoom})`,
     transformOrigin: "top left",
+    backgroundColor: props.color,
+  };
+
+  const headerColor = {
+    backgroundColor: props.headerColor,
   };
 
   const onDrag = (e: MouseEvent) => {
@@ -50,7 +55,8 @@ export const ReactEditorNode = (props: NodeProps) => {
             e.preventDefault();
             props.hideContextMenu();
             onDrag(e);
-          }}>
+          }}
+          style={headerColor}>
           {props.name}
         </header>
 

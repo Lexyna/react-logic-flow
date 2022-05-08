@@ -25,6 +25,6 @@ export interface NodeConnectionProps {
 export interface NodeEditorProps {
   id: string;
   config: ProtoNode[];
-  root: ProtoNode;
+  root?: ProtoNode;
   liveUpdate: boolean;
 }

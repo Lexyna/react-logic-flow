@@ -45,17 +45,21 @@ export const NodeEditor = (props: NodeEditorProps) => {
 
   const savedNode = useSelector(selectNodeEditorNodes(rootId));
   const [nodes, setNodes] = useState<LogicNode[]>(
-    createLogicNodeArray(props.config, savedNode).concat({
-      ...props.root,
-      name: props.root.name + "(Root)",
-      id: rootId,
-      configId: props.root.id,
-      autoUpdate: !(props.root.autoUpdate === undefined)
-        ? props.root.autoUpdate
-        : true,
-      x: rootPos.x,
-      y: rootPos.y,
-    })
+    createLogicNodeArray(props.config, savedNode).concat(
+      props.root
+        ? {
+            ...props.root,
+            name: props.root.name + "(Root)",
+            id: rootId,
+            configId: props.root.id,
+            autoUpdate: !(props.root.autoUpdate === undefined)
+              ? props.root.autoUpdate
+              : true,
+            x: rootPos.x,
+            y: rootPos.y,
+          }
+        : []
+    )
   );
 
   const nodeEditorStore = useSelector(selectNodeEditor(rootId));
@@ -348,7 +352,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   //functions to execute the graph logic
 
   const execute = () => {
-    createOneTimeGraph(props.id, props.config, props.root);
+    if (props.root) createOneTimeGraph(props.id, props.config, props.root);
   };
 
   const doLiveUpdate = () => {
@@ -422,7 +426,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
   useEffect(() => {
     const reduxNodes: ReduxNode[] = [];
     nodes.forEach((n: LogicNode) => {
-      if (n.configId === props.root.id) {
+      if (props.root && n.configId === props.root.id) {
         dispatch(
           updateRootNodePos({
             id: rootId,
@@ -496,7 +500,7 @@ export const NodeEditor = (props: NodeEditorProps) => {
       <button
         style={{ position: "absolute", left: "10rem" }}
         onClick={setupLivingGraph}>
-        Create living Grapg
+        Create living Graph
       </button>
       <ConnectionStage
         zoom={zoom}

@@ -45,15 +45,17 @@ export const createLivingGarph = (
     graphId
   );
 
-  logicNodes.forEach((node) => {
-    if (node.setup) node.setup(...node.inputs, ...node.outputs);
-  });
-
   logicGraphs[graphId] = {
     nodes: logicNodes,
     connetions: connections,
     graphId: graphId,
   };
+
+  logicNodes.forEach((node) => {
+    resolveDependencies(node);
+    if (node.setup) node.setup(...node.inputs, ...node.outputs);
+  });
+
   return graphId;
 };
 
@@ -132,15 +134,16 @@ export const createOneTimeGraph = (
     graphId
   ).concat(logicRoot);
 
-  logicNodes.forEach((node) => {
-    if (node.setup) node.setup(...node.inputs, ...node.outputs);
-  });
-
   logicGraphs[graphId] = {
     nodes: logicNodes,
     connetions: connections,
     graphId: editorId,
   };
+
+  logicNodes.forEach((node) => {
+    resolveDependencies(node);
+    if (node.setup) node.setup(...node.inputs, ...node.outputs);
+  });
 
   fireNode(logicRoot, false);
 

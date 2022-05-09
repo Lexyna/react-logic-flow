@@ -20,6 +20,8 @@ export interface NodeConnectionProps {
   zoom: number;
   d: string;
   color: string;
+  dashArray: string | null;
+  animated: boolean;
   removeConnection: (index: number) => void;
 }
 

@@ -75,6 +75,8 @@ export const ReactEditorNode = (props: NodeProps) => {
                   conMapping={io.input.conMapping}
                   value={io.input.value}
                   color={io.input.color}
+                  dashArray={null}
+                  animated={false}
                   label={io.input.name}
                   extra={io.input.extra}
                   data={io.input.data}
@@ -94,6 +96,16 @@ export const ReactEditorNode = (props: NodeProps) => {
                   conMapping={io.output.conMapping}
                   value={io.output.value}
                   color={io.output.color}
+                  dashArray={
+                    io.output.dasharray !== undefined
+                      ? io.output.dasharray
+                      : null
+                  }
+                  animated={
+                    io.output.animated !== undefined
+                      ? io.output.animated
+                      : false
+                  }
                   label={io.output.name}
                   extra={io.output.extra}
                   data={io.output.data}

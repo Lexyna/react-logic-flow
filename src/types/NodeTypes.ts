@@ -7,6 +7,8 @@ export interface selectedNode {
   type: string;
   conMapping: CONTYPE;
   color: string;
+  dashArray: string | null;
+  animated: boolean;
   index: number;
   id: string;
 }

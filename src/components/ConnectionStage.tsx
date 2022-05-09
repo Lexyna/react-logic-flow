@@ -117,6 +117,8 @@ export const ConnectionStage = (props: ConnectionStageProps) => {
             key={pathId}
             index={index}
             color={con.output.color}
+            dashArray={con.output.dashArray}
+            animated={con.output.animated}
             zoom={props.zoom}
             d={str}
             removeConnection={onRemoveConnecton}

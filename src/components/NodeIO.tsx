@@ -10,6 +10,8 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
     props.onClick({
       id: id,
       color: props.color,
+      dashArray: props.dashArray,
+      animated: props.animated,
       index: props.index,
       type: props.type,
       conMapping: props.conMapping,

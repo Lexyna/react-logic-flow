@@ -22,6 +22,7 @@ export const InputForm = (props: ExtraProps<number, inputData>) => {
         step={1}
         onChange={(e) => update(parseFloat(e.target.value))}
       />
+      <textarea />
     </div>
   );
 };

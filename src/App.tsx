@@ -311,7 +311,7 @@ const root: ProtoNode = {
   name: "Const",
   description: "A root Node",
   autoUpdate: false,
-  inputs: [ioNumberIN],
+  inputs: [ioNumberInput],
   outputs: [ioActivationOut, ioNumberOUT],
   forward: (
     io: ProtoIO<number, any>,

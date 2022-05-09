@@ -1,6 +1,5 @@
 .NodeContainer {
-    display: inline-block;
-    background-color: rgba(63, 63, 63, .7);
+    display: block;
     max-width: 250px;
     min-width: 100px;
     width: auto;
@@ -24,7 +23,6 @@
 
 .NodeContainer>header {
     display: block;
-    background-color: #297286BB;
     color:white;
     border-radius: 5px 5px 0px 0px;
     text-align: left;
@@ -42,6 +40,7 @@
 .NodeContainer>ul {
     margin: 0;
     padding: 0;
+    display:flex;
     list-style: none;
     user-select: none; /* supported by Chrome and Opera */
     -webkit-touch-callout: none;
@@ -53,12 +52,17 @@
 
 .NodeContainer>ul>li {
     position: relative;
+    display: flex;
     margin-top: 8px;
     margin-bottom: 8px;
+    padding-left: 1rem;
+}
+
+.NodeContainer>ul>li.Output {
+  margin-left: auto;
 }
 
 .NodeContainer>ul>li>span {
-    padding-left: 1rem;
     padding-right: 0.3rem;
     color: black;
     font-family: 'Courier New', Courier, monospace;
@@ -84,7 +88,7 @@
 
 .NodeContainer>ul>li.Output>i {
     right: -.3rem;
-    top: 30%;
+    top: .35rem;
     margin-right: -0.6rem;
 }
 

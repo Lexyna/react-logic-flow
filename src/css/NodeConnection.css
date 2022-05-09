@@ -1,5 +1,4 @@
-.NodeConnection {
-  stroke-dasharray: 15, 5, 5, 10, 5, 5;
+.AnimatedConnection {
   animation: connectionAnimation 50s linear infinite; 
 }
 

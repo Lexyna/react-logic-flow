@@ -10,6 +10,8 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
     props.onClick({
       id: id,
       color: props.color,
+      dashArray: props.dashArray,
+      animated: props.animated,
       index: props.index,
       type: props.type,
       conMapping: props.conMapping,
@@ -37,7 +39,8 @@ export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
       if (!dotRef.current) return -1;
       return (
         dotRef.current.getBoundingClientRect().x +
-        dotRef.current.getBoundingClientRect().width
+        dotRef.current.getBoundingClientRect().width -
+        0.01
       );
     };
     const y = () => {

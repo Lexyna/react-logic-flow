@@ -34,7 +34,7 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
         return index;
       });
     if (e.key === "Enter")
-      if (ref.current)
+      if (ref.current && nodes[selectedIndex])
         addLogicNode(
           ref.current.getBoundingClientRect().x,
           ref.current.getBoundingClientRect().y,
@@ -47,6 +47,8 @@ export const EditorContextMenu = (props: EditorContextMenuProps) => {
       id: nanoid(),
       configId: protoNode.id,
       name: protoNode.name,
+      color: protoNode.color ? protoNode.color : "rgba(63, 63, 63, .7)",
+      headerColor: protoNode.headerColor ? protoNode.headerColor : "#297286BB",
       x: x / props.zoom - props.panning.offsetX / props.zoom,
       y: y / props.zoom - props.panning.offsetY / props.zoom,
       autoUpdate: !(protoNode.autoUpdate === undefined)

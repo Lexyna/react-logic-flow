@@ -7,6 +7,8 @@ export interface selectedNode {
   type: string;
   conMapping: CONTYPE;
   color: string;
+  dashArray: string | null;
+  animated: boolean;
   index: number;
   id: string;
 }
@@ -17,6 +19,8 @@ export interface NodeProps {
   index: number;
   editorOffset: { x: number; y: number };
   name: string;
+  headerColor: string;
+  color: string;
   x: number;
   y: number;
   zoom: number;
@@ -49,6 +53,8 @@ export interface LogicNode {
   configId: string;
   graphId?: string;
   name: string;
+  headerColor?: string;
+  color?: string;
   x: number;
   y: number;
   autoUpdate: boolean;
@@ -62,6 +68,8 @@ export interface LogicNode {
 export interface ProtoNode {
   id: string;
   name: string;
+  headerColor?: string;
+  color?: string;
   description: string;
   autoUpdate?: boolean;
   inputs: ProtoIO<any, any>[];

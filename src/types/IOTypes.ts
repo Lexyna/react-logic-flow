@@ -12,6 +12,8 @@ export interface ProtoIO<T, K> {
   type: string;
   conMapping: CONTYPE;
   color: string;
+  dasharray?: string;
+  animated?: boolean;
   data: K;
   extra: React.FC<ExtraProps<T, K>> | null;
   value: T;
@@ -38,6 +40,8 @@ export interface NodeIOProps<T, K> {
   conMapping: CONTYPE;
   label: string;
   color: string;
+  dashArray: string | null;
+  animated: boolean;
   value: T;
   extra: React.FC<ExtraProps<T, K>> | null;
   data: any;

@@ -5,6 +5,14 @@ import "./../css/NodeConnection.css";
 export const NodeConnection = (props: NodeConnectionProps) => {
   const [strokeWidth, setStrokeWidth] = useState(2);
 
+  const connectionStye = {
+    transform: `scale(${props.zoom})`,
+    stroke: props.color,
+    strokeWidth: strokeWidth,
+    strokeDasharray: props.dashArray ? props.dashArray : "",
+    animation: props.animated ? "connectionAnimation 50s linear infinite;" : "",
+  };
+
   const onHover = () => {
     setStrokeWidth(6);
   };
@@ -20,12 +28,10 @@ export const NodeConnection = (props: NodeConnectionProps) => {
   return (
     <svg onMouseEnter={onHover} onMouseLeave={onHoverLeave}>
       <path
-        style={{ transform: `scale(${props.zoom})` }}
-        className="NodeConnection"
+        style={connectionStye}
+        className={props.animated ? "AnimatedConnection" : ""}
         onClick={onConnectionClicked}
         fill="none"
-        stroke={props.color}
-        strokeWidth={strokeWidth}
         d={props.d}
       />
     </svg>

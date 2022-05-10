@@ -1,46 +1,213 @@
-# Getting Started with Create React App
+# React-logic-flow  (WIP)
+---
+## How to use
+---
+Create a new react component like this  
+```jsx
+<NodeEditor id="#id" config={YOUR_CONFIG} root={YOUR_ROOT} liveUpdate={true}>
+```
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+`id`: The id of this NodeEditor. Will either create a new (empty) NodeEditor or load the ast known state of the nodeEditor with the given id  
 
-## Available Scripts
+`config`: An array of `ProtoNodes`  
 
-In the project directory, you can run:
+`root`: A `ProtoNode` defined as root (optional)
 
-### `npm start`
+`liveUpdate`: `boolean` value, will be false when no root is passed. Otherwise executes nodeEditor with each data change to the nodeEditor
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+To execute a graph, you have two options:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Calling `createOneTimeGraph(id, config, root)` will execute the Grapg once starting from the root and delete it after.
 
-### `npm test`
+Calling `createLivingGraph(id, config)` will create a Graph that lives in Memory. A Garph created liek this can only be executed from inside. For example, by a eventListener.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To delete a living graph, call `deleteLivingGraph(id)`
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+***
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Types
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+***
 
-### `npm run eject`
+`ProtoNode`: A prototype node used to descripe the behaviour and layout of the node
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```ts
+  ProtoNode: {
+    id: string; //The id for this node, used to identify the type of node in the nodeEditor
+    name: string; //Name displayed for this node
+    headerColor?: string; //header color of the node <CSSColor>
+    color?: string; //body color of the node <CSSColor>
+    description: string; //description of the node displayed in the contextMenu
+    autoUpdate?: boolean; //defines if the the node should update when dependencies are requeted. Default <true>
+    inputs: ProtoIO<any, any>[]; // Array of ProtoIO used as input
+    outpust ProtoIO<any,any>[]; // Array of ProtoIO used as output
+    forward: (...io:ProtoIO<any,any>[]) => void; // function executed when this node triggers
+    setup?: (...io:ProtoIO<any,any>[]) => void; //function that is called once before the nodes are excuted
+    cleanup?: (...io:ProtoIO<any,any>[]) => void;  // function called once before the nodeEditor is deleted
+  }
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+`ProtoIO`: IO type use to transfer date between nodes and detrmine valid connections
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```ts
+ProtoIO<T,K> {
+name: string; // display name of this connection
+type: string; // 'Type' of this connection. only connection of the same type can be connection (caseinsensitve)
+conMapping: CONTYPE; //The Connection Type, used to dermine how many connetion this io port can have
+color: string; //color of this connection (detrmined by output)
+dashArray?: string; //Converts the connection to the specified dsh array E.g "15,5,5,5,5"
+animated?: boolean; // Animates the dashArray
+data: K; // extra data useable by a reactComponent inside the ProtoIO
+extra: React.FC<ExtraProps<T,K>> | null; //Potential extra react component inside ProtoIO
+value: T; //The transferd data value to other nodes
+}
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+`ExraProps`: Props passed down to a ProtoIO, used to store additional data inside ProtoIOs.
 
-## Learn More
+```ts
+ExtraProps<T,k> {
+  setData: (data:K) => void; //function to manipulate extraData
+  data: K; //Extra data
+  value: T; //Value of the ProtoIO
+}
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+`CONTYPE`: connection type, defines how many outgoing/ingoing connecions are possible
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```jsx
+enum CONTYPE: {
+  SINGLE, //Allows one ingoing/outgoing connection
+  MULTI //Allows unlimited ingoing/outgoing connetions
+}
+```
+
+`Note:` `T` & `K` need t be serializable!
+
+***
+
+## Calculator example
+***
+
+The following (typescript) code show a simple implementation of a simple math application:
+
+```jsx
+
+interface inputData {
+  val: number;
+}
+
+//Out extra React component to change the output value
+const inputForm = (props: Extraprops<number, inputData>) => {
+  const update = (val: number) => {
+    props.setData({val: val})
+  }
+  return (
+    <div>
+      <label>value:</label>
+      <input 
+        type="number"
+        style={{width: "25px}}
+        defaultValue={props.data.val}
+        step={1}
+        onChange={(e) => update(parseFloat(e.target.value))}
+      />
+    </div>
+  )
+}
+
+//Creating our ProtoIO with inputForm
+const ioNumberInput: protoIO<number, inputData> = {
+  name: "Const",
+  type: "number",
+  conMapping: CONTYPE.MULTI,
+  color: "rgba(0,0,255)",
+  data: { val: 0 },
+  extra: InputForm,
+  value: 0
+}
+
+//Create some input IO without an input form
+const ioNumberIN: ProtoIO<number, any> = {
+  name: "const",
+  type: "number",
+  conMapping: CONTYPE.SINGLE,
+  color: "rgba(0, 0, 255)",
+  data: {},
+  extra: null,
+  value: 0,
+}
+
+const ioNumberOut: ProtoIO<number, any> = {
+  name: "const",
+  type: "number",
+  conMapping: CONTYPE.MULTI,
+  color: "rgba(0, 0, 255)",
+  data: {},
+  extra: null,
+  value: 0,
+}
+
+//Now it's time to create our nodes
+
+//First, we'll create number output node
+const constNode: ProtoNode = {
+  id: "constNode",
+  name: "Const",
+  description: "A node that outputs a number",
+  inputs: [],
+  outputs: [ioNumberInput],
+  forward: (io: ProtoIO<number, inputData>) => {
+    io.value = io.data.val;
+  },
+};
+
+//And finally we can create a node that will do some math
+const addNode: ProtoNode = {
+  id: "addNode",
+  name: "Add",
+  description: "Adds two numnbers",
+  inputs: [ioNumberIN, ioNumberIN],
+  outputs: [ioNumberOUT],
+  forward: (
+    in1: ProtoIO<number, any>,
+    in2: ProtoIO<number, any>,
+    out: ProtoIO<number, any>
+  ) => {
+    out.value = in1.value + in2.value;
+  },
+};
+
+//All thats missing now is a root node to receive our connections and calculate the result
+const root: ProtoNode = {
+  id: "root",
+  name: "Const",
+  description: "A root Node",
+  autoUpdate: false,
+  inputs: [ioNumberIN],
+  outputs: [],
+  forward: (
+    io: ProtoIO<number, any>
+  ) => {
+    console.log("calculated: " + io.value);
+  },
+};
+
+//Simply create the config and we can pass it to the nodeEditor
+const config: ProtoNoe[] = [
+  constNode,
+  addNode
+]
+
+<...>
+  <NodeEditor
+    id="MY_ID"
+    config={config}
+    root={root}
+    liveUpdate={true}>
+</...>
+
+```
+
+

@@ -83,14 +83,14 @@ enum CONTYPE: {
 }
 ```
 
-`Note:` `T` & `K` need t be serializable!
+`Note:` `T` & `K` need to be serializable!
 
 ***
 
 ## Calculator example
 ***
 
-The following (typescript) code show a simple implementation of a simple math application:
+The following (typescript) code shows a implementation of a simple math application:
 
 ```jsx
 

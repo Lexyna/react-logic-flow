@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { NodeConnectionProps } from "../types/NodeEditorTypes";
-import "./../css/NodeConnection.css";
+import { NodeConnectionProps } from "../../types/NodeEditorTypes";
+import "./../../css/NodeConnection.css";
 
 export const NodeConnection = (props: NodeConnectionProps) => {
   const [strokeWidth, setStrokeWidth] = useState(2);

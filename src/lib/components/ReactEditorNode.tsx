@@ -1,7 +1,7 @@
 import { MouseEvent } from "react";
-import { ProtoIOMapper } from "../types/NodeEditorTypes";
-import { NodeProps } from "../types/NodeTypes";
-import "./../css/NodeContainer.css";
+import { ProtoIOMapper } from "../../types/NodeEditorTypes";
+import { NodeProps } from "../../types/NodeTypes";
+import "./../../css/NodeContainer.css";
 import { ReactNodeIO } from "./NodeIO";
 
 export const ReactEditorNode = (props: NodeProps) => {

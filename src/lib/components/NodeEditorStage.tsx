@@ -1,9 +1,12 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "../css/NodeEditor.css";
-import { createNewConnection } from "../logic/ConnetionMapping";
-import { createLivingGarph, createOneTimeGraph } from "../logic/NodeProcessing";
-import { computeBezierCurve, createLogicNodeArray } from "../logic/Utils";
+import "../../css/NodeEditor.css";
+import { createNewConnection } from "../../logic/ConnetionMapping";
+import {
+  createLivingGarph,
+  createOneTimeGraph,
+} from "../../logic/NodeProcessing";
+import { computeBezierCurve, createLogicNodeArray } from "../../logic/Utils";
 import {
   addNodeEditor,
   NodeEditorStore,
@@ -15,19 +18,19 @@ import {
   updateConnections,
   updateNodes,
   updateRootNodePos,
-} from "../store/reducers/NodeEditorSlice";
+} from "../../store/reducers/NodeEditorSlice";
 import {
   ContextMenuOptions,
   NodeContextMenuOptions,
-} from "../types/ContextMenuTypes";
+} from "../../types/ContextMenuTypes";
 import {
   Connection,
   ConnectionPosition,
   ConnectionPosTable,
   NodeEditorProps,
-} from "../types/NodeEditorTypes";
-import { LogicNode, selectedNode } from "../types/NodeTypes";
-import { DragOffset } from "../types/utilTypes";
+} from "../../types/NodeEditorTypes";
+import { LogicNode, selectedNode } from "../../types/NodeTypes";
+import { DragOffset } from "../../types/utilTypes";
 import { ConnectionStage } from "./ConnectionStage";
 import { EditorContextMenu } from "./EditorContextMenu";
 import { NodeContextMenu } from "./NodeContextMenu";

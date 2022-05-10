@@ -1,4 +1,4 @@
-import { NodeContextMenuProps } from "../types/ContextMenuTypes";
+import { NodeContextMenuProps } from "../../types/ContextMenuTypes";
 
 export const NodeContextMenu = (props: NodeContextMenuProps) => {
   const style = {

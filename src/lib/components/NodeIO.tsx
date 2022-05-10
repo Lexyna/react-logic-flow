@@ -1,5 +1,5 @@
 import { FunctionComponent, MouseEvent, useEffect, useRef } from "react";
-import { ExtraProps, NodeIOProps } from "../types/IOTypes";
+import { ExtraProps, NodeIOProps } from "../../types/IOTypes";
 
 export const ReactNodeIO = (props: NodeIOProps<any, any>) => {
   const dotRef = useRef<HTMLUListElement>(null);

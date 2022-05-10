@@ -1,4 +1,4 @@
-import { GridProps } from "../types/GridType";
+import { GridProps } from "../../types/GridType";
 
 interface line {
   startX: number;

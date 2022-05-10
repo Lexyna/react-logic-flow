@@ -1,7 +1,7 @@
 import { MouseEvent, useEffect, useRef, useState, WheelEvent } from "react";
-import { computeBezierCurve } from "../logic/Utils";
-import { ConnectionStageProps } from "../types/ConnectionStageTypes";
-import { clientDimensions } from "../types/utilTypes";
+import { computeBezierCurve } from "../../logic/Utils";
+import { ConnectionStageProps } from "../../types/ConnectionStageTypes";
+import { clientDimensions } from "../../types/utilTypes";
 import { BackgroundGrid } from "./BackgroundGrid";
 import { NodeConnection } from "./NodeConnection";
 

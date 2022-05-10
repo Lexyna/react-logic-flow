@@ -36,7 +36,7 @@ import { ReactEditorNode } from "./ReactEditorNode";
 let selectedOutput: selectedNode | null = null;
 let isSelected: boolean = false;
 
-export const NodeEditor = (props: NodeEditorProps) => {
+export const NodeEditorStage = (props: NodeEditorProps) => {
   const rootId = props.id; // main id for the identification of this nodeEditor in the store
 
   //-------------------------------------------------- Editor States --------------------------------------------------

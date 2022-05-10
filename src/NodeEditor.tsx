@@ -1,5 +1,7 @@
-import { NodeEditor } from "./components/NodeEditor";
+import { Provider } from "react-redux";
+import { NodeEditorStage } from "./components/NodeEditorStage";
 import { next } from "./logic/NodeProcessing";
+import { store } from "./store/stroe";
 import { ACTIVATION, CONTYPE, ExtraProps, ProtoIO } from "./types/IOTypes";
 import { ProtoNode } from "./types/NodeTypes";
 
@@ -324,7 +326,7 @@ const root: ProtoNode = {
   },
 };
 
-function App() {
+function NodeEditor() {
   return (
     <div
       style={{
@@ -334,14 +336,16 @@ function App() {
         left: "0px",
         top: "0px",
       }}>
-      <NodeEditor
-        id={"#myInitialID"}
-        config={config}
-        root={root}
-        liveUpdate={false}
-      />
+      <Provider store={store}>
+        <NodeEditorStage
+          id={"#myInitialID"}
+          config={config}
+          root={root}
+          liveUpdate={false}
+        />
+      </Provider>
     </div>
   );
 }
 
-export default App;
+export default NodeEditor;
